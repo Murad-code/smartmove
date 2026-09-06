@@ -14,13 +14,7 @@ import type { PropertyImage } from '@/lib/properties/types'
  * is a native horizontally scrolling list, which gives momentum scrolling on
  * touch for free and keeps the client bundle to this file.
  */
-export function PropertyGallery({
-  images,
-  title,
-}: {
-  images: PropertyImage[]
-  title: string
-}) {
+export function PropertyGallery({ images, title }: { images: PropertyImage[]; title: string }) {
   const [index, setIndex] = useState(0)
 
   const step = useCallback(

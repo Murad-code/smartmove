@@ -56,7 +56,9 @@ interface HandleArgs<T> {
   successMessage: string
 }
 
-async function handleSubmission<T extends { email: string; companyWebsite?: string; renderedAt?: string }>({
+async function handleSubmission<
+  T extends { email: string; companyWebsite?: string; renderedAt?: string },
+>({
   kind,
   schema,
   formData,

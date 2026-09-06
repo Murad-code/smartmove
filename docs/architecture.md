@@ -50,14 +50,14 @@ and `sitemap.ts` live directly under `src/app` rather than inside
 
 ## Layers
 
-| Layer | Location | Responsibility |
-| --- | --- | --- |
-| Content model | `src/collections`, `src/globals`, `src/blocks` | Payload collections, globals and page sections |
-| Domain | `src/lib/properties` | Property types, queries and mapping, independent of Payload |
-| Data access | `src/lib/site.ts`, `src/lib/pages.ts` | Globals, pages and services, deduped per request |
-| Forms | `src/lib/forms` | Zod schemas, spam checks, server actions |
-| Email | `src/lib/email` | Provider-agnostic notification adapter |
-| Presentation | `src/components` | UI primitives, layout, property and form components |
+| Layer         | Location                                       | Responsibility                                              |
+| ------------- | ---------------------------------------------- | ----------------------------------------------------------- |
+| Content model | `src/collections`, `src/globals`, `src/blocks` | Payload collections, globals and page sections              |
+| Domain        | `src/lib/properties`                           | Property types, queries and mapping, independent of Payload |
+| Data access   | `src/lib/site.ts`, `src/lib/pages.ts`          | Globals, pages and services, deduped per request            |
+| Forms         | `src/lib/forms`                                | Zod schemas, spam checks, server actions                    |
+| Email         | `src/lib/email`                                | Provider-agnostic notification adapter                      |
+| Presentation  | `src/components`                               | UI primitives, layout, property and form components         |
 
 ## The property domain layer
 
@@ -124,13 +124,13 @@ adapter plugin in `payload.config.ts` and nothing else.
 
 ## Access control
 
-| Collection | Public read | Staff |
-| --- | --- | --- |
-| Properties | Only `available` and `let-agreed` | Full |
-| Pages, Services | Published only | Full |
-| Media | Yes | Full |
-| Enquiries | No | Read, update, delete |
-| Users | No | Admins only |
+| Collection      | Public read                       | Staff                |
+| --------------- | --------------------------------- | -------------------- |
+| Properties      | Only `available` and `let-agreed` | Full                 |
+| Pages, Services | Published only                    | Full                 |
+| Media           | Yes                               | Full                 |
+| Enquiries       | No                                | Read, update, delete |
+| Users           | No                                | Admins only          |
 
 Enquiries have `create: () => false`. The only way one is created is the server
 actions in `src/lib/forms/actions.ts`, which pass `overrideAccess: true`.

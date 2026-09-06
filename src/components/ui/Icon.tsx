@@ -58,9 +58,7 @@ const PATHS: Record<IconName, React.ReactNode> = {
     </>
   ),
   shield: <path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z" />,
-  spanner: (
-    <path d="M14.5 3a5.5 5.5 0 0 0-5 7.8L3 17.3V21h3.7l6.5-6.5A5.5 5.5 0 1 0 14.5 3z" />
-  ),
+  spanner: <path d="M14.5 3a5.5 5.5 0 0 0-5 7.8L3 17.3V21h3.7l6.5-6.5A5.5 5.5 0 1 0 14.5 3z" />,
   chart: (
     <>
       <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />

@@ -72,13 +72,15 @@ export function Field({ label, name, hint, error, required, children }: FieldPro
   )
 }
 
-export function TextField(props: Omit<FieldProps, 'children'> & {
-  type?: 'text' | 'email' | 'tel' | 'number' | 'date'
-  placeholder?: string
-  autoComplete?: string
-  defaultValue?: string | number
-  min?: number
-}) {
+export function TextField(
+  props: Omit<FieldProps, 'children'> & {
+    type?: 'text' | 'email' | 'tel' | 'number' | 'date'
+    placeholder?: string
+    autoComplete?: string
+    defaultValue?: string | number
+    min?: number
+  },
+) {
   const { type = 'text', placeholder, autoComplete, defaultValue, min, ...field } = props
   return (
     <Field {...field}>
@@ -96,11 +98,13 @@ export function TextField(props: Omit<FieldProps, 'children'> & {
   )
 }
 
-export function TextAreaField(props: Omit<FieldProps, 'children'> & {
-  rows?: number
-  placeholder?: string
-  defaultValue?: string
-}) {
+export function TextAreaField(
+  props: Omit<FieldProps, 'children'> & {
+    rows?: number
+    placeholder?: string
+    defaultValue?: string
+  },
+) {
   const { rows = 5, placeholder, defaultValue, ...field } = props
   return (
     <Field {...field}>
@@ -111,16 +115,22 @@ export function TextAreaField(props: Omit<FieldProps, 'children'> & {
   )
 }
 
-export function SelectField(props: Omit<FieldProps, 'children'> & {
-  options: { label: string; value: string }[]
-  placeholder?: string
-  defaultValue?: string
-}) {
+export function SelectField(
+  props: Omit<FieldProps, 'children'> & {
+    options: { label: string; value: string }[]
+    placeholder?: string
+    defaultValue?: string
+  },
+) {
   const { options, placeholder, defaultValue, ...field } = props
   return (
     <Field {...field}>
       {(control) => (
-        <select {...control} defaultValue={defaultValue ?? ''} className={cn(control.className, 'pr-9')}>
+        <select
+          {...control}
+          defaultValue={defaultValue ?? ''}
+          className={cn(control.className, 'pr-9')}
+        >
           {placeholder ? <option value="">{placeholder}</option> : null}
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -183,7 +193,13 @@ export function HoneypotField() {
   return (
     <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
       <label htmlFor="company-website">Leave this field blank</label>
-      <input id="company-website" name="companyWebsite" type="text" tabIndex={-1} autoComplete="off" />
+      <input
+        id="company-website"
+        name="companyWebsite"
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+      />
     </div>
   )
 }

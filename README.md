@@ -1,67 +1,125 @@
-# Payload Blank Template
+# Smart Move
 
-This template comes configured with the bare minimum to get started on anything you need.
+Website and CMS for [Smart Move](https://smartmove4u.co.uk/), an independent
+letting agent in Scunthorpe.
 
-## Quick start
+One Next.js application with Payload CMS running inside it, backed by
+PostgreSQL, deployed with Docker Compose behind Nginx on a Linux VPS.
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+- **Website** — `/`
+- **Admin panel** — `/admin`
 
-## Quick Start - local setup
+## Getting started
 
-To spin up this template locally, follow these steps:
+Requires Node 22+, pnpm 10, and PostgreSQL 14 or later (or Docker).
 
-### Clone
+```bash
+pnpm install
+cp .env.example .env
+```
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+Fill in `.env`. At a minimum you need `DATABASE_URL`, a `PAYLOAD_SECRET`
+(`openssl rand -hex 32`), and a `SEED_ADMIN_PASSWORD`.
 
-### Development
+Start Postgres. Either use your own, or:
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+```bash
+docker compose up -d
+```
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+Then set up the database and start the app:
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+```bash
+createdb smartmove          # skip if using the Docker Postgres above
+pnpm migrate
+SEED_DEMO_PROPERTIES=true pnpm seed
+pnpm dev
+```
 
-#### Docker (Optional)
+- Website: http://localhost:3000
+- Admin: http://localhost:3000/admin, signing in with `SEED_ADMIN_EMAIL`
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+The seed writes the starter pages, services and business details, and with
+`SEED_DEMO_PROPERTIES=true` adds eight obviously-labelled demo properties. It is
+safe to re-run.
 
-To do so, follow these steps:
+## Commands
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+| Command                      | What it does                              |
+| ---------------------------- | ----------------------------------------- |
+| `pnpm dev`                   | Development server                        |
+| `pnpm build`                 | Production build                          |
+| `pnpm start`                 | Run the production build                  |
+| `pnpm typecheck`             | TypeScript, strict mode                   |
+| `pnpm lint`                  | ESLint                                    |
+| `pnpm format`                | Prettier                                  |
+| `pnpm test`                  | Integration and end-to-end tests          |
+| `pnpm test:int`              | Vitest only                               |
+| `pnpm test:e2e`              | Playwright only                           |
+| `pnpm seed`                  | Create the admin user and starter content |
+| `pnpm migrate`               | Apply database migrations                 |
+| `pnpm migrate:create <name>` | Create a migration from model changes     |
+| `pnpm generate:types`        | Regenerate `src/payload-types.ts`         |
 
-## How it works
+Run `pnpm typecheck && pnpm lint && pnpm test && pnpm build` before considering
+any change finished.
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+## Project layout
 
-### Collections
+```
+src/
+  app/
+    (frontend)/     the public website
+    (payload)/      the admin panel and Payload's REST API
+    robots.ts       /robots.txt
+    sitemap.ts      /sitemap.xml
+    healthz/        health check
+  collections/      Properties, Pages, Services, Enquiries, Media, Users
+  globals/          Business Details, Website Settings, Home Page
+  blocks/           the nine CMS page sections
+  components/       ui, layout, property, forms, blocks, seo
+  lib/
+    properties/     the property domain layer
+    forms/          validation, spam checks, server actions
+    email/          provider-agnostic notification adapter
+  scripts/          the seed
+  migrations/       generated database migrations
+docker/             Dockerfile support, Nginx configuration
+scripts/            backup.sh, restore.sh
+docs/               everything below
+tests/              int (Vitest), e2e (Playwright)
+```
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+## Documentation
 
-- #### Users (Authentication)
+| Document                                                              | For                                             |
+| --------------------------------------------------------------------- | ----------------------------------------------- |
+| [architecture.md](docs/architecture.md)                               | How the application fits together and why       |
+| [content-model.md](docs/content-model.md)                             | Every collection, global and block              |
+| [cms-guide.md](docs/cms-guide.md)                                     | **The business owner.** Written without jargon. |
+| [deployment.md](docs/deployment.md)                                   | Setting up a VPS from scratch                   |
+| [backups.md](docs/backups.md)                                         | Backups, retention and restoring                |
+| [operations.md](docs/operations.md)                                   | Logs, health, routine maintenance               |
+| [environment-variables.md](docs/environment-variables.md)             | Every variable                                  |
+| [testing.md](docs/testing.md)                                         | What is tested and how to run it                |
+| [property-integration-future.md](docs/property-integration-future.md) | Connecting a CRM or portal feed later           |
+| [client-content-required.md](docs/client-content-required.md)         | What we still need from the client              |
+| [existing-site-audit.md](docs/existing-site-audit.md)                 | What the old site had, and its problems         |
+| [product-requirements.md](docs/product-requirements.md)               | Requirements with acceptance criteria           |
+| [project-handoff.md](docs/project-handoff.md)                         | Summary of what was built                       |
+| [SECURITY.md](SECURITY.md)                                            | Security posture and the pre-launch checklist   |
 
-  Users are auth-enabled collections that have access to the admin panel.
+[CLAUDE.md](CLAUDE.md) holds the conventions a coding agent needs.
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+## Deploying
 
-- #### Media
+See [deployment.md](docs/deployment.md). In outline:
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+```bash
+git clone <repo> /opt/smartmove && cd /opt/smartmove
+cp .env.example .env && nano .env
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml run --rm --entrypoint sh migrate -c "pnpm seed"
+```
 
-### Docker
-
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
-
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+Migrations run automatically before the app container starts.

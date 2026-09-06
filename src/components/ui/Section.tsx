@@ -62,12 +62,7 @@ export function SectionHeading({
   as?: 'h1' | 'h2' | 'h3'
 }) {
   return (
-    <div
-      className={cn(
-        'max-w-2xl',
-        align === 'center' && 'mx-auto text-center',
-      )}
-    >
+    <div className={cn('max-w-2xl', align === 'center' && 'mx-auto text-center')}>
       {eyebrow ? (
         <p
           className={cn(
@@ -78,21 +73,9 @@ export function SectionHeading({
           {eyebrow}
         </p>
       ) : null}
-      <Tag
-        className={cn(
-          'text-3xl sm:text-4xl',
-          tone === 'light' && 'text-white',
-        )}
-      >
-        {heading}
-      </Tag>
+      <Tag className={cn('text-3xl sm:text-4xl', tone === 'light' && 'text-white')}>{heading}</Tag>
       {intro ? (
-        <p
-          className={cn(
-            'mt-4 text-lg',
-            tone === 'light' ? 'text-navy-100' : 'text-ink-600',
-          )}
-        >
+        <p className={cn('mt-4 text-lg', tone === 'light' ? 'text-navy-100' : 'text-ink-600')}>
           {intro}
         </p>
       ) : null}

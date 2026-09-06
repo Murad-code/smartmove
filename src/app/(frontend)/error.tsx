@@ -36,9 +36,7 @@ export default function ErrorPage({
           Back to the home page
         </ButtonLink>
       </div>
-      {error.digest ? (
-        <p className="mt-8 text-xs text-ink-400">Reference: {error.digest}</p>
-      ) : null}
+      {error.digest ? <p className="mt-8 text-xs text-ink-400">Reference: {error.digest}</p> : null}
     </Container>
   )
 }

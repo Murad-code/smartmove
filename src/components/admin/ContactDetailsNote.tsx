@@ -18,9 +18,8 @@ export function ContactDetailsNote() {
         margin: 0,
       }}
     >
-      Your address, phone number, email and opening hours are pulled in
-      automatically from <strong>Settings → Business Details</strong>. Change them
-      there and every page updates.
+      Your address, phone number, email and opening hours are pulled in automatically from{' '}
+      <strong>Settings → Business Details</strong>. Change them there and every page updates.
     </p>
   )
 }

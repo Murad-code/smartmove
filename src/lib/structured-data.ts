@@ -21,9 +21,7 @@ export function realEstateAgentSchema(business: BusinessDetail) {
     ...(business.email ? { email: business.email } : {}),
     address: {
       '@type': 'PostalAddress',
-      streetAddress: [business.address?.line1, business.address?.line2]
-        .filter(Boolean)
-        .join(', '),
+      streetAddress: [business.address?.line1, business.address?.line2].filter(Boolean).join(', '),
       addressLocality: business.address?.town,
       addressRegion: business.address?.county ?? undefined,
       postalCode: business.address?.postcode,
@@ -69,7 +67,11 @@ export function propertySchema(property: PropertyDetail, business: BusinessDetai
     description: property.shortDescription,
     datePosted: property.publishedAt ?? property.updatedAt,
     ...(property.images.length
-      ? { image: property.images.slice(0, 6).map((image) => new URL(image.url, env.siteUrl).toString()) }
+      ? {
+          image: property.images
+            .slice(0, 6)
+            .map((image) => new URL(image.url, env.siteUrl).toString()),
+        }
       : {}),
     provider: {
       '@type': 'RealEstateAgent',

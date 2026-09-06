@@ -24,8 +24,8 @@ export async function Footer() {
 
   const addressLines = formatAddress(business)
   const legalLinks = settings.legalLinks?.length ? settings.legalLinks : FALLBACK_LEGAL
-  const socials = Object.entries(business.social ?? {}).filter(
-    (entry): entry is [string, string] => Boolean(entry[1]),
+  const socials = Object.entries(business.social ?? {}).filter((entry): entry is [string, string] =>
+    Boolean(entry[1]),
   )
 
   return (
@@ -33,9 +33,7 @@ export async function Footer() {
       <Container>
         <div className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:py-16">
           <div className="lg:col-span-1">
-            <p className="font-display text-xl font-semibold text-white">
-              {business.companyName}
-            </p>
+            <p className="font-display text-xl font-semibold text-white">{business.companyName}</p>
             {business.tagline ? (
               <p className="mt-2 text-sm text-navy-200">{business.tagline}</p>
             ) : null}

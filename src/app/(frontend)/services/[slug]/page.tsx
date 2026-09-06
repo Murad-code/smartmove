@@ -7,10 +7,9 @@ import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { Container } from '@/components/ui/Container'
 import { Icon } from '@/components/ui/Icon'
-import { findServiceBySlug, findServices } from '@/lib/pages'
+import { findServiceBySlug } from '@/lib/pages'
 import { buildMetadata } from '@/lib/seo'
 import { breadcrumbSchema } from '@/lib/structured-data'
-
 
 export async function generateMetadata({
   params,
@@ -29,11 +28,7 @@ export async function generateMetadata({
   })
 }
 
-export default async function ServiceDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const service = await findServiceBySlug(slug)
   if (!service) notFound()

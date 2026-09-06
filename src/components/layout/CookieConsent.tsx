@@ -23,8 +23,8 @@ export function CookieConsent({ policyHref = '/cookie-policy' }: { policyHref?: 
       className="fixed inset-x-3 bottom-3 z-50 rounded-xl border border-ink-200 bg-white p-4 shadow-raised sm:inset-x-auto sm:right-4 sm:bottom-4 sm:max-w-md sm:p-5"
     >
       <p className="text-sm text-ink-700">
-        We would like to use anonymous analytics to see which pages are useful. Nothing is used
-        to identify you.{' '}
+        We would like to use anonymous analytics to see which pages are useful. Nothing is used to
+        identify you.{' '}
         <Link href={policyHref} className="font-medium text-navy-700 underline">
           How we use cookies
         </Link>

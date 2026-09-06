@@ -45,9 +45,7 @@ async function BlockRenderer({ block }: { block: Block }): Promise<React.ReactNo
     case 'text':
       return (
         <Section background={block.background === 'grey' ? 'grey' : 'white'}>
-          {block.heading ? (
-            <SectionHeading heading={block.heading} intro={block.intro} />
-          ) : null}
+          {block.heading ? <SectionHeading heading={block.heading} intro={block.intro} /> : null}
           <RichText data={block.body} className={cn(block.heading && 'mt-8')} />
         </Section>
       )
@@ -86,7 +84,10 @@ async function BlockRenderer({ block }: { block: Block }): Promise<React.ReactNo
                 <div className="flex gap-3">
                   <Icon
                     name="check"
-                    className={cn('mt-1 size-5 shrink-0', light ? 'text-accent-400' : 'text-accent-600')}
+                    className={cn(
+                      'mt-1 size-5 shrink-0',
+                      light ? 'text-accent-400' : 'text-accent-600',
+                    )}
                   />
                   <div>
                     <h3 className={cn('text-lg', light && 'text-white')}>{item.title}</h3>
@@ -314,9 +315,7 @@ async function BlockRenderer({ block }: { block: Block }): Promise<React.ReactNo
       return (
         <Section id="enquiry">
           <Container size="narrow" className="px-0">
-            {block.heading ? (
-              <SectionHeading heading={block.heading} intro={block.intro} />
-            ) : null}
+            {block.heading ? <SectionHeading heading={block.heading} intro={block.intro} /> : null}
             <div className={cn(block.heading && 'mt-8')}>
               {block.formType === 'landlord' ? (
                 <LandlordEnquiryForm turnstileSiteKey={siteKey} />

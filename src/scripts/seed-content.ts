@@ -204,16 +204,46 @@ export const services = [
         columns: '3',
         background: 'grey',
         items: [
-          { title: 'Free rental valuation', description: 'An honest figure for what your property should achieve.' },
-          { title: 'Marketing', description: 'Photographs, a written description and listing on this website.' },
-          { title: 'Referencing and credit checks', description: 'Every applicant is checked before we recommend them.' },
-          { title: 'Tenancy agreements', description: 'Drawing up, granting and renewing agreements.' },
-          { title: 'Deposit administration', description: 'Registering and handling the deposit correctly.' },
-          { title: 'Inventories', description: 'A written record of condition at the start of the tenancy.' },
-          { title: 'Rent collection', description: 'Standing orders set up and payments chased if they are late.' },
-          { title: 'Monthly accounting', description: 'A statement each month showing what has come in and gone out.' },
-          { title: 'Repairs and maintenance', description: 'We arrange the trades and oversee the work.' },
-          { title: 'Property inspections', description: 'Regular visits with a written report back to you.' },
+          {
+            title: 'Free rental valuation',
+            description: 'An honest figure for what your property should achieve.',
+          },
+          {
+            title: 'Marketing',
+            description: 'Photographs, a written description and listing on this website.',
+          },
+          {
+            title: 'Referencing and credit checks',
+            description: 'Every applicant is checked before we recommend them.',
+          },
+          {
+            title: 'Tenancy agreements',
+            description: 'Drawing up, granting and renewing agreements.',
+          },
+          {
+            title: 'Deposit administration',
+            description: 'Registering and handling the deposit correctly.',
+          },
+          {
+            title: 'Inventories',
+            description: 'A written record of condition at the start of the tenancy.',
+          },
+          {
+            title: 'Rent collection',
+            description: 'Standing orders set up and payments chased if they are late.',
+          },
+          {
+            title: 'Monthly accounting',
+            description: 'A statement each month showing what has come in and gone out.',
+          },
+          {
+            title: 'Repairs and maintenance',
+            description: 'We arrange the trades and oversee the work.',
+          },
+          {
+            title: 'Property inspections',
+            description: 'Regular visits with a written report back to you.',
+          },
           { title: 'Landlord support', description: 'Someone to call when you need an answer.' },
         ],
       },
@@ -253,7 +283,10 @@ export const services = [
         heading: 'How it works',
         steps: [
           { title: 'Valuation', description: 'We visit the property and agree a realistic rent.' },
-          { title: 'Marketing', description: 'Photographs, description and listing on this website.' },
+          {
+            title: 'Marketing',
+            description: 'Photographs, description and listing on this website.',
+          },
           { title: 'Viewings', description: 'We show applicants round and report back to you.' },
           { title: 'Referencing', description: 'Credit checks and references before you commit.' },
         ],
@@ -276,8 +309,7 @@ export const services = [
     icon: 'pound',
     audience: 'landlords',
     order: 30,
-    summary:
-      'We collect the rent, chase it when it is late and send you a statement each month.',
+    summary: 'We collect the rent, chase it when it is late and send you a statement each month.',
     layout: [
       {
         blockType: 'text',
@@ -371,10 +403,19 @@ export const pages = [
         background: 'grey',
         items: [
           { title: 'Free rental valuation', description: 'No obligation and no charge.' },
-          { title: 'Marketing your property', description: 'Photographs, description and listing on this website.' },
-          { title: 'Finding a tenant', description: 'Accompanied viewings and feedback after each one.' },
+          {
+            title: 'Marketing your property',
+            description: 'Photographs, description and listing on this website.',
+          },
+          {
+            title: 'Finding a tenant',
+            description: 'Accompanied viewings and feedback after each one.',
+          },
           { title: 'Referencing', description: 'Credit checks and references on every applicant.' },
-          { title: 'Rent collection', description: 'Payments monitored and chased if they are late.' },
+          {
+            title: 'Rent collection',
+            description: 'Payments monitored and chased if they are late.',
+          },
           { title: 'Maintenance', description: 'We arrange the trades and oversee the work.' },
           { title: 'Inspections', description: 'Regular visits with a written report.' },
           { title: 'Deposits', description: 'Registered and handled correctly.' },
@@ -388,7 +429,10 @@ export const pages = [
           { title: 'Free valuation', description: 'We visit and agree a realistic rent.' },
           { title: 'Marketing', description: 'The property goes live and viewings begin.' },
           { title: 'Referencing', description: 'We check applicants and recommend the right one.' },
-          { title: 'Move in', description: 'Agreement signed, inventory taken, deposit protected.' },
+          {
+            title: 'Move in',
+            description: 'Agreement signed, inventory taken, deposit protected.',
+          },
         ],
       },
       {
@@ -401,8 +445,7 @@ export const pages = [
       {
         blockType: 'form',
         heading: 'Book a free rental valuation',
-        intro:
-          'Fill in your details and we will call you back to arrange a convenient time.',
+        intro: 'Fill in your details and we will call you back to arrange a convenient time.',
         formType: 'landlord',
       },
     ],
@@ -522,8 +565,7 @@ export const pages = [
     slug: 'contact',
     hero: {
       heading: 'Get in touch',
-      subheading:
-        'Call the office, send us a message, or come and see us on Frodingham Road.',
+      subheading: 'Call the office, send us a message, or come and see us on Frodingham Road.',
     },
     layout: [
       { blockType: 'contactDetails', heading: 'Our office', showMap: true },
@@ -566,8 +608,7 @@ export const pages = [
     slug: 'tenant-fees',
     hero: {
       heading: 'Tenant fees and permitted payments',
-      subheading:
-        'What we can and cannot charge you under the Tenant Fees Act 2019.',
+      subheading: 'What we can and cannot charge you under the Tenant Fees Act 2019.',
     },
     layout: [
       {
@@ -675,7 +716,10 @@ export const pages = [
   {
     title: 'Terms of use',
     slug: 'terms',
-    hero: { heading: 'Website terms of use', subheading: 'The terms on which you may use this site.' },
+    hero: {
+      heading: 'Website terms of use',
+      subheading: 'The terms on which you may use this site.',
+    },
     layout: [
       {
         blockType: 'text',
@@ -703,9 +747,7 @@ export const pages = [
             'Where we link to another website, that is for convenience. We are not responsible for its content.',
           ),
           heading('Governing law'),
-          paragraph(
-            'Your use of this website is governed by the law of England and Wales.',
-          ),
+          paragraph('Your use of this website is governed by the law of England and Wales.'),
         ),
       },
     ],

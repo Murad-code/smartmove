@@ -42,8 +42,8 @@ export default async function ServicesPage() {
         <Container className="py-12 sm:py-16">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl">Our services</h1>
           <p className="mt-4 max-w-2xl text-lg text-ink-600">
-            Whether you are letting a property out or looking for somewhere to live, here is how
-            we can help.
+            Whether you are letting a property out or looking for somewhere to live, here is how we
+            can help.
           </p>
         </Container>
       </div>

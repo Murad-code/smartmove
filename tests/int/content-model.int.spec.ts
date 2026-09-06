@@ -113,9 +113,7 @@ describe('enquiries collection', () => {
   })
 
   it('hides enquiries from visitors', async () => {
-    await expect(
-      payload.find({ collection: 'enquiries', overrideAccess: false }),
-    ).rejects.toThrow()
+    await expect(payload.find({ collection: 'enquiries', overrideAccess: false })).rejects.toThrow()
   })
 })
 

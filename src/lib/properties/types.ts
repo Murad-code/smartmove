@@ -10,13 +10,7 @@
 export type PropertyStatus = 'available' | 'let-agreed' | 'let' | 'draft'
 
 export type PropertyType =
-  | 'detached'
-  | 'semi-detached'
-  | 'terraced'
-  | 'flat'
-  | 'bungalow'
-  | 'room'
-  | 'commercial'
+  'detached' | 'semi-detached' | 'terraced' | 'flat' | 'bungalow' | 'room' | 'commercial'
 
 export type FurnishedStatus = 'unfurnished' | 'part-furnished' | 'furnished'
 

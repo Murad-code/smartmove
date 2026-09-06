@@ -61,7 +61,10 @@ export function PropertyFilters({ resultCount }: { resultCount: number }) {
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <label htmlFor="filter-bedrooms" className="mb-1.5 block text-sm font-medium text-ink-800">
+          <label
+            htmlFor="filter-bedrooms"
+            className="mb-1.5 block text-sm font-medium text-ink-800"
+          >
             Bedrooms
           </label>
           <select

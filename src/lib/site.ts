@@ -34,15 +34,14 @@ export function notificationRecipients(business: BusinessDetail): string[] {
 
 export function formatAddress(business: BusinessDetail): string[] {
   const { address } = business
-  return [address?.line1, address?.line2, address?.town, address?.county, address?.postcode]
-    .filter((line): line is string => Boolean(line && line.trim()))
+  return [address?.line1, address?.line2, address?.town, address?.county, address?.postcode].filter(
+    (line): line is string => Boolean(line && line.trim()),
+  )
 }
 
 export function mapLink(business: BusinessDetail): string {
   if (business.mapUrl) return business.mapUrl
-  const query = encodeURIComponent(
-    [business.companyName, ...formatAddress(business)].join(', '),
-  )
+  const query = encodeURIComponent([business.companyName, ...formatAddress(business)].join(', '))
   return `https://www.google.com/maps/search/?api=1&query=${query}`
 }
 

@@ -7,7 +7,6 @@ import { findAllPropertySlugs } from '@/lib/properties'
 /** Rendered per request, so a property added today is in it today. */
 export const dynamic = 'force-dynamic'
 
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [pages, properties, services] = await Promise.all([
     findAllPageSlugs(),

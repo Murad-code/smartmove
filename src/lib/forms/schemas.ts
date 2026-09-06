@@ -8,11 +8,7 @@ import { z } from 'zod'
  * shown to a member of the public, not to a developer.
  */
 
-const name = z
-  .string()
-  .trim()
-  .min(2, 'Please enter your name')
-  .max(100, 'That name is too long')
+const name = z.string().trim().min(2, 'Please enter your name').max(100, 'That name is too long')
 
 const email = z
   .string()
@@ -76,11 +72,7 @@ export const landlordEnquirySchema = antiSpamSchema.extend({
   name,
   email,
   telephone: requiredTelephone,
-  postcode: z
-    .string()
-    .trim()
-    .max(12, 'Please enter a valid postcode')
-    .optional(),
+  postcode: z.string().trim().max(12, 'Please enter a valid postcode').optional(),
   serviceInterest: optionalText(80),
   message,
   consent,

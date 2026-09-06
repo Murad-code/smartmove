@@ -20,10 +20,7 @@ export function Pagination({
   if (totalPages <= 1) return null
 
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1).filter(
-    (candidate) =>
-      candidate === 1 ||
-      candidate === totalPages ||
-      Math.abs(candidate - page) <= 1,
+    (candidate) => candidate === 1 || candidate === totalPages || Math.abs(candidate - page) <= 1,
   )
 
   return (

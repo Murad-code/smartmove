@@ -89,7 +89,13 @@ export const BusinessDetails: GlobalConfig = {
                 {
                   type: 'row',
                   fields: [
-                    { name: 'town', type: 'text', required: true, label: 'Town', admin: { width: '50%' } },
+                    {
+                      name: 'town',
+                      type: 'text',
+                      required: true,
+                      label: 'Town',
+                      admin: { width: '50%' },
+                    },
                     { name: 'county', type: 'text', label: 'County', admin: { width: '50%' } },
                   ],
                 },

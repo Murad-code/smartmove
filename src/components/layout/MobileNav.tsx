@@ -41,10 +41,7 @@ export function MobileNav({
   const [openedFor, setOpenedFor] = useState<string | null>(null)
   const open = openedFor === pathname
 
-  const setOpen = useCallback(
-    (next: boolean) => setOpenedFor(next ? pathname : null),
-    [pathname],
-  )
+  const setOpen = useCallback((next: boolean) => setOpenedFor(next ? pathname : null), [pathname])
 
   useEffect(() => {
     if (!open) return
@@ -124,9 +121,7 @@ export function MobileNav({
                         aria-current={current ? 'page' : undefined}
                         className={cn(
                           'block rounded-lg px-3 py-3 text-lg font-medium',
-                          current
-                            ? 'bg-navy-50 text-navy-900'
-                            : 'text-ink-800 hover:bg-ink-50',
+                          current ? 'bg-navy-50 text-navy-900' : 'text-ink-800 hover:bg-ink-50',
                         )}
                       >
                         {link.label}

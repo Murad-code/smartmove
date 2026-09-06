@@ -45,8 +45,7 @@
   --color-ink-900: #1e232b;
   --color-ink-950: #12161c;
 
-  --font-sans:
-    var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display: var(--font-serif), ui-serif, Georgia, 'Times New Roman', serif;
 
   --text-display: 3.5rem;

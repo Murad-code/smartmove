@@ -73,8 +73,20 @@ export const Enquiries: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'name', type: 'text', required: true, label: 'Name', admin: { readOnly: true, width: '50%' } },
-        { name: 'email', type: 'email', required: true, label: 'Email', admin: { readOnly: true, width: '50%' } },
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+          label: 'Name',
+          admin: { readOnly: true, width: '50%' },
+        },
+        {
+          name: 'email',
+          type: 'email',
+          required: true,
+          label: 'Email',
+          admin: { readOnly: true, width: '50%' },
+        },
       ],
     },
     {
@@ -124,7 +136,12 @@ export const Enquiries: CollectionConfig = {
       admin: { condition: (data) => data?.kind === 'landlord' },
       fields: [
         { name: 'postcode', type: 'text', label: 'Property postcode', admin: { readOnly: true } },
-        { name: 'serviceInterest', type: 'text', label: 'Interested in', admin: { readOnly: true } },
+        {
+          name: 'serviceInterest',
+          type: 'text',
+          label: 'Interested in',
+          admin: { readOnly: true },
+        },
       ],
     },
     {
@@ -136,15 +153,35 @@ export const Enquiries: CollectionConfig = {
         {
           type: 'row',
           fields: [
-            { name: 'preferredArea', type: 'text', label: 'Preferred area', admin: { readOnly: true, width: '50%' } },
-            { name: 'propertyType', type: 'text', label: 'Property type', admin: { readOnly: true, width: '50%' } },
+            {
+              name: 'preferredArea',
+              type: 'text',
+              label: 'Preferred area',
+              admin: { readOnly: true, width: '50%' },
+            },
+            {
+              name: 'propertyType',
+              type: 'text',
+              label: 'Property type',
+              admin: { readOnly: true, width: '50%' },
+            },
           ],
         },
         {
           type: 'row',
           fields: [
-            { name: 'minBedrooms', type: 'number', label: 'Minimum bedrooms', admin: { readOnly: true, width: '50%' } },
-            { name: 'maxRent', type: 'number', label: 'Maximum monthly rent', admin: { readOnly: true, width: '50%' } },
+            {
+              name: 'minBedrooms',
+              type: 'number',
+              label: 'Minimum bedrooms',
+              admin: { readOnly: true, width: '50%' },
+            },
+            {
+              name: 'maxRent',
+              type: 'number',
+              label: 'Maximum monthly rent',
+              admin: { readOnly: true, width: '50%' },
+            },
           ],
         },
         { name: 'moveDate', type: 'text', label: 'Looking to move', admin: { readOnly: true } },

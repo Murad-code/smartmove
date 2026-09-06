@@ -18,8 +18,8 @@ export default function NotFound() {
       </span>
       <h1 className="mt-6 text-3xl sm:text-4xl">We could not find that page</h1>
       <p className="mx-auto mt-4 max-w-md text-ink-600">
-        The page may have moved, or a property may no longer be available. Try browsing what we
-        have at the moment.
+        The page may have moved, or a property may no longer be available. Try browsing what we have
+        at the moment.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <ButtonLink href="/properties" size="large">

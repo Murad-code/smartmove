@@ -5,12 +5,7 @@ import { PUBLIC_PROPERTY_STATUSES } from '@/collections/Properties'
 import { getPayloadClient } from '@/lib/payload'
 
 import { toPropertyDetail, toPropertySummary } from './mappers'
-import type {
-  PropertyDetail,
-  PropertyFilters,
-  PropertyPage,
-  PropertySummary,
-} from './types'
+import type { PropertyDetail, PropertyFilters, PropertyPage, PropertySummary } from './types'
 
 export * from './types'
 export { PROPERTY_TYPE_LABELS, describeFilters } from './labels'
@@ -70,58 +65,54 @@ export const findProperties = cache(
  * Two queries rather than one so a short featured list is topped up instead of
  * leaving gaps in the grid.
  */
-export const findFeaturedProperties = cache(
-  async (limit = 3): Promise<PropertySummary[]> => {
-    const payload = await getPayloadClient()
+export const findFeaturedProperties = cache(async (limit = 3): Promise<PropertySummary[]> => {
+  const payload = await getPayloadClient()
 
-    const featured = await payload.find({
-      collection: 'properties',
-      where: {
-        and: [{ featured: { equals: true } }, { status: { in: PUBLIC_PROPERTY_STATUSES } }],
-      },
-      sort: '-publishedAt',
-      depth: 1,
-      limit,
-      overrideAccess: false,
-    })
+  const featured = await payload.find({
+    collection: 'properties',
+    where: {
+      and: [{ featured: { equals: true } }, { status: { in: PUBLIC_PROPERTY_STATUSES } }],
+    },
+    sort: '-publishedAt',
+    depth: 1,
+    limit,
+    overrideAccess: false,
+  })
 
-    const selected = featured.docs.map(toPropertySummary)
-    if (selected.length >= limit) return selected
+  const selected = featured.docs.map(toPropertySummary)
+  if (selected.length >= limit) return selected
 
-    const topUp = await payload.find({
-      collection: 'properties',
-      where: {
-        and: [
-          { status: { in: PUBLIC_PROPERTY_STATUSES } },
-          ...(selected.length ? [{ id: { not_in: selected.map((p) => p.id) } }] : []),
-        ],
-      },
-      sort: '-publishedAt',
-      depth: 1,
-      limit: limit - selected.length,
-      overrideAccess: false,
-    })
+  const topUp = await payload.find({
+    collection: 'properties',
+    where: {
+      and: [
+        { status: { in: PUBLIC_PROPERTY_STATUSES } },
+        ...(selected.length ? [{ id: { not_in: selected.map((p) => p.id) } }] : []),
+      ],
+    },
+    sort: '-publishedAt',
+    depth: 1,
+    limit: limit - selected.length,
+    overrideAccess: false,
+  })
 
-    return [...selected, ...topUp.docs.map(toPropertySummary)]
-  },
-)
+  return [...selected, ...topUp.docs.map(toPropertySummary)]
+})
 
-export const findPropertyBySlug = cache(
-  async (slug: string): Promise<PropertyDetail | null> => {
-    const payload = await getPayloadClient()
+export const findPropertyBySlug = cache(async (slug: string): Promise<PropertyDetail | null> => {
+  const payload = await getPayloadClient()
 
-    const result = await payload.find({
-      collection: 'properties',
-      where: { slug: { equals: slug } },
-      depth: 1,
-      limit: 1,
-      overrideAccess: false,
-    })
+  const result = await payload.find({
+    collection: 'properties',
+    where: { slug: { equals: slug } },
+    depth: 1,
+    limit: 1,
+    overrideAccess: false,
+  })
 
-    const doc = result.docs[0]
-    return doc ? toPropertyDetail(doc) : null
-  },
-)
+  const doc = result.docs[0]
+  return doc ? toPropertyDetail(doc) : null
+})
 
 /** Other available properties to show at the foot of a property page. */
 export const findRelatedProperties = cache(

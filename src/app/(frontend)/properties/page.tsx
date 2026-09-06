@@ -11,7 +11,13 @@ import { Icon } from '@/components/ui/Icon'
 import { Pagination } from '@/components/ui/Pagination'
 import { Section } from '@/components/ui/Section'
 import { PROPERTIES_PER_PAGE, describeFilters, findProperties } from '@/lib/properties'
-import { buildQuery, hasActiveFilters, parseFilters, parsePage, type SearchParams } from '@/lib/properties/filters'
+import {
+  buildQuery,
+  hasActiveFilters,
+  parseFilters,
+  parsePage,
+  type SearchParams,
+} from '@/lib/properties/filters'
 import { buildMetadata } from '@/lib/seo'
 import { breadcrumbSchema } from '@/lib/structured-data'
 

@@ -6,7 +6,7 @@ import React from 'react'
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { Container } from '@/components/ui/Container'
-import { findAllPageSlugs, findPageBySlug } from '@/lib/pages'
+import { findPageBySlug } from '@/lib/pages'
 import { toImage } from '@/lib/properties/mappers'
 import { buildMetadata } from '@/lib/seo'
 import { breadcrumbSchema } from '@/lib/structured-data'
@@ -19,7 +19,6 @@ import { breadcrumbSchema } from '@/lib/structured-data'
  */
 
 export const dynamicParams = true
-
 
 export async function generateMetadata({
   params,
@@ -74,9 +73,7 @@ export default async function CmsPage({ params }: { params: Promise<{ slug: stri
             {page.hero?.heading || page.title}
           </h1>
           {page.hero?.subheading ? (
-            <p
-              className={`mt-4 max-w-2xl text-lg ${heroImage ? 'text-navy-100' : 'text-ink-600'}`}
-            >
+            <p className={`mt-4 max-w-2xl text-lg ${heroImage ? 'text-navy-100' : 'text-ink-600'}`}>
               {page.hero.subheading}
             </p>
           ) : null}

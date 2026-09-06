@@ -4,35 +4,35 @@ Audited 6 September 2026 against the live site at https://smartmove4u.co.uk/.
 
 ## 1. Technical profile
 
-| Item | Observed |
-| --- | --- |
-| Server | Apache, `X-Powered-By: PHP/8.5.10` |
-| Caching | Varnish (`x-varnish`, `via: 1.1 webcache2`) |
-| Front end | Hand-written CSS (`reset.css`, `layout.css`, `responsive.css`, `forms.css`), jQuery, Fancybox lightbox |
-| Session | `SIDSMARTMOVE` PHP session cookie set on every page, including anonymous browsing |
-| Cache policy | `Cache-Control: no-store, no-cache, must-revalidate` on HTML, plus `Expires: Thu, 19 Nov 1981` |
-| Property data | Rendered server-side from a database; a sort control exists but returns no results |
+| Item          | Observed                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------ |
+| Server        | Apache, `X-Powered-By: PHP/8.5.10`                                                                     |
+| Caching       | Varnish (`x-varnish`, `via: 1.1 webcache2`)                                                            |
+| Front end     | Hand-written CSS (`reset.css`, `layout.css`, `responsive.css`, `forms.css`), jQuery, Fancybox lightbox |
+| Session       | `SIDSMARTMOVE` PHP session cookie set on every page, including anonymous browsing                      |
+| Cache policy  | `Cache-Control: no-store, no-cache, must-revalidate` on HTML, plus `Expires: Thu, 19 Nov 1981`         |
+| Property data | Rendered server-side from a database; a sort control exists but returns no results                     |
 
 The stack is a bespoke PHP application rather than a recognised CMS. There is no visible
 admin route, so content changes almost certainly require a developer or an FTP edit.
 
 ## 2. Sitemap
 
-| Path | Title | Notes |
-| --- | --- | --- |
-| `/` | Home | Marketing page, service teasers |
-| `/index` | Home (duplicate) | Same content as `/`, duplicate-content risk |
-| `/about` | About Us | Company positioning |
-| `/properties` | Properties to Let | Listing page, currently empty |
-| `/properties-for-sale` | Properties for Sale | Listing page, currently empty |
-| `/property-management` | Property Management | Landlord services |
-| `/mortgages` | Mortgages | Mortgage brokerage |
-| `/epcs` | EPCs | Energy Performance Certificates |
-| `/contact` | Contact | Address, hours, enquiry form |
-| `/terms` | Terms & Conditions | Website terms |
-| `/cookie-policy` | Cookie Policy | |
-| `/sitemap` | Sitemap | HTML sitemap |
-| `/tenant-fee-guide` | **404** | Linked from the main nav and footer of every page |
+| Path                   | Title               | Notes                                             |
+| ---------------------- | ------------------- | ------------------------------------------------- |
+| `/`                    | Home                | Marketing page, service teasers                   |
+| `/index`               | Home (duplicate)    | Same content as `/`, duplicate-content risk       |
+| `/about`               | About Us            | Company positioning                               |
+| `/properties`          | Properties to Let   | Listing page, currently empty                     |
+| `/properties-for-sale` | Properties for Sale | Listing page, currently empty                     |
+| `/property-management` | Property Management | Landlord services                                 |
+| `/mortgages`           | Mortgages           | Mortgage brokerage                                |
+| `/epcs`                | EPCs                | Energy Performance Certificates                   |
+| `/contact`             | Contact             | Address, hours, enquiry form                      |
+| `/terms`               | Terms & Conditions  | Website terms                                     |
+| `/cookie-policy`       | Cookie Policy       |                                                   |
+| `/sitemap`             | Sitemap             | HTML sitemap                                      |
+| `/tenant-fee-guide`    | **404**             | Linked from the main nav and footer of every page |
 
 ## 3. Business information found on the site
 
@@ -109,23 +109,23 @@ packages.
 
 ### Can migrate largely as-is
 
-| Content | Destination |
-| --- | --- |
-| Address, phone, email, opening hours | Business Details global |
-| EPC explainer page body | Services entry / page |
-| Property management service list | Landlords page and Services entry |
-| Mortgages "reasons to choose" points | Why-choose-us content |
-| Silver / Gold / Platinum package names | Landlord services |
+| Content                                | Destination                       |
+| -------------------------------------- | --------------------------------- |
+| Address, phone, email, opening hours   | Business Details global           |
+| EPC explainer page body                | Services entry / page             |
+| Property management service list       | Landlords page and Services entry |
+| Mortgages "reasons to choose" points   | Why-choose-us content             |
+| Silver / Gold / Platinum package names | Landlord services                 |
 
 ### Should be rewritten
 
-| Content | Reason |
-| --- | --- |
-| About page copy | "Newest… young and dynamic" no longer reflects an established agency |
-| Terms & Conditions | Contains an unfilled placeholder; needs review by the client's solicitor |
-| Cookie policy | Must match the cookies the new site actually sets |
-| Lettings listing disclaimer | Currently written for sales, not lettings |
-| Home page marketing copy | Thin and repetitive across the strip CTAs |
+| Content                     | Reason                                                                   |
+| --------------------------- | ------------------------------------------------------------------------ |
+| About page copy             | "Newest… young and dynamic" no longer reflects an established agency     |
+| Terms & Conditions          | Contains an unfilled placeholder; needs review by the client's solicitor |
+| Cookie policy               | Must match the cookies the new site actually sets                        |
+| Lettings listing disclaimer | Currently written for sales, not lettings                                |
+| Home page marketing copy    | Thin and repetitive across the strip CTAs                                |
 
 ### Requires client confirmation
 

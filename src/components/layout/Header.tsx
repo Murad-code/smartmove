@@ -22,10 +22,9 @@ const FALLBACK_NAV: NavLink[] = [
 export async function Header() {
   const [business, settings] = await Promise.all([getBusinessDetails(), getSiteSettings()])
 
-  const links: NavLink[] =
-    settings.mainNav?.length
-      ? settings.mainNav.map((item) => ({ label: item.label, href: item.href }))
-      : FALLBACK_NAV
+  const links: NavLink[] = settings.mainNav?.length
+    ? settings.mainNav.map((item) => ({ label: item.label, href: item.href }))
+    : FALLBACK_NAV
 
   const cta =
     settings.headerCta?.label && settings.headerCta?.href

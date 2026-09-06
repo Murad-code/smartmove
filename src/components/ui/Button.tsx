@@ -11,8 +11,7 @@ const BASE =
 
 const VARIANTS: Record<Variant, string> = {
   primary: 'bg-navy-700 text-white hover:bg-navy-800',
-  secondary:
-    'border border-navy-200 bg-white text-navy-800 hover:border-navy-400 hover:bg-navy-50',
+  secondary: 'border border-navy-200 bg-white text-navy-800 hover:border-navy-400 hover:bg-navy-50',
   // The brand green is too light to carry white text at AA, so it carries
   // dark navy text instead. That keeps the brand colour and reaches 9:1.
   accent: 'bg-accent-400 text-navy-950 hover:bg-accent-300',

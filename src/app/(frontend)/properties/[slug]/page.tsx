@@ -16,15 +16,10 @@ import { RichText } from '@/components/ui/RichText'
 import { Section } from '@/components/ui/Section'
 import { env } from '@/lib/env'
 import { formatAvailability, formatRent } from '@/lib/format'
-import {
-  findAllPropertySlugs,
-  findPropertyBySlug,
-  findRelatedProperties,
-} from '@/lib/properties'
+import { findPropertyBySlug, findRelatedProperties } from '@/lib/properties'
 import { buildMetadata } from '@/lib/seo'
 import { getBusinessDetails, telHref } from '@/lib/site'
 import { breadcrumbSchema, propertySchema } from '@/lib/structured-data'
-
 
 export async function generateMetadata({
   params,
@@ -177,9 +172,9 @@ export default async function PropertyDetailPage({
             ) : null}
 
             <p className="mt-10 border-t border-ink-200 pt-6 text-xs leading-relaxed text-ink-500">
-              These particulars are a general guide and do not form part of any contract.
-              Fixtures, fittings and services have not been tested. Please check anything that
-              matters to you when you view.
+              These particulars are a general guide and do not form part of any contract. Fixtures,
+              fittings and services have not been tested. Please check anything that matters to you
+              when you view.
             </p>
           </div>
 

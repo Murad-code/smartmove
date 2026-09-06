@@ -28,13 +28,7 @@ export function GeneralEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: st
       submitLabel="Send enquiry"
       turnstileSiteKey={turnstileSiteKey}
     >
-      <TextField
-        label="Your name"
-        name="name"
-        required
-        autoComplete="name"
-        error={errors.name}
-      />
+      <TextField label="Your name" name="name" required autoComplete="name" error={errors.name} />
       <div className="grid gap-5 sm:grid-cols-2">
         <TextField
           label="Email address"

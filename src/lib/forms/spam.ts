@@ -71,15 +71,12 @@ export async function verifyTurnstile(token: unknown): Promise<boolean> {
   if (typeof token !== 'string' || !token) return false
 
   try {
-    const response = await fetch(
-      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: env.turnstile.secretKey, response: token }),
-        signal: AbortSignal.timeout(8_000),
-      },
-    )
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: env.turnstile.secretKey, response: token }),
+      signal: AbortSignal.timeout(8_000),
+    })
     const result = (await response.json()) as { success?: boolean }
     return Boolean(result.success)
   } catch (error) {

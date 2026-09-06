@@ -29,8 +29,7 @@ export function parseFilters(params: SearchParams): PropertyFilters {
   return {
     minBedrooms: positiveInt(params.bedrooms),
     maxRent: positiveInt(params.maxRent),
-    propertyType:
-      type && type in PROPERTY_TYPE_LABELS ? (type as PropertyType) : undefined,
+    propertyType: type && type in PROPERTY_TYPE_LABELS ? (type as PropertyType) : undefined,
     status: status === 'available' || status === 'let-agreed' ? status : undefined,
     sort:
       sort === 'rent-asc' || sort === 'rent-desc' || sort === 'bedrooms-desc' || sort === 'newest'
@@ -57,7 +56,5 @@ export function buildQuery(filters: PropertyFilters, page?: number): string {
 }
 
 export function hasActiveFilters(filters: PropertyFilters): boolean {
-  return Boolean(
-    filters.minBedrooms || filters.maxRent || filters.propertyType || filters.status,
-  )
+  return Boolean(filters.minBedrooms || filters.maxRent || filters.propertyType || filters.status)
 }

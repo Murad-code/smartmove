@@ -32,9 +32,7 @@ export function slugField(sourceField = 'title'): Field {
         ({ value, data, originalDoc }) => {
           if (typeof value === 'string' && value.length > 0) return slugify(value)
 
-          const source = (data?.[sourceField] ?? originalDoc?.[sourceField]) as
-            | string
-            | undefined
+          const source = (data?.[sourceField] ?? originalDoc?.[sourceField]) as string | undefined
           return source ? slugify(source) : value
         },
       ],

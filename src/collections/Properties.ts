@@ -47,8 +47,7 @@ export const Properties: CollectionConfig = {
   access: {
     // A single `status` field is the only publish control, so drafts are off:
     // two competing "is it live?" switches would confuse the owner.
-    read: ({ req: { user } }) =>
-      user ? true : { status: { in: PUBLIC_PROPERTY_STATUSES } },
+    read: ({ req: { user } }) => (user ? true : { status: { in: PUBLIC_PROPERTY_STATUSES } }),
     create: isStaff,
     update: isStaff,
     delete: isStaff,
@@ -250,7 +249,8 @@ export const Properties: CollectionConfig = {
         // -------------------------------------------------------------------
         {
           label: 'Address',
-          description: 'For your records and for the map. Only the area and postcode are shown publicly.',
+          description:
+            'For your records and for the map. Only the area and postcode are shown publicly.',
           fields: [
             {
               name: 'addressLine1',

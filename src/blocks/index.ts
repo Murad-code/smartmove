@@ -142,7 +142,12 @@ export const ImageTextBlock: Block = {
       label: 'Button (optional)',
       fields: [
         { name: 'label', type: 'text', label: 'Button text' },
-        { name: 'href', type: 'text', label: 'Where it goes', admin: { placeholder: '/properties' } },
+        {
+          name: 'href',
+          type: 'text',
+          label: 'Where it goes',
+          admin: { placeholder: '/properties' },
+        },
       ],
     },
   ],

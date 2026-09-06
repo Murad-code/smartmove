@@ -49,9 +49,7 @@ export function PropertyCard({
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <p className="text-xl font-semibold text-navy-800">
-          {formatRent(property.monthlyRent)}
-        </p>
+        <p className="text-xl font-semibold text-navy-800">{formatRent(property.monthlyRent)}</p>
 
         <h3 className="mt-1.5 text-lg leading-snug">
           <Link
