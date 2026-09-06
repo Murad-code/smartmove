@@ -69,7 +69,7 @@ export async function Header() {
             <Logo logo={settings.logo} companyName={business.companyName} />
           </div>
 
-          <nav aria-label="Main" className="hidden lg:block">
+          <nav aria-label="Main" className="hidden lg:flex lg:items-center">
             <NavLinks links={links} />
           </nav>
 

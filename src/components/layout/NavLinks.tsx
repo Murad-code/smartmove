@@ -25,7 +25,7 @@ export function NavLinks({ links }: { links: NavLink[] }) {
               href={link.href}
               aria-current={current ? 'page' : undefined}
               className={cn(
-                'rounded-lg px-3 py-2 text-[0.95rem] font-medium transition-colors',
+                'relative rounded-lg px-3 py-2 text-[0.95rem] font-medium transition-colors',
                 current ? 'text-navy-800' : 'text-ink-600 hover:text-navy-800',
               )}
             >
@@ -33,7 +33,7 @@ export function NavLinks({ links }: { links: NavLink[] }) {
               <span
                 aria-hidden="true"
                 className={cn(
-                  'mx-3 mt-1.5 block h-0.5 rounded-full transition-colors',
+                  'absolute inset-x-3 -bottom-0.5 block h-0.5 rounded-full transition-colors',
                   current ? 'bg-accent-400' : 'bg-transparent',
                 )}
               />
