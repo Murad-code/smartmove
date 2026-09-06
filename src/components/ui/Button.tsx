@@ -1,0 +1,89 @@
+import Link from 'next/link'
+import React from 'react'
+
+import { cn } from '@/lib/cn'
+
+type Variant = 'primary' | 'secondary' | 'ghost' | 'accent' | 'inverse'
+type Size = 'default' | 'small' | 'large'
+
+const BASE =
+  'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60'
+
+const VARIANTS: Record<Variant, string> = {
+  primary: 'bg-navy-700 text-white hover:bg-navy-800',
+  secondary:
+    'border border-navy-200 bg-white text-navy-800 hover:border-navy-400 hover:bg-navy-50',
+  accent: 'bg-accent-500 text-white hover:bg-accent-600',
+  ghost: 'text-navy-700 hover:bg-navy-50',
+  // For use on navy sections, where the primary navy button would vanish.
+  inverse: 'bg-white text-navy-800 hover:bg-navy-50',
+}
+
+const SIZES: Record<Size, string> = {
+  small: 'px-3.5 py-2 text-sm',
+  // 44px tall, which keeps every button a comfortable touch target.
+  default: 'px-5 py-2.5 text-[0.95rem]',
+  large: 'px-7 py-3.5 text-base',
+}
+
+function classes(variant: Variant, size: Size, fullWidth?: boolean, className?: string) {
+  return cn(BASE, VARIANTS[variant], SIZES[size], fullWidth && 'w-full', className)
+}
+
+export function Button({
+  variant = 'primary',
+  size = 'default',
+  fullWidth,
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: Variant
+  size?: Size
+  fullWidth?: boolean
+}) {
+  return <button className={classes(variant, size, fullWidth, className)} {...props} />
+}
+
+/**
+ * A link styled as a button. Uses `next/link` for in-app paths and a plain
+ * anchor for anything external, `tel:` or `mailto:`.
+ */
+export function ButtonLink({
+  href,
+  variant = 'primary',
+  size = 'default',
+  fullWidth,
+  className,
+  children,
+  ...props
+}: Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & {
+  href: string
+  variant?: Variant
+  size?: Size
+  fullWidth?: boolean
+  children: React.ReactNode
+}) {
+  const isInternal = href.startsWith('/') && !href.startsWith('//')
+  const merged = classes(variant, size, fullWidth, className)
+
+  if (isInternal) {
+    return (
+      <Link href={href} className={merged} {...props}>
+        {children}
+      </Link>
+    )
+  }
+
+  const isExternal = /^https?:\/\//.test(href)
+
+  return (
+    <a
+      href={href}
+      className={merged}
+      {...(isExternal ? { rel: 'noopener noreferrer' } : {})}
+      {...props}
+    >
+      {children}
+    </a>
+  )
+}
