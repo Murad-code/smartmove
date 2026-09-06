@@ -9,6 +9,7 @@ import { Header } from '@/components/layout/Header'
 import { SkipLink } from '@/components/layout/SkipLink'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { analytics, env } from '@/lib/env'
+import { toImage } from '@/lib/properties/mappers'
 import { realEstateAgentSchema } from '@/lib/structured-data'
 import { getBusinessDetails, getSiteSettings } from '@/lib/site'
 
@@ -49,8 +50,14 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const [business, settings] = await Promise.all([getBusinessDetails(), getSiteSettings()])
 
+  // The client can replace this in Website Settings → Branding.
+  const favicon = toImage(settings.favicon)
+
   return {
     metadataBase: new URL(env.siteUrl),
+    icons: {
+      icon: favicon ? [{ url: favicon.url }] : [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    },
     title: {
       default: settings.defaultSeo?.titleSuffix || business.companyName,
       template: `%s | ${settings.defaultSeo?.titleSuffix || business.companyName}`,
