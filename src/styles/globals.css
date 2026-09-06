@@ -1,0 +1,195 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   ---------------------------------------------------------------------------
+   The navy and green are carried over from the previous Smart Move site so the
+   brand stays recognisable, but the scales around them are new. The green in
+   the old site (#8cc63e) fails AA against white, so it is used for fills and
+   accents only; anything green that carries text uses accent-700 or darker.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --color-navy-50: #eef4fb;
+  --color-navy-100: #d7e5f5;
+  --color-navy-200: #b0c9e9;
+  --color-navy-300: #7fa5d6;
+  --color-navy-400: #4a7cbd;
+  --color-navy-500: #2a5c9e;
+  --color-navy-600: #1a4785;
+  --color-navy-700: #003d7e;
+  --color-navy-800: #002e60;
+  --color-navy-900: #00214a;
+  --color-navy-950: #001531;
+
+  --color-accent-50: #f2f9e8;
+  --color-accent-100: #e2f2cb;
+  --color-accent-200: #c8e79c;
+  --color-accent-300: #a8d861;
+  --color-accent-400: #8cc63e;
+  --color-accent-500: #74ad2c;
+  --color-accent-600: #588a1e;
+  --color-accent-700: #43671a;
+  --color-accent-800: #375218;
+  --color-accent-900: #2f4518;
+
+  --color-ink-50: #f7f8f9;
+  --color-ink-100: #eceef1;
+  --color-ink-200: #d9dde3;
+  --color-ink-300: #b9c0cb;
+  --color-ink-400: #8c96a6;
+  --color-ink-500: #6b7687;
+  --color-ink-600: #545e6d;
+  --color-ink-700: #454d59;
+  --color-ink-800: #333a44;
+  --color-ink-900: #1e232b;
+  --color-ink-950: #12161c;
+
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-serif), ui-serif, Georgia, 'Times New Roman', serif;
+
+  --text-display: 3.5rem;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.02em;
+
+  --radius-card: 0.75rem;
+
+  --shadow-card: 0 1px 2px rgb(0 33 74 / 0.06), 0 8px 24px -12px rgb(0 33 74 / 0.18);
+  --shadow-raised: 0 2px 4px rgb(0 33 74 / 0.08), 0 18px 40px -16px rgb(0 33 74 / 0.24);
+
+  --container-site: 80rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Keeps anchored sections clear of the sticky header. */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: white;
+    color: var(--color-ink-800);
+    font-family: var(--font-sans);
+    /* Long-form marketing copy reads better slightly loose. */
+    line-height: 1.65;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--color-navy-900);
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  /* A single visible focus treatment everywhere, including inside dark
+     sections where a navy ring would disappear. */
+  :focus-visible {
+    outline: 3px solid var(--color-accent-400);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-navy-700);
+    color: white;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Utilities used often enough to deserve a name
+--------------------------------------------------------------------------- */
+
+@layer components {
+  /* Long CMS-authored rich text. Applied to a wrapper so editors never need to
+     think about classes. */
+  .prose-site {
+    color: var(--color-ink-700);
+    max-width: 68ch;
+  }
+
+  .prose-site > * + * {
+    margin-top: 1.15em;
+  }
+
+  .prose-site h2 {
+    font-size: 1.75rem;
+    margin-top: 2em;
+  }
+
+  .prose-site h3 {
+    font-size: 1.3rem;
+    margin-top: 1.75em;
+  }
+
+  .prose-site h4 {
+    font-size: 1.1rem;
+    margin-top: 1.5em;
+  }
+
+  .prose-site a {
+    color: var(--color-navy-700);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .prose-site a:hover {
+    color: var(--color-navy-500);
+  }
+
+  .prose-site ul,
+  .prose-site ol {
+    padding-left: 1.35em;
+  }
+
+  .prose-site ul {
+    list-style: disc;
+  }
+
+  .prose-site ol {
+    list-style: decimal;
+  }
+
+  .prose-site li + li {
+    margin-top: 0.4em;
+  }
+
+  .prose-site strong {
+    color: var(--color-navy-900);
+    font-weight: 600;
+  }
+
+  .prose-site blockquote {
+    border-left: 3px solid var(--color-accent-400);
+    padding-left: 1.15em;
+    font-style: italic;
+    color: var(--color-ink-600);
+  }
+}
