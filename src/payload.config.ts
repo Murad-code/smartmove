@@ -36,9 +36,26 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
+    // The admin panel is presented as Smart Move's own software, not as a
+    // third-party CMS. This replaces every piece of Payload branding a member
+    // of staff would otherwise see: the logo on the sign-in screen, the mark
+    // in the navigation, the browser tab icon and the page metadata.
+    components: {
+      graphics: {
+        Logo: '@/components/admin/BrandLogo#BrandLogo',
+        Icon: '@/components/admin/BrandIcon#BrandIcon',
+      },
+    },
     meta: {
       titleSuffix: ' — Smart Move',
       description: 'Manage the Smart Move website',
+      icons: [{ rel: 'icon', type: 'image/svg+xml', url: '/admin-icon.svg' }],
+      openGraph: {
+        title: 'Smart Move',
+        description: 'Manage the Smart Move website',
+        siteName: 'Smart Move',
+        images: [],
+      },
     },
     // Everything the owner needs is in the sidebar; the stock dashboard cards
     // and the API URL row only add noise.
@@ -54,6 +71,15 @@ export default buildConfig({
         if (collectionConfig?.slug === 'properties') return `${siteUrl}/properties/${slug}`
         if (collectionConfig?.slug === 'services') return `${siteUrl}/services/${slug}`
         return `${siteUrl}/${slug}`
+      },
+    },
+  },
+
+  // The only place the CMS vendor's name appears in the interface copy.
+  i18n: {
+    translations: {
+      en: {
+        general: { payloadSettings: 'Your preferences' },
       },
     },
   },
