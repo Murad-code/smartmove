@@ -38,6 +38,29 @@ test('the sidebar shows business language, not developer language', async ({ pag
   await expect(nav.getByRole('link', { name: /payload/i })).toHaveCount(0)
 })
 
+test('the admin panel carries no CMS vendor branding', async ({ page }) => {
+  for (const path of ['/admin', '/admin/account', '/admin/collections/properties']) {
+    await page.goto(path)
+    await expect(page.locator('.nav')).toBeVisible()
+
+    // Nothing a member of staff can read should name the CMS.
+    const visibleText = await page.locator('body').innerText()
+    expect(visibleText, `${path} should not mention Payload`).not.toMatch(/payload/i)
+  }
+
+  await expect(page).toHaveTitle(/Smart Move/)
+  await expect(page.locator('link[rel="icon"]').first()).toHaveAttribute('href', '/admin-icon.svg')
+})
+
+test('the sign-in screen shows the client brand, not the CMS brand', async ({ page }) => {
+  await page.goto('/admin/logout')
+  await page.goto('/admin/login')
+
+  await expect(page.getByLabel('Email')).toBeVisible()
+  await expect(page.getByText('Smart Move').first()).toBeVisible()
+  await expect(page.locator('body')).not.toContainText(/payload/i)
+})
+
 test('the property form is split into tabs so the first screen stays short', async ({ page }) => {
   await page.goto('/admin/collections/properties/create')
 
