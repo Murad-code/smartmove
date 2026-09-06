@@ -67,8 +67,12 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    properties: Property;
+    pages: Page;
+    services: Service;
+    enquiries: Enquiry;
     media: Media;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -76,8 +80,12 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    properties: PropertiesSelect<false> | PropertiesSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    enquiries: EnquiriesSelect<false> | EnquiriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -87,8 +95,16 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'home-page': HomePage;
+    'business-details': BusinessDetail;
+    'site-settings': SiteSetting;
+  };
+  globalsSelect: {
+    'home-page': HomePageSelect<false> | HomePageSelect<true>;
+    'business-details': BusinessDetailsSelect<false> | BusinessDetailsSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -118,11 +134,499 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Everything you are currently marketing.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "properties".
+ */
+export interface Property {
+  id: number;
+  /**
+   * This is the heading shown on the website.
+   */
+  title: string;
+  /**
+   * Only "Available" and "Let agreed" properties appear on the website.
+   */
+  status: 'available' | 'let-agreed' | 'let' | 'draft';
+  /**
+   * In pounds per month, numbers only.
+   */
+  monthlyRent: number;
+  /**
+   * Leave blank if you would rather not show it.
+   */
+  deposit?: number | null;
+  bedrooms: number;
+  bathrooms?: number | null;
+  propertyType: 'detached' | 'semi-detached' | 'terraced' | 'flat' | 'bungalow' | 'room' | 'commercial';
+  /**
+   * The area buyers search by. The full address goes on the Address tab and is never shown publicly.
+   */
+  displayLocation: string;
+  furnishedStatus?: ('unfurnished' | 'part-furnished' | 'furnished') | null;
+  /**
+   * Leave blank if it is available now.
+   */
+  availableFrom?: string | null;
+  /**
+   * Shown on the property cards and in Google results. Around 25 words works best.
+   */
+  shortDescription: string;
+  /**
+   * Short bullet points, for example "Off-street parking".
+   */
+  keyFeatures?:
+    | {
+        feature: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The main write-up shown on the property page.
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * You can select several at once. Drag them into the order you want them shown.
+   */
+  images?: (number | Media)[] | null;
+  addressLine1?: string | null;
+  addressLine2?: string | null;
+  townCity?: string | null;
+  county?: string | null;
+  /**
+   * Used for the map link on the property page.
+   */
+  postcode?: string | null;
+  epcRating?: ('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G') | null;
+  councilTaxBand?: ('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H') | null;
+  petsConsidered?: boolean | null;
+  gardenIncluded?: boolean | null;
+  parking?: ('none' | 'on-street' | 'off-street' | 'garage') | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  /**
+   * Ticked properties appear in the featured section on the home page.
+   */
+  featured?: boolean | null;
+  /**
+   * The web address for this page. Filled in automatically.
+   */
+  slug?: string | null;
+  /**
+   * Controls the order properties are listed in. Newest first.
+   */
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Every photo and file used across the website.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * A short description for people using a screen reader, for example "Front of a red-brick terraced house".
+   */
+  alt: string;
+  caption?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    wide?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    hero?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * The text on your Landlords, Tenants, About, Contact and legal pages.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  hero?: {
+    /**
+     * Leave blank to use the page title.
+     */
+    heading?: string | null;
+    subheading?: string | null;
+    image?: (number | null) | Media;
+  };
+  /**
+   * Add sections in the order you want them to appear. Drag to reorder.
+   */
+  layout?:
+    | (
+        | TextBlock
+        | FeatureListBlock
+        | StepsBlock
+        | ImageTextBlock
+        | CallToActionBlock
+        | PropertyShowcaseBlock
+        | FaqBlock
+        | ContactDetailsBlock
+        | FormBlock
+      )[]
+    | null;
+  /**
+   * The web address for this page. Filled in automatically.
+   */
+  slug?: string | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TextBlock".
+ */
+export interface TextBlock {
+  heading?: string | null;
+  intro?: string | null;
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  background?: ('white' | 'grey') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'text';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureListBlock".
+ */
+export interface FeatureListBlock {
+  heading?: string | null;
+  intro?: string | null;
+  items: {
+    title: string;
+    description?: string | null;
+    id?: string | null;
+  }[];
+  columns?: ('2' | '3' | '4') | null;
+  background?: ('white' | 'grey' | 'navy') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureList';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StepsBlock".
+ */
+export interface StepsBlock {
+  heading?: string | null;
+  intro?: string | null;
+  steps: {
+    title: string;
+    description?: string | null;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'steps';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageTextBlock".
+ */
+export interface ImageTextBlock {
+  image: number | Media;
+  imagePosition?: ('left' | 'right') | null;
+  heading: string;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  link?: {
+    label?: string | null;
+    href?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'imageText';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock".
+ */
+export interface CallToActionBlock {
+  heading: string;
+  text?: string | null;
+  buttons?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'callToAction';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PropertyShowcaseBlock".
+ */
+export interface PropertyShowcaseBlock {
+  heading?: string | null;
+  intro?: string | null;
+  limit?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'propertyShowcase';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqBlock".
+ */
+export interface FaqBlock {
+  heading?: string | null;
+  intro?: string | null;
+  items: {
+    question: string;
+    answer: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faq';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactDetailsBlock".
+ */
+export interface ContactDetailsBlock {
+  heading?: string | null;
+  showMap?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactDetails';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlock".
+ */
+export interface FormBlock {
+  heading?: string | null;
+  intro?: string | null;
+  formType: 'general' | 'landlord' | 'requirements';
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'form';
+}
+/**
+ * What Smart Move offers. Each one gets its own page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  title: string;
+  /**
+   * Shown on the services overview and in search results.
+   */
+  summary: string;
+  icon?: ('key' | 'house' | 'shield' | 'spanner' | 'chart' | 'document' | 'people' | 'pound') | null;
+  audience?: ('landlords' | 'tenants' | 'everyone') | null;
+  layout?:
+    | (
+        | TextBlock
+        | FeatureListBlock
+        | StepsBlock
+        | ImageTextBlock
+        | CallToActionBlock
+        | PropertyShowcaseBlock
+        | FaqBlock
+        | ContactDetailsBlock
+        | FormBlock
+      )[]
+    | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  /**
+   * The web address for this page. Filled in automatically.
+   */
+  slug?: string | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Messages sent through the website.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enquiries".
+ */
+export interface Enquiry {
+  id: number;
+  /**
+   * Tick once you have replied.
+   */
+  handled?: boolean | null;
+  /**
+   * Only visible here. The sender never sees this.
+   */
+  internalNotes?: string | null;
+  kind: 'general' | 'property' | 'landlord' | 'requirements';
+  name: string;
+  email: string;
+  telephone?: string | null;
+  message?: string | null;
+  property?: (number | null) | Property;
+  preferredViewing?: string | null;
+  enquiryTopic?: string | null;
+  landlord?: {
+    postcode?: string | null;
+    serviceInterest?: string | null;
+  };
+  requirements?: {
+    preferredArea?: string | null;
+    propertyType?: string | null;
+    minBedrooms?: number | null;
+    maxRent?: number | null;
+    moveDate?: string | null;
+  };
+  /**
+   * Recorded automatically as proof of consent.
+   */
+  consentGivenAt?: string | null;
+  sourcePage?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * People who can sign in and manage this website.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
+  name: string;
+  /**
+   * Only choose the first option for people you fully trust.
+   */
+  role: 'admin' | 'editor';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -141,25 +645,6 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -186,12 +671,28 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'properties';
+        value: number | Property;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'enquiries';
+        value: number | Enquiry;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -237,9 +738,361 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "properties_select".
+ */
+export interface PropertiesSelect<T extends boolean = true> {
+  title?: T;
+  status?: T;
+  monthlyRent?: T;
+  deposit?: T;
+  bedrooms?: T;
+  bathrooms?: T;
+  propertyType?: T;
+  displayLocation?: T;
+  furnishedStatus?: T;
+  availableFrom?: T;
+  shortDescription?: T;
+  keyFeatures?:
+    | T
+    | {
+        feature?: T;
+        id?: T;
+      };
+  description?: T;
+  images?: T;
+  addressLine1?: T;
+  addressLine2?: T;
+  townCity?: T;
+  county?: T;
+  postcode?: T;
+  epcRating?: T;
+  councilTaxBand?: T;
+  petsConsidered?: T;
+  gardenIncluded?: T;
+  parking?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  featured?: T;
+  slug?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  hero?:
+    | T
+    | {
+        heading?: T;
+        subheading?: T;
+        image?: T;
+      };
+  layout?:
+    | T
+    | {
+        text?: T | TextBlockSelect<T>;
+        featureList?: T | FeatureListBlockSelect<T>;
+        steps?: T | StepsBlockSelect<T>;
+        imageText?: T | ImageTextBlockSelect<T>;
+        callToAction?: T | CallToActionBlockSelect<T>;
+        propertyShowcase?: T | PropertyShowcaseBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        contactDetails?: T | ContactDetailsBlockSelect<T>;
+        form?: T | FormBlockSelect<T>;
+      };
+  slug?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TextBlock_select".
+ */
+export interface TextBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  body?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureListBlock_select".
+ */
+export interface FeatureListBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  columns?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StepsBlock_select".
+ */
+export interface StepsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  steps?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageTextBlock_select".
+ */
+export interface ImageTextBlockSelect<T extends boolean = true> {
+  image?: T;
+  imagePosition?: T;
+  heading?: T;
+  body?: T;
+  link?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock_select".
+ */
+export interface CallToActionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  text?: T;
+  buttons?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PropertyShowcaseBlock_select".
+ */
+export interface PropertyShowcaseBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  limit?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqBlock_select".
+ */
+export interface FaqBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  items?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactDetailsBlock_select".
+ */
+export interface ContactDetailsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  showMap?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlock_select".
+ */
+export interface FormBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  formType?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  summary?: T;
+  icon?: T;
+  audience?: T;
+  layout?:
+    | T
+    | {
+        text?: T | TextBlockSelect<T>;
+        featureList?: T | FeatureListBlockSelect<T>;
+        steps?: T | StepsBlockSelect<T>;
+        imageText?: T | ImageTextBlockSelect<T>;
+        callToAction?: T | CallToActionBlockSelect<T>;
+        propertyShowcase?: T | PropertyShowcaseBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        contactDetails?: T | ContactDetailsBlockSelect<T>;
+        form?: T | FormBlockSelect<T>;
+      };
+  order?: T;
+  slug?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enquiries_select".
+ */
+export interface EnquiriesSelect<T extends boolean = true> {
+  handled?: T;
+  internalNotes?: T;
+  kind?: T;
+  name?: T;
+  email?: T;
+  telephone?: T;
+  message?: T;
+  property?: T;
+  preferredViewing?: T;
+  enquiryTopic?: T;
+  landlord?:
+    | T
+    | {
+        postcode?: T;
+        serviceInterest?: T;
+      };
+  requirements?:
+    | T
+    | {
+        preferredArea?: T;
+        propertyType?: T;
+        minBedrooms?: T;
+        maxRent?: T;
+        moveDate?: T;
+      };
+  consentGivenAt?: T;
+  sourcePage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        wide?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        hero?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -256,24 +1109,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -314,6 +1149,450 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * The wording on your home page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-page".
+ */
+export interface HomePage {
+  id: number;
+  hero: {
+    heading: string;
+    subheading?: string | null;
+    image?: (number | null) | Media;
+    primaryCta?: {
+      label?: string | null;
+      href?: string | null;
+    };
+    secondaryCta?: {
+      label?: string | null;
+      href?: string | null;
+    };
+  };
+  highlights?:
+    | {
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  intro?: {
+    heading?: string | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    image?: (number | null) | Media;
+  };
+  featuredProperties?: {
+    heading?: string | null;
+    intro?: string | null;
+    /**
+     * Properties ticked as "Show on the home page" come first, then the newest.
+     */
+    limit?: number | null;
+  };
+  landlords?: {
+    heading?: string | null;
+    body?: string | null;
+    points?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    cta?: {
+      label?: string | null;
+      href?: string | null;
+    };
+    image?: (number | null) | Media;
+  };
+  tenants?: {
+    heading?: string | null;
+    body?: string | null;
+    points?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    cta?: {
+      label?: string | null;
+      href?: string | null;
+    };
+    image?: (number | null) | Media;
+  };
+  whyUs?: {
+    heading?: string | null;
+    intro?: string | null;
+    reasons?:
+      | {
+          title: string;
+          description?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  closingCta?: {
+    heading?: string | null;
+    text?: string | null;
+    buttons?:
+      | {
+          label: string;
+          href: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Your contact details and company information, used all over the website.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "business-details".
+ */
+export interface BusinessDetail {
+  id: number;
+  companyName: string;
+  tagline?: string | null;
+  telephone: string;
+  secondaryTelephone?: string | null;
+  email: string;
+  /**
+   * Leave blank to use the main email.
+   */
+  enquiriesEmail?: string | null;
+  address: {
+    line1: string;
+    line2?: string | null;
+    town: string;
+    county?: string | null;
+    postcode: string;
+  };
+  /**
+   * Paste a Google Maps link. Leave blank to build one from the address.
+   */
+  mapUrl?: string | null;
+  /**
+   * One line per row, shown in the order you put them in.
+   */
+  openingHours?:
+    | {
+        days: string;
+        hours: string;
+        id?: string | null;
+      }[]
+    | null;
+  social?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    x?: string | null;
+    linkedin?: string | null;
+  };
+  registeredName?: string | null;
+  companyNumber?: string | null;
+  vatNumber?: string | null;
+  redressScheme?: string | null;
+  clientMoneyProtection?: string | null;
+  depositScheme?: string | null;
+  /**
+   * Anything else you want at the bottom of every page.
+   */
+  footerNote?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Your logo, menus and how the website appears in Google.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  /**
+   * A wide logo on a transparent background works best.
+   */
+  logo?: (number | null) | Media;
+  /**
+   * Used in the footer. Leave blank to use the main logo.
+   */
+  logoLight?: (number | null) | Media;
+  favicon?: (number | null) | Media;
+  /**
+   * Shown across the top of every page. Drag to reorder.
+   */
+  mainNav?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  headerCta?: {
+    label?: string | null;
+    href?: string | null;
+  };
+  footerColumns?:
+    | {
+        title: string;
+        links?:
+          | {
+              label: string;
+              href: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The row of small links at the very bottom.
+   */
+  legalLinks?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  defaultSeo?: {
+    titleSuffix?: string | null;
+    description?: string | null;
+    /**
+     * Shown when someone shares a link on Facebook or WhatsApp.
+     */
+    shareImage?: (number | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-page_select".
+ */
+export interface HomePageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        heading?: T;
+        subheading?: T;
+        image?: T;
+        primaryCta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        secondaryCta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+      };
+  highlights?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  intro?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        image?: T;
+      };
+  featuredProperties?:
+    | T
+    | {
+        heading?: T;
+        intro?: T;
+        limit?: T;
+      };
+  landlords?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        points?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        cta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        image?: T;
+      };
+  tenants?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        points?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        cta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        image?: T;
+      };
+  whyUs?:
+    | T
+    | {
+        heading?: T;
+        intro?: T;
+        reasons?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+      };
+  closingCta?:
+    | T
+    | {
+        heading?: T;
+        text?: T;
+        buttons?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              id?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "business-details_select".
+ */
+export interface BusinessDetailsSelect<T extends boolean = true> {
+  companyName?: T;
+  tagline?: T;
+  telephone?: T;
+  secondaryTelephone?: T;
+  email?: T;
+  enquiriesEmail?: T;
+  address?:
+    | T
+    | {
+        line1?: T;
+        line2?: T;
+        town?: T;
+        county?: T;
+        postcode?: T;
+      };
+  mapUrl?: T;
+  openingHours?:
+    | T
+    | {
+        days?: T;
+        hours?: T;
+        id?: T;
+      };
+  social?:
+    | T
+    | {
+        facebook?: T;
+        instagram?: T;
+        x?: T;
+        linkedin?: T;
+      };
+  registeredName?: T;
+  companyNumber?: T;
+  vatNumber?: T;
+  redressScheme?: T;
+  clientMoneyProtection?: T;
+  depositScheme?: T;
+  footerNote?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  logo?: T;
+  logoLight?: T;
+  favicon?: T;
+  mainNav?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  headerCta?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+      };
+  footerColumns?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  legalLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  defaultSeo?:
+    | T
+    | {
+        titleSuffix?: T;
+        description?: T;
+        shareImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

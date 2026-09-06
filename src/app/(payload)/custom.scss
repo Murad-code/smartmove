@@ -1,0 +1,21 @@
+/* Light Smart Move branding for the admin panel. Kept minimal so Payload
+   upgrades do not fight with custom styling. */
+
+:root {
+  --theme-elevation-1000: #00214a;
+  --color-base-1000: #00214a;
+}
+
+html[data-theme='light'] {
+  --theme-success-500: #588a1e;
+}
+
+/* The sidebar group headings do a lot of work in a simplified admin, so make
+   them read as labels rather than faint asides. */
+.nav__label {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  opacity: 0.75;
+}
