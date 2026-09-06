@@ -52,6 +52,12 @@ owner:
 - **Nine curated page sections** rather than a free-form page builder.
 - **Live preview** at three breakpoints.
 - Pages and services keep version history, so an editor can undo.
+- **No CMS vendor branding.** The sign-in screen shows Smart Move's own logo,
+  taken from Website Settings when one has been uploaded; the navigation mark,
+  browser tab icon and page metadata are all Smart Move's. To a member of
+  staff this reads as their own software, not as a third-party product. There
+  is an end-to-end test asserting no page of the admin panel mentions the CMS
+  by name.
 
 ### Enquiries
 
@@ -228,7 +234,8 @@ England:**
 
 12. Logo files, favicon, and confirmation of the brand colours
 13. Real photographs for the home page hero, about, landlords and tenants pages
-14. Real property photographs and listings, replacing the eight demo properties
+14. Real property photographs and listings, replacing the six demo properties
+    (see the licence note in client-content-required.md)
 15. The about page in the company's own words
 16. Confirmation of the phone number, email, address and opening hours
 17. Social media links, if any
@@ -262,9 +269,14 @@ step.
 properties do not, because drafts were switched off to keep a single publish
 control. A mis-typed rent has to be re-typed.
 
-**The seeded demo properties must be deleted before launch.** They are labelled
-`[DEMO]` in the admin list and their photographs say "DEMO PHOTO", so they are
-hard to miss, but nothing stops them going live.
+**The seeded demo properties must be deleted before launch.** The six demo
+listings use photographs and particulars taken from another Scunthorpe
+agency's live site, so the demo looks like a real letting agency rather than
+lorem ipsum. That content is not Smart Move's to publish. Four guards are in
+place: the seed only creates them when `SEED_DEMO_PROPERTIES=true`, it refuses
+outright when `NODE_ENV=production`, it prints a warning every run, and the
+restriction is the first blocking item in
+[client-content-required.md](client-content-required.md).
 
 **Lettings only.** No `listingType` split for sales, pending confirmation that
 sales are still offered. Adding one is a select field and a migration.

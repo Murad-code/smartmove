@@ -61,7 +61,7 @@ legal requirements for a letting agent in England.
 | **Home page hero photograph**                              | Ideally something local and recognisable. At least 1920px wide.                                                                                                                                                                     |
 | **Photographs for the about, landlords and tenants pages** | Real photographs, of the office or the team, are far better than stock.                                                                                                                                                             |
 | **A default sharing image**                                | Shown when someone shares a link on Facebook or WhatsApp.                                                                                                                                                                           |
-| **Real property photographs**                              | The site currently has eight clearly-labelled demo properties which must be deleted before launch.                                                                                                                                  |
+| **Real property photographs**                              | 🔴 See the licence note below. The site is seeded with six demo properties whose photographs and particulars belong to another agency and must be deleted before launch.                                                            |
 
 ## Wording
 
@@ -83,6 +83,30 @@ legal requirements for a letting agent in England.
 | **Analytics preference**              | Plausible (privacy-friendly, paid, no cookie banner needed in practice) or Google Analytics 4 (free, needs a consent banner). Or neither.             |
 | **Social media links**                | Facebook, Instagram, X, LinkedIn. Left out entirely if you do not use them.                                                                           |
 | **Google Business Profile**           | Not required by the website, but the single most valuable thing for showing up in local searches for "letting agents in Scunthorpe".                  |
+
+## 🔴 Demo property content must be removed before launch
+
+The six properties the development site is seeded with were taken from another
+Scunthorpe agency's live listings, so the site could be demonstrated with
+realistic photographs and particulars rather than placeholders.
+
+**Those photographs and written particulars are that agency's property, not
+Smart Move's.** They are development scaffolding only:
+
+- They are only created when `SEED_DEMO_PROPERTIES=true`, which is off by
+  default and documented as development-only.
+- The seed refuses to create them at all when `NODE_ENV=production`.
+- The seed prints a warning naming the restriction every time it runs.
+- One photograph still shows the other agency's "To Let" board.
+
+Before launch, delete all six from Properties in the admin panel and replace
+them with Smart Move's own stock and photographs.
+
+To regenerate the fixtures during development:
+
+```bash
+pnpm scrape:demo
+```
 
 ## Content on the old site we suggest dropping
 

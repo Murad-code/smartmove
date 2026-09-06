@@ -186,3 +186,8 @@ Settings          People, Business Details, Website Settings
 Payload's internal collections are not exposed. The rich-text toolbar is
 restricted to paragraphs, h2–h4, bold, italic, lists and links, so nothing an
 editor writes can break the page design.
+
+The panel carries no CMS vendor branding: `admin.components.graphics` supplies
+the sign-in logo (read from Website Settings when the client has uploaded one)
+and the navigation mark, `admin.meta` supplies the tab icon and metadata, and
+an `i18n` override replaces the one interface string that named the CMS.

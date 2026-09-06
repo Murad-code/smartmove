@@ -45,9 +45,14 @@ pnpm dev
 - Website: http://localhost:3000
 - Admin: http://localhost:3000/admin, signing in with `SEED_ADMIN_EMAIL`
 
-The seed writes the starter pages, services and business details, and with
-`SEED_DEMO_PROPERTIES=true` adds eight obviously-labelled demo properties. It is
-safe to re-run.
+The seed writes the starter pages, services and business details. With
+`SEED_DEMO_PROPERTIES=true` it also adds six demo properties from the fixtures
+in `src/scripts/`. It is safe to re-run.
+
+> The demo photographs and particulars were taken from another agency's live
+> listings so the site demonstrates well. They are development scaffolding and
+> must be deleted before launch. See
+> [client-content-required.md](docs/client-content-required.md).
 
 ## Commands
 
@@ -88,7 +93,7 @@ src/
     properties/     the property domain layer
     forms/          validation, spam checks, server actions
     email/          provider-agnostic notification adapter
-  scripts/          the seed
+  scripts/          the seed, the demo fixtures and the scraper that builds them
   migrations/       generated database migrations
 docker/             Dockerfile support, Nginx configuration
 scripts/            backup.sh, restore.sh

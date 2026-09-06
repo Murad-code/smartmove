@@ -176,6 +176,17 @@ Turnstile, storage and notification. Do not reimplement any of that.
 The enquiry is stored **before** the email is attempted. A mail failure must
 never look like a failed submission to the visitor.
 
+### Admin branding
+
+The admin panel is presented as Smart Move's own software. `admin.components.graphics`
+overrides the sign-in logo and the navigation mark, `admin.meta` covers the tab
+icon and page metadata, and one `i18n` override replaces the single interface
+string that named the CMS.
+
+If a Payload upgrade introduces new vendor-branded copy, the end-to-end test
+`the admin panel carries no CMS vendor branding` will fail. Fix it with a
+config override, not by editing anything in `node_modules`.
+
 ### CMS fields
 
 - Labels are written for the owner, not the developer: "Availability", not
@@ -267,8 +278,18 @@ This applies especially to legal and compliance text — fees, redress schemes,
 deposit protection, privacy policies. Write a clearly-marked placeholder that
 describes what is needed; never present invented legal wording as final.
 
-Do not copy property descriptions or photographs from other websites. The demo
-properties were written for this project and their images are generated.
+**The demo properties are third-party content.** The six fixtures in
+`src/scripts/demo-properties.json` and `src/scripts/demo-assets/` were scraped
+from another Scunthorpe agency's live listings so the site demonstrates with
+real photographs rather than placeholders. That content is not Smart Move's to
+publish. Do not weaken any of the guards: the `SEED_DEMO_PROPERTIES` flag, the
+`NODE_ENV === 'production'` refusal in the seed, or the warning it prints.
+
+`pnpm scrape:demo` rebuilds the fixtures. It records what the source says;
+`src/scripts/demo-properties.ts` decides how that is presented, including the
+illustrative rents for the four source listings that were sale rather than
+lettings. Keep those two concerns separate so re-scraping never overwrites a
+judgement call.
 
 ---
 
