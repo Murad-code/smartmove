@@ -7,13 +7,17 @@ import { cn } from '@/lib/cn'
 /**
  * Renders Lexical content from the CMS. Styling comes from the `.prose-site`
  * rules in globals.css so editors never see or need a class name.
+ *
+ * `disableContainer` stops the renderer wrapping everything in its own div.
+ * That wrapper would break the `> * + *` spacing rule, and it carries a
+ * vendor-named class into the public HTML.
  */
 export function RichText({ data, className }: { data: unknown; className?: string }) {
   if (!data || typeof data !== 'object') return null
 
   return (
     <div className={cn('prose-site', className)}>
-      <LexicalRichText data={data as SerializedEditorState} />
+      <LexicalRichText disableContainer data={data as SerializedEditorState} />
     </div>
   )
 }
