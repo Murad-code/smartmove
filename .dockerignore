@@ -1,0 +1,16 @@
+.git
+.github
+node_modules
+.next
+media
+docs
+tests
+test-results
+playwright-report
+.env
+.env.*
+!.env.example
+*.md
+!README.md
+.vscode
+.idea

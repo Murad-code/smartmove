@@ -20,10 +20,6 @@ import { breadcrumbSchema } from '@/lib/structured-data'
 
 export const dynamicParams = true
 
-export async function generateStaticParams() {
-  const slugs = await findAllPageSlugs()
-  return slugs.map(({ slug }) => ({ slug }))
-}
 
 export async function generateMetadata({
   params,

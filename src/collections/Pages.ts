@@ -3,7 +3,6 @@ import type { CollectionConfig } from 'payload'
 import { isStaff, publishedOrStaff } from '@/access'
 import { pageBlocks } from '@/blocks'
 import { slugField } from '@/fields/slug'
-import { revalidatePage, revalidatePageOnDelete } from '@/hooks/revalidate'
 
 /**
  * Website pages.
@@ -30,10 +29,6 @@ export const Pages: CollectionConfig = {
   versions: {
     drafts: { autosave: { interval: 800 } },
     maxPerDoc: 20,
-  },
-  hooks: {
-    afterChange: [revalidatePage],
-    afterDelete: [revalidatePageOnDelete],
   },
   fields: [
     {

@@ -3,7 +3,6 @@ import type { CollectionConfig } from 'payload'
 import { isStaff, publishedOrStaff } from '@/access'
 import { pageBlocks } from '@/blocks'
 import { slugField } from '@/fields/slug'
-import { revalidateService, revalidateServiceOnDelete } from '@/hooks/revalidate'
 
 export const Services: CollectionConfig = {
   slug: 'services',
@@ -22,10 +21,6 @@ export const Services: CollectionConfig = {
   },
   versions: { drafts: true },
   defaultSort: 'order',
-  hooks: {
-    afterChange: [revalidateService],
-    afterDelete: [revalidateServiceOnDelete],
-  },
   fields: [
     {
       name: 'title',

@@ -1,71 +1,96 @@
-# To use this Dockerfile, you have to set `output: 'standalone'` in your next.config.mjs file.
-# From https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
+# syntax=docker/dockerfile:1
 
-FROM node:22.17.0-alpine AS base
+# ---------------------------------------------------------------------------
+# Smart Move — production image
+#
+# Multi-stage so the runtime image carries only the standalone server output,
+# with no source, build tooling or development dependencies.
+# ---------------------------------------------------------------------------
 
-# Install dependencies only when needed
+FROM node:22-alpine AS base
+# `packageManager` in package.json pins the exact pnpm version, so the image
+# and a developer's machine resolve dependencies identically.
+RUN corepack enable
+WORKDIR /app
+
+
+# --- Dependencies ----------------------------------------------------------
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+# libc6-compat is needed by sharp's prebuilt binaries on Alpine.
 RUN apk add --no-cache libc6-compat
-WORKDIR /app
-
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm config set store-dir /pnpm/store && \
+    pnpm install --frozen-lockfile
 
 
-# Rebuild the source code only when needed
+# --- Build -----------------------------------------------------------------
 FROM base AS builder
-WORKDIR /app
+# fontconfig and a font let sharp render the text on the seed script's
+# placeholder images. Build stage only; the runtime image does not need them.
+RUN apk add --no-cache libc6-compat fontconfig ttf-dejavu
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
+# Next inlines NEXT_PUBLIC_* variables at build time, so they have to be
+# present here as well as at runtime.
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_ANALYTICS_PROVIDER
+ARG NEXT_PUBLIC_ANALYTICS_ID
+ARG NEXT_PUBLIC_PLAUSIBLE_HOST
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
+    NEXT_PUBLIC_ANALYTICS_PROVIDER=$NEXT_PUBLIC_ANALYTICS_PROVIDER \
+    NEXT_PUBLIC_ANALYTICS_ID=$NEXT_PUBLIC_ANALYTICS_ID \
+    NEXT_PUBLIC_PLAUSIBLE_HOST=$NEXT_PUBLIC_PLAUSIBLE_HOST \
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY \
+    NEXT_TELEMETRY_DISABLED=1 \
+    NODE_ENV=production
 
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+# Placeholders only. The build must not touch the real database, and the
+# runtime values come from the environment.
+ENV DATABASE_URL=postgres://build:build@127.0.0.1:5432/build \
+    PAYLOAD_SECRET=build-time-placeholder
 
-# Production image, copy all the files and run next
+# The Turbopack cache is hundreds of megabytes and is not needed by either of
+# the stages built from here.
+RUN pnpm build && rm -rf .next/cache
+
+
+# --- Migrations ------------------------------------------------------------
+# Payload's CLI reads the TypeScript config through tsx, so migrations run from
+# the build stage where the source and the development dependencies still
+# exist. Compose runs this to completion before starting the app.
+FROM builder AS migrator
+CMD ["pnpm", "migrate"]
+
+
+# --- Runtime ---------------------------------------------------------------
 FROM base AS runner
-WORKDIR /app
+RUN apk add --no-cache libc6-compat curl
 
-ENV NODE_ENV production
-# Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0 \
+    MEDIA_DIR=/app/media
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Never run the application as root.
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-# Remove this line if you do not have this folder
-COPY --from=builder /app/public ./public
-
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-USER nextjs
+# Mount points. Declared before dropping privileges so the volumes are owned
+# by the application user.
+RUN mkdir -p /app/media /app/.next/cache && \
+    chown -R nextjs:nodejs /app/media /app/.next/cache
 
+USER nextjs
 EXPOSE 3000
 
-ENV PORT 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD curl -fsS http://127.0.0.1:3000/healthz || exit 1
 
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/next-config-js/output
-CMD HOSTNAME="0.0.0.0" node server.js
+CMD ["node", "server.js"]

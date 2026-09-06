@@ -4,10 +4,10 @@ import { env } from '@/lib/env'
 import { findAllPageSlugs, findServices } from '@/lib/pages'
 import { findAllPropertySlugs } from '@/lib/properties'
 
-/**
- * Built from live CMS content so a new property is discoverable without anyone
- * remembering to update a list.
- */
+/** Rendered per request, so a property added today is in it today. */
+export const dynamic = 'force-dynamic'
+
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [pages, properties, services] = await Promise.all([
     findAllPageSlugs(),

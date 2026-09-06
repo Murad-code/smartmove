@@ -11,12 +11,6 @@ import { findServiceBySlug, findServices } from '@/lib/pages'
 import { buildMetadata } from '@/lib/seo'
 import { breadcrumbSchema } from '@/lib/structured-data'
 
-export async function generateStaticParams() {
-  const services = await findServices()
-  return services
-    .filter((service): service is typeof service & { slug: string } => Boolean(service.slug))
-    .map((service) => ({ slug: service.slug }))
-}
 
 export async function generateMetadata({
   params,

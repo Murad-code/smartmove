@@ -29,6 +29,18 @@ const sourceSerif = Source_Serif_4({
   variable: '--font-serif',
 })
 
+/**
+ * Every page reads content from the CMS, so nothing is prerendered at build
+ * time. That keeps the Docker build independent of the database and, more
+ * importantly, means an edit in the admin panel is live the moment it is
+ * saved rather than after a cache window. Postgres runs alongside the app and
+ * a page costs a handful of indexed queries.
+ *
+ * If traffic ever justifies it, the route to caching is Next's ISR plus
+ * `revalidatePath` in Payload `afterChange` hooks. See docs/architecture.md.
+ */
+export const dynamic = 'force-dynamic'
+
 export const viewport: Viewport = {
   themeColor: '#003d7e',
   colorScheme: 'light',

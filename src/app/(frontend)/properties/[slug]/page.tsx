@@ -25,10 +25,6 @@ import { buildMetadata } from '@/lib/seo'
 import { getBusinessDetails, telHref } from '@/lib/site'
 import { breadcrumbSchema, propertySchema } from '@/lib/structured-data'
 
-export async function generateStaticParams() {
-  const slugs = await findAllPropertySlugs()
-  return slugs.map(({ slug }) => ({ slug }))
-}
 
 export async function generateMetadata({
   params,

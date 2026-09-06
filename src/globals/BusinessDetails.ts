@@ -1,7 +1,6 @@
 import type { GlobalConfig } from 'payload'
 
 import { anyone, isStaff } from '@/access'
-import { revalidateEverything } from '@/hooks/revalidate'
 
 /**
  * Business Details.
@@ -20,9 +19,6 @@ export const BusinessDetails: GlobalConfig = {
   access: {
     read: anyone,
     update: isStaff,
-  },
-  hooks: {
-    afterChange: [revalidateEverything],
   },
   fields: [
     {

@@ -16,13 +16,17 @@ import {
 } from './seed-content'
 
 /**
- * Development seed.
+ * Seed script.
  *
  * Idempotent: running it twice updates rather than duplicates, so it is safe
- * to re-run after changing the content in `seed-content.ts`. It refuses to run
- * in production, where content is the client's, not ours.
+ * to re-run after changing the content in `seed-content.ts`.
  *
  *   pnpm seed
+ *
+ * The admin user, business details, services and pages are always written,
+ * which is exactly what a first deployment needs. The eight demo properties
+ * are development scaffolding and are only written when
+ * SEED_DEMO_PROPERTIES=true, so a real site never starts with fake stock.
  */
 
 const DEMO_PREFIX = '[DEMO]'
@@ -49,10 +53,7 @@ async function makePlaceholderImage(label: string, hue: number): Promise<Buffer>
 }
 
 async function main() {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('The seed script is for development only. Refusing to run in production.')
-  }
-
+  const seedDemoProperties = process.env.SEED_DEMO_PROPERTIES === 'true'
   const payload = await getPayload({ config })
 
   // --- Admin user ----------------------------------------------------------
@@ -152,6 +153,12 @@ async function main() {
   payload.logger.info(`Seeded ${pages.length} pages`)
 
   // --- Demo properties -----------------------------------------------------
+  if (!seedDemoProperties) {
+    payload.logger.info('Skipping demo properties (set SEED_DEMO_PROPERTIES=true to add them)')
+    payload.logger.info('Seed complete.')
+    process.exit(0)
+  }
+
   for (const [index, property] of demoProperties.entries()) {
     const slug = slugify(property.title)
 

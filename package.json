@@ -4,6 +4,7 @@
   "description": "Website and CMS for Smart Move, an independent letting agent in Scunthorpe",
   "license": "UNLICENSED",
   "type": "module",
+  "packageManager": "pnpm@10.14.0",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
