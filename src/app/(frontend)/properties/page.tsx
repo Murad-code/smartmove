@@ -81,6 +81,9 @@ export default async function PropertiesPage({
         </Suspense>
 
         <div className="mt-10">
+          {/* The cards are h3s, so the results need an h2 above them to keep
+              the heading order unbroken for screen-reader navigation. */}
+          <h2 className="sr-only">Available properties</h2>
           {properties.length ? (
             <>
               <PropertyGrid properties={properties} />
