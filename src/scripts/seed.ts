@@ -1,19 +1,14 @@
 import 'dotenv/config'
 
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import { getPayload } from 'payload'
-import sharp from 'sharp'
 
 import config from '@/payload.config'
-import { slugify } from '@/fields/slug'
 
-import {
-  businessDetails,
-  demoProperties,
-  homePage,
-  pages,
-  services,
-  siteSettings,
-} from './seed-content'
+import { buildDemoProperties } from './demo-properties'
+import { businessDetails, homePage, pages, services, siteSettings } from './seed-content'
 
 /**
  * Seed script.
@@ -29,28 +24,7 @@ import {
  * SEED_DEMO_PROPERTIES=true, so a real site never starts with fake stock.
  */
 
-const DEMO_PREFIX = '[DEMO]'
-
-async function makePlaceholderImage(label: string, hue: number): Promise<Buffer> {
-  // Generated rather than shipped: no third-party photographs are copied into
-  // this repository, and the result is obviously not a real property.
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200">
-    <defs>
-      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="hsl(${hue}, 24%, 74%)"/>
-        <stop offset="100%" stop-color="hsl(${hue + 20}, 28%, 52%)"/>
-      </linearGradient>
-    </defs>
-    <rect width="1600" height="1200" fill="url(#g)"/>
-    <rect x="560" y="470" width="480" height="260" rx="16" fill="rgba(255,255,255,0.16)"/>
-    <text x="800" y="600" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
-      font-size="64" font-weight="700" fill="#ffffff">DEMO PHOTO</text>
-    <text x="800" y="660" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
-      font-size="34" fill="rgba(255,255,255,0.9)">${label}</text>
-  </svg>`
-
-  return sharp(Buffer.from(svg)).jpeg({ quality: 82 }).toBuffer()
-}
+const ASSET_DIR = path.resolve(import.meta.dirname, 'demo-assets')
 
 async function main() {
   const seedDemoProperties = process.env.SEED_DEMO_PROPERTIES === 'true'
@@ -159,17 +133,26 @@ async function main() {
     process.exit(0)
   }
 
-  for (const [index, property] of demoProperties.entries()) {
-    const slug = slugify(property.title)
+  // The demo particulars and photographs belong to the agency that published
+  // them. They are development scaffolding and must never reach a live site.
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Refusing to seed demo properties in production. They use third-party ' +
+        'photographs and particulars. Unset SEED_DEMO_PROPERTIES.',
+    )
+  }
 
+  const demoProperties = buildDemoProperties()
+
+  for (const property of demoProperties) {
     const existing = await payload.find({
       collection: 'properties',
-      where: { slug: { equals: slug } },
+      where: { slug: { equals: property.slug } },
       limit: 1,
       overrideAccess: true,
     })
 
-    // Only generate images the first time; re-running should not pile up media.
+    // Only upload the first time; re-running should not pile up media.
     let imageIds: number[] = []
     if (existing.docs[0]) {
       const current = existing.docs[0].images
@@ -179,17 +162,15 @@ async function main() {
     }
 
     if (imageIds.length === 0) {
-      const hue = 200 + index * 18
-      for (let position = 0; position < 3; position += 1) {
+      for (const image of property.images) {
+        const file = path.join(ASSET_DIR, property.slug, image.file)
         const media = await payload.create({
           collection: 'media',
-          data: {
-            alt: `${DEMO_PREFIX} placeholder photograph ${position + 1} of ${property.title}`,
-          },
+          data: { alt: image.alt },
           file: {
-            data: await makePlaceholderImage(property.displayLocation, hue + position * 8),
+            data: await fs.readFile(file),
             mimetype: 'image/jpeg',
-            name: `demo-${slug}-${position + 1}.jpg`,
+            name: `${property.slug}-${image.file}`,
             size: 0,
           },
           overrideAccess: true,
@@ -198,17 +179,7 @@ async function main() {
       }
     }
 
-    const data = {
-      ...property,
-      slug,
-      // Makes it unmistakable in the admin list that this is not real stock.
-      shortDescription: `${DEMO_PREFIX} ${property.shortDescription}`,
-      keyFeatures: property.keyFeatures.map((feature) => ({ feature })),
-      images: imageIds,
-      townCity: 'Scunthorpe',
-      county: 'North Lincolnshire',
-      publishedAt: new Date(Date.now() - index * 86_400_000).toISOString(),
-    } as never
+    const data = { ...property.data, images: imageIds } as never
 
     if (existing.docs[0]) {
       await payload.update({
@@ -221,7 +192,12 @@ async function main() {
       await payload.create({ collection: 'properties', data, overrideAccess: true })
     }
   }
+
   payload.logger.info(`Seeded ${demoProperties.length} demo properties`)
+  payload.logger.warn(
+    'Demo properties use photographs and particulars from a third-party website. ' +
+      "Delete them and replace with Smart Move's own before this site goes live.",
+  )
 
   payload.logger.info('Seed complete.')
   process.exit(0)
