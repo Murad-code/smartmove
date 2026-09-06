@@ -21,16 +21,22 @@ cp .env.example .env
 Fill in `.env`. At a minimum you need `DATABASE_URL`, a `PAYLOAD_SECRET`
 (`openssl rand -hex 32`), and a `SEED_ADMIN_PASSWORD`.
 
-Start Postgres. Either use your own, or:
+Start Postgres. The quickest way is the development Compose file, which
+creates the `smartmove` database for you:
 
 ```bash
 docker compose up -d
 ```
 
+Its connection string is `postgres://postgres:postgres@127.0.0.1:5432/smartmove`.
+
+If you already run Postgres on port 5432, the container's port mapping will be
+shadowed by it. Either stop your local Postgres, or skip Compose entirely: run
+`createdb smartmove` and point `DATABASE_URL` at your own instance.
+
 Then set up the database and start the app:
 
 ```bash
-createdb smartmove          # skip if using the Docker Postgres above
 pnpm migrate
 SEED_DEMO_PROPERTIES=true pnpm seed
 pnpm dev
