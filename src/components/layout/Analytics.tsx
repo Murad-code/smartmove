@@ -1,16 +1,15 @@
 'use client'
 
 import Script from 'next/script'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
-import { CONSENT_EVENT, type ConsentValue, readConsent } from './CookieConsent'
+import { useConsent } from '@/lib/consent'
 
 /**
  * Loads an analytics script only after the visitor has accepted.
  *
  * Both providers are configured entirely by environment variables, so no
- * tracking id is ever committed and turning analytics off means clearing one
- * variable.
+ * tracking id is committed and turning analytics off is one blank variable.
  */
 export function Analytics({
   provider,
@@ -21,16 +20,7 @@ export function Analytics({
   id: string
   plausibleHost: string
 }) {
-  const [consent, setConsent] = useState<ConsentValue | null>(null)
-
-  useEffect(() => {
-    setConsent(readConsent())
-    function onConsent(event: Event) {
-      setConsent((event as CustomEvent<ConsentValue>).detail)
-    }
-    window.addEventListener(CONSENT_EVENT, onConsent)
-    return () => window.removeEventListener(CONSENT_EVENT, onConsent)
-  }, [])
+  const consent = useConsent()
 
   if (consent !== 'accepted' || !id) return null
 

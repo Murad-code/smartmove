@@ -1,41 +1,112 @@
-import { test, expect, Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+
 import { login } from '../helpers/login'
-import { seedTestUser, cleanupTestUser, testUser } from '../helpers/seedUser'
+import { cleanupTestUser, seedTestUser, testUser } from '../helpers/seedUser'
 
-test.describe('Admin Panel', () => {
-  let page: Page
+/**
+ * The admin experience the business owner sees.
+ *
+ * Assertions are made against the URL and the page state rather than the
+ * toast messages, which disappear on a timer and would make these flaky.
+ */
 
-  test.beforeAll(async ({ browser }, testInfo) => {
-    await seedTestUser()
+test.describe.configure({ mode: 'serial' })
 
-    const context = await browser.newContext()
-    page = await context.newPage()
+test.beforeAll(async () => {
+  await seedTestUser()
+})
 
-    await login({ page, user: testUser })
-  })
+test.afterAll(async () => {
+  await cleanupTestUser()
+})
 
-  test.afterAll(async () => {
-    await cleanupTestUser()
-  })
+test.beforeEach(async ({ page }) => {
+  await login({ page, user: testUser })
+})
 
-  test('can navigate to dashboard', async () => {
-    await page.goto('http://localhost:3000/admin')
-    await expect(page).toHaveURL('http://localhost:3000/admin')
-    const dashboardArtifact = page.locator('span[title="Dashboard"]').first()
-    await expect(dashboardArtifact).toBeVisible()
-  })
+test('the sidebar shows business language, not developer language', async ({ page }) => {
+  await page.goto('/admin')
 
-  test('can navigate to list view', async () => {
-    await page.goto('http://localhost:3000/admin/collections/users')
-    await expect(page).toHaveURL('http://localhost:3000/admin/collections/users')
-    const listViewArtifact = page.locator('h1', { hasText: 'Users' }).first()
-    await expect(listViewArtifact).toBeVisible()
-  })
+  const nav = page.locator('.nav')
+  await expect(nav.getByRole('link', { name: 'Properties', exact: true })).toBeVisible()
+  await expect(nav.getByRole('link', { name: 'Website pages' })).toBeVisible()
+  await expect(nav.getByRole('link', { name: 'Enquiries' })).toBeVisible()
+  await expect(nav.getByRole('link', { name: 'Business Details' })).toBeVisible()
+  await expect(nav.getByRole('link', { name: 'Media' })).toBeVisible()
 
-  test('can navigate to edit view', async () => {
-    await page.goto('http://localhost:3000/admin/collections/users/create')
-    await expect(page).toHaveURL(/\/admin\/collections\/users\/[a-zA-Z0-9-_]+/)
-    const editViewArtifact = page.locator('input[name="email"]')
-    await expect(editViewArtifact).toBeVisible()
-  })
+  // Payload's internal collections must never be on show.
+  await expect(nav.getByRole('link', { name: /payload/i })).toHaveCount(0)
+})
+
+test('the property form is split into tabs so the first screen stays short', async ({ page }) => {
+  await page.goto('/admin/collections/properties/create')
+
+  for (const tab of ['Property details', 'Photos', 'Address', 'More details']) {
+    await expect(page.getByRole('button', { name: tab })).toBeVisible()
+  }
+
+  // Everything needed to publish is on the first tab.
+  await expect(page.locator('#field-title')).toBeVisible()
+  await expect(page.locator('#field-monthlyRent')).toBeVisible()
+  await expect(page.locator('#field-bedrooms')).toBeVisible()
+  await expect(page.locator('#field-displayLocation')).toBeVisible()
+  await expect(page.locator('#field-shortDescription')).toBeVisible()
+})
+
+test('a property can be added, published, marked as let and removed', async ({ page }) => {
+  const title = 'E2E Test Property, Ashby'
+  const slug = 'e2e-test-property-ashby'
+
+  // --- Add ----------------------------------------------------------------
+  await page.goto('/admin/collections/properties/create')
+
+  await page.locator('#field-title').fill(title)
+  await page.locator('#field-monthlyRent').fill('695')
+  await page.locator('#field-bedrooms').fill('3')
+  await page.locator('#field-displayLocation').fill('Ashby, Scunthorpe')
+  await page.locator('#field-shortDescription').fill('Created by the automated test suite.')
+  await page.locator('#field-propertyType').click()
+  await page.getByRole('option', { name: 'House — semi-detached' }).click()
+
+  await page.getByRole('button', { name: 'Save', exact: true }).click()
+
+  // Leaving the create route is the reliable signal that the save succeeded.
+  await page.waitForURL(/\/admin\/collections\/properties\/\d+/)
+  // The slug fills itself in, so the owner never has to think about URLs.
+  await expect(page.locator('#field-slug')).toHaveValue(slug)
+
+  const editUrl = page.url()
+
+  // --- Live on the website straight away ----------------------------------
+  await page.goto(`/properties/${slug}`)
+  await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible()
+  await expect(page.getByText('£695 pcm').first()).toBeVisible()
+
+  // --- Mark as let, and it disappears from the website --------------------
+  await page.goto(editUrl)
+  await page.locator('#field-status').click()
+  await page.getByRole('option', { name: 'Let — hide from the website' }).click()
+  await page.getByRole('button', { name: 'Save', exact: true }).click()
+  await expect(page.locator('#field-status')).toContainText('Let — hide from the website')
+
+  const hidden = await page.goto(`/properties/${slug}`)
+  expect(hidden?.status()).toBe(404)
+
+  // --- Remove --------------------------------------------------------------
+  await page.goto(editUrl)
+  // Delete sits behind Payload's unlabelled overflow menu beside Save, so it
+  // has to be reached by class rather than by role.
+  await page.locator('.doc-controls__popup button').first().click()
+  await page.getByRole('button', { name: 'Delete', exact: true }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Confirm' }).click()
+  await page.waitForURL(/\/admin\/collections\/properties(\?|$)/)
+})
+
+test('enquiries sent through the website appear in the admin panel', async ({ page }) => {
+  await page.goto('/admin/collections/enquiries')
+
+  // The list columns are the ones a member of staff would triage by.
+  await expect(page.getByRole('columnheader', { name: /Name/ })).toBeVisible()
+  await expect(page.getByRole('columnheader', { name: /Type of enquiry/ })).toBeVisible()
+  await expect(page.getByRole('columnheader', { name: /Dealt with/ })).toBeVisible()
 })

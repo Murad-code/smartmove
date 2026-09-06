@@ -65,14 +65,16 @@ export async function Header() {
       </div>
 
       <Container>
-        <div className="flex h-18 items-center justify-between gap-4 py-3">
-          <Logo logo={settings.logo} companyName={business.companyName} />
+        <div className="flex h-18 items-center justify-between gap-2 py-3 sm:gap-4">
+          <div className="min-w-0">
+            <Logo logo={settings.logo} companyName={business.companyName} />
+          </div>
 
           <nav aria-label="Main" className="hidden lg:block">
             <NavLinks links={links} />
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             {phone && phoneHref ? (
               <a
                 href={phoneHref}
@@ -83,9 +85,11 @@ export async function Header() {
               </a>
             ) : null}
 
-            <ButtonLink href={cta.href} className="hidden lg:inline-flex">
-              {cta.label}
-            </ButtonLink>
+            {/* Wrapped rather than given a `hidden` class: the button's own
+                `inline-flex` is in the same CSS layer and would win. */}
+            <div className="hidden lg:block">
+              <ButtonLink href={cta.href}>{cta.label}</ButtonLink>
+            </div>
 
             <MobileNav links={links} telephone={phone} telHref={phoneHref} cta={cta} />
           </div>

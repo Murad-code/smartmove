@@ -22,7 +22,7 @@ export function Logo({
   return (
     <Link
       href="/"
-      className="inline-flex items-center gap-2.5"
+      className="inline-flex min-w-0 items-center gap-2.5"
       aria-label={`${companyName} home page`}
     >
       {image ? (
@@ -38,12 +38,12 @@ export function Logo({
         <>
           <span
             aria-hidden="true"
-            className="grid size-10 place-items-center rounded-lg bg-navy-700 font-display text-lg font-bold text-white"
+            className="grid size-10 shrink-0 place-items-center rounded-lg bg-navy-700 font-display text-lg font-bold text-white"
           >
             S
           </span>
           <span
-            className={`font-display text-xl font-semibold tracking-tight ${
+            className={`truncate font-display text-lg font-semibold tracking-tight sm:text-xl ${
               tone === 'light' ? 'text-white' : 'text-navy-900'
             }`}
           >

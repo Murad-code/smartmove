@@ -8,6 +8,22 @@ import type {
   PropertyType,
 } from './types'
 
+/**
+ * Payload builds media URLs against `serverURL`, which makes them absolute.
+ * `next/image` would then treat our own files as a remote host, so anything
+ * on our own origin is turned back into a path.
+ */
+function toRelativeUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined
+  if (url.startsWith('/')) return url
+  try {
+    const parsed = new URL(url)
+    return `${parsed.pathname}${parsed.search}`
+  } catch {
+    return url
+  }
+}
+
 /** Payload returns either an ID or a populated document depending on depth. */
 function isPopulated<T extends { id: unknown }>(value: unknown): value is T {
   return typeof value === 'object' && value !== null && 'id' in value
@@ -16,15 +32,19 @@ function isPopulated<T extends { id: unknown }>(value: unknown): value is T {
 export function toImage(value: unknown): PropertyImage | undefined {
   if (!isPopulated<Media>(value) || !value.url) return undefined
 
+  const url = toRelativeUrl(value.url)
+  if (!url) return undefined
+
   return {
     id: String(value.id),
-    url: value.url,
+    url,
     alt: value.alt || '',
     width: value.width ?? undefined,
     height: value.height ?? undefined,
-    thumbnailUrl: value.sizes?.thumbnail?.url ?? undefined,
-    cardUrl: value.sizes?.card?.url ?? undefined,
-    wideUrl: value.sizes?.wide?.url ?? undefined,
+    thumbnailUrl: toRelativeUrl(value.sizes?.thumbnail?.url),
+    cardUrl: toRelativeUrl(value.sizes?.card?.url),
+    wideUrl: toRelativeUrl(value.sizes?.wide?.url),
+    heroUrl: toRelativeUrl(value.sizes?.hero?.url),
   }
 }
 

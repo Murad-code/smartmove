@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { Icon } from '@/components/ui/Icon'
 import { cn } from '@/lib/cn'
@@ -31,15 +31,20 @@ export function MobileNav({
   telHref?: string
   cta?: NavLink | null
 }) {
-  const [open, setOpen] = useState(false)
   const pathname = usePathname()
   const panelRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
-  // Any navigation closes the panel, including browser back/forward.
-  useEffect(() => {
-    setOpen(false)
-  }, [pathname])
+  // The panel remembers which page it was opened on. Navigating anywhere,
+  // including with the browser's back button, makes this stale and the panel
+  // closes on its own, with no effect synchronising two pieces of state.
+  const [openedFor, setOpenedFor] = useState<string | null>(null)
+  const open = openedFor === pathname
+
+  const setOpen = useCallback(
+    (next: boolean) => setOpenedFor(next ? pathname : null),
+    [pathname],
+  )
 
   useEffect(() => {
     if (!open) return
@@ -60,7 +65,7 @@ export function MobileNav({
       document.body.style.overflow = previousOverflow
       document.removeEventListener('keydown', onKeyDown)
     }
-  }, [open])
+  }, [open, setOpen])
 
   return (
     <>

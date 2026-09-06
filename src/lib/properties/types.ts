@@ -30,6 +30,7 @@ export interface PropertyImage {
   thumbnailUrl?: string
   cardUrl?: string
   wideUrl?: string
+  heroUrl?: string
 }
 
 export interface PropertySummary {

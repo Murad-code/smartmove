@@ -1,6 +1,7 @@
 'use server'
 
 import { headers } from 'next/headers'
+import type { RequiredDataFromCollectionSlug } from 'payload'
 import type { ZodType } from 'zod'
 
 import type { EnquiryKind } from '@/collections/Enquiries'
@@ -99,12 +100,15 @@ async function handleSubmission<T extends { email: string; companyWebsite?: stri
 
     const enquiry = await payload.create({
       collection: 'enquiries',
+      // The per-kind field sets are validated by Zod above; Payload's generated
+      // type describes the union of all four, so one assertion here beats
+      // four near-identical mapper signatures.
       data: {
         kind,
         consentGivenAt: new Date().toISOString(),
         sourcePage: await sourcePage(),
         ...toDocument(input),
-      },
+      } as RequiredDataFromCollectionSlug<'enquiries'>,
       // The collection refuses `create` to everyone; this is the only path in.
       overrideAccess: true,
     })

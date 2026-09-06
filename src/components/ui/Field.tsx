@@ -3,7 +3,7 @@ import React, { useId } from 'react'
 import { cn } from '@/lib/cn'
 
 const CONTROL =
-  'w-full rounded-lg border bg-white px-3.5 py-2.5 text-[0.95rem] text-ink-900 placeholder:text-ink-400 transition-colors focus:border-navy-500 disabled:bg-ink-50'
+  'w-full rounded-lg border bg-white px-3.5 py-2.5 text-[0.95rem] text-ink-900 placeholder:text-ink-500 transition-colors focus:border-navy-500 disabled:bg-ink-50'
 
 const CONTROL_TONE = {
   normal: 'border-ink-300 hover:border-ink-400',

@@ -1,7 +1,8 @@
 'use client'
 
+import Link from 'next/link'
 import Script from 'next/script'
-import React, { useMemo } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
@@ -28,9 +29,14 @@ export function FormShell({
   children: React.ReactNode
   turnstileSiteKey?: string
 }) {
-  // Captured once on mount. A submission that arrives within two seconds of
-  // this timestamp was not filled in by a person.
-  const renderedAt = useMemo(() => String(Date.now()), [])
+  // Written after mount rather than during render, so the component stays
+  // pure and the server and client markup match. A submission that arrives
+  // within two seconds of this timestamp was not filled in by a person.
+  const renderedAt = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (renderedAt.current) renderedAt.current.value = String(Date.now())
+  }, [])
 
   if (state.status === 'success') {
     return (
@@ -43,7 +49,7 @@ export function FormShell({
   return (
     <form action={action} noValidate className="space-y-5">
       <HoneypotField />
-      <input type="hidden" name="renderedAt" value={renderedAt} />
+      <input ref={renderedAt} type="hidden" name="renderedAt" defaultValue="" />
 
       {state.status === 'error' ? (
         <Alert tone="error" title="We could not send your message">
@@ -75,9 +81,9 @@ export function consentLabel() {
   return (
     <>
       I am happy for Smart Move to use these details to reply to my enquiry. See our{' '}
-      <a href="/privacy-policy" className="font-medium text-navy-700 underline">
+      <Link href="/privacy-policy" className="font-medium text-navy-700 underline">
         privacy policy
-      </a>
+      </Link>
       .
     </>
   )

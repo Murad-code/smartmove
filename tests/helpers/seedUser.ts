@@ -1,46 +1,37 @@
 import { getPayload } from 'payload'
+
 import config from '../../src/payload.config.js'
 
 export const testUser = {
-  email: 'dev@payloadcms.com',
-  password: 'test',
+  email: 'e2e@smartmove.test',
+  password: 'TestPassword123!',
+  name: 'End to end test',
+  role: 'admin' as const,
 }
 
-/**
- * Seeds a test user for e2e admin tests.
- */
+/** Creates the admin account the end-to-end admin tests sign in with. */
 export async function seedTestUser(): Promise<void> {
   const payload = await getPayload({ config })
 
-  // Delete existing test user if any
   await payload.delete({
     collection: 'users',
-    where: {
-      email: {
-        equals: testUser.email,
-      },
-    },
+    where: { email: { equals: testUser.email } },
+    overrideAccess: true,
   })
 
-  // Create fresh test user
   await payload.create({
     collection: 'users',
     data: testUser,
+    overrideAccess: true,
   })
 }
 
-/**
- * Cleans up test user after tests
- */
 export async function cleanupTestUser(): Promise<void> {
   const payload = await getPayload({ config })
 
   await payload.delete({
     collection: 'users',
-    where: {
-      email: {
-        equals: testUser.email,
-      },
-    },
+    where: { email: { equals: testUser.email } },
+    overrideAccess: true,
   })
 }

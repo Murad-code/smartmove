@@ -1,7 +1,6 @@
 import type { BusinessDetail } from '@/payload-types'
 import { env } from '@/lib/env'
 import type { PropertyDetail } from '@/lib/properties/types'
-import { formatAddress } from '@/lib/site'
 
 /**
  * Schema.org helpers.

@@ -1,41 +1,47 @@
 import { defineConfig, devices } from '@playwright/test'
-
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
 import 'dotenv/config'
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
+const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000'
+
 export default defineConfig({
   testDir: './tests/e2e',
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list']],
+  // The first run compiles pages on demand, which is slow in development.
+  timeout: 60_000,
+  expect: { timeout: 15_000 },
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://localhost:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    baseURL,
     trace: 'on-first-retry',
+    locale: 'en-GB',
+    timezoneId: 'Europe/London',
+    extraHTTPHeaders: {
+      // Enquiry rate limiting keys off the forwarded client address, the same
+      // way it will behind nginx. A fresh address per run stops repeated local
+      // runs inside the ten-minute window from tripping the limit.
+      'x-forwarded-for': `198.51.100.${Math.floor(Math.random() * 250) + 1}`,
+    },
   },
   projects: [
     {
-      name: 'chromium',
+      name: 'desktop',
       use: { ...devices['Desktop Chrome'], channel: 'chromium' },
+      testIgnore: /mobile\.e2e\.spec\.ts/,
+    },
+    {
+      // The brief calls out mobile behaviour specifically, so the mobile
+      // journeys run on a real mobile viewport rather than a narrow desktop.
+      name: 'mobile',
+      use: { ...devices['Pixel 7'], channel: 'chromium' },
+      testMatch: /mobile\.e2e\.spec\.ts/,
     },
   ],
   webServer: {
     command: 'pnpm dev',
     reuseExistingServer: true,
-    url: 'http://localhost:3000',
+    url: baseURL,
+    timeout: 120_000,
   },
 })

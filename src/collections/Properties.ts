@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { isStaff } from '@/access'
 import { slugField } from '@/fields/slug'
+import { revalidateProperty, revalidatePropertyOnDelete } from '@/hooks/revalidate'
 
 /**
  * Properties.
@@ -54,6 +55,10 @@ export const Properties: CollectionConfig = {
     delete: isStaff,
   },
   defaultSort: '-publishedAt',
+  hooks: {
+    afterChange: [revalidateProperty],
+    afterDelete: [revalidatePropertyOnDelete],
+  },
   fields: [
     {
       type: 'tabs',

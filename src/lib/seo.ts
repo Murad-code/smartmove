@@ -32,7 +32,9 @@ export async function buildMetadata({
   const url = new URL(path, env.siteUrl).toString()
 
   return {
-    title: resolvedTitle,
+    // Absolute, because the suffix is already applied above. Leaving it
+    // relative would let the root layout's template append it a second time.
+    title: { absolute: resolvedTitle },
     description: resolvedDescription,
     alternates: { canonical: url },
     ...(noIndex ? { robots: { index: false, follow: false } } : {}),
