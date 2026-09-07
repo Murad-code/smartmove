@@ -30,7 +30,7 @@ and everything required to publish is on the first tab.
 | `furnishedStatus`  | select   |          |                                                |
 | `availableFrom`    | date     |          | Blank means available now                      |
 | `shortDescription` | textarea | ✓        | Max 220 characters. Cards and meta description |
-| `keyFeatures`      | array    |          | Up to 12 bullet points                         |
+| `keyFeatures`      | text[]   |          | Up to 12 bullet points                         |
 | `description`      | richText |          |                                                |
 
 **Photos**: `images`, a multi-value upload. Order is meaningful and the first

@@ -43,7 +43,7 @@ Down the left-hand side you will see four sections:
 | Furnishing                | Optional                                                               |
 | Available from            | Leave blank if it is available now                                     |
 | One-line summary          | About 25 words. This shows on the property cards and in Google.        |
-| Key features              | Short bullet points. Click **Add Feature** for each one.               |
+| Key features              | Short bullet points. Type one and press Enter to add it.               |
 | Full description          | The main write-up                                                      |
 
 4. Click the **Photos** tab and add your pictures (see below)
