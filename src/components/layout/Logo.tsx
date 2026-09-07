@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
+import { brandInitial } from '@/lib/brand'
 import { toImage } from '@/lib/properties/mappers'
 
 /**
@@ -12,12 +13,15 @@ export function Logo({
   logo,
   companyName,
   tone = 'dark',
+  priority = false,
 }: {
   logo: unknown
   companyName: string
   tone?: 'dark' | 'light'
+  priority?: boolean
 }) {
   const image = toImage(logo)
+  const initial = brandInitial(companyName)
 
   return (
     <Link
@@ -31,7 +35,7 @@ export function Logo({
           alt={image.alt || companyName}
           width={image.width ?? 200}
           height={image.height ?? 56}
-          priority
+          priority={priority}
           className="h-10 w-auto sm:h-11"
         />
       ) : (
@@ -40,7 +44,7 @@ export function Logo({
             aria-hidden="true"
             className="grid size-10 shrink-0 place-items-center rounded-lg bg-navy-700 font-display text-lg font-bold text-white"
           >
-            S
+            {initial}
           </span>
           <span
             className={`truncate font-display text-lg font-semibold tracking-tight sm:text-xl ${

@@ -1333,6 +1333,9 @@ export interface SiteSetting {
    * Used in the footer. Leave blank to use the main logo.
    */
   logoLight?: (number | null) | Media;
+  /**
+   * A square PNG. Used in the browser tab and the admin navigation. Until one is uploaded, those places show the first letter of the company name.
+   */
   favicon?: (number | null) | Media;
   /**
    * Shown across the top of every page. Drag to reorder.

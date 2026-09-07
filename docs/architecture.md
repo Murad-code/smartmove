@@ -41,6 +41,7 @@ src/app/
   robots.ts            /robots.txt
   sitemap.ts           /sitemap.xml
   healthz/             health check for Docker and Nginx
+  brand-icon/          compact mark from Website Settings (tabs and admin nav)
 ```
 
 Route groups carry no URL segment, so `/[slug]` and `/robots.txt` sit at the

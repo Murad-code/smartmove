@@ -1,5 +1,7 @@
-import type { BusinessDetail } from '@/payload-types'
+import type { BusinessDetail, SiteSetting } from '@/payload-types'
+
 import { env } from '@/lib/env'
+import { toImage } from '@/lib/properties/mappers'
 import type { PropertyDetail } from '@/lib/properties/types'
 
 /**
@@ -9,13 +11,16 @@ import type { PropertyDetail } from '@/lib/properties/types'
  * inventing those is both dishonest and against Google's guidelines.
  */
 
-export function realEstateAgentSchema(business: BusinessDetail) {
+export function realEstateAgentSchema(business: BusinessDetail, settings?: SiteSetting) {
+  const logo = toImage(settings?.logo)
+
   return {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
     '@id': `${env.siteUrl}/#organisation`,
     name: business.companyName,
     url: env.siteUrl,
+    ...(logo ? { logo: new URL(logo.url, env.siteUrl).toString() } : {}),
     ...(business.tagline ? { description: business.tagline } : {}),
     ...(business.telephone ? { telephone: business.telephone } : {}),
     ...(business.email ? { email: business.email } : {}),

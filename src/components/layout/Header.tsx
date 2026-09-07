@@ -66,7 +66,7 @@ export async function Header() {
       <Container>
         <div className="flex h-18 items-center justify-between gap-2 py-3 sm:gap-4">
           <div className="min-w-0">
-            <Logo logo={settings.logo} companyName={business.companyName} />
+            <Logo logo={settings.logo} companyName={business.companyName} priority />
           </div>
 
           <nav aria-label="Main" className="hidden lg:flex lg:items-center">

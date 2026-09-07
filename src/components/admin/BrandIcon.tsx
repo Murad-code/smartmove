@@ -1,17 +1,27 @@
 import React from 'react'
 
+import { getBusinessDetails } from '@/lib/site'
+
 /**
- * The compact mark Payload shows in the collapsed navigation and on narrow
- * screens, in place of its own.
+ * Compact mark in the admin header. The image itself comes from `/brand-icon`,
+ * which reads the favicon uploaded in Website Settings.
+ *
+ * Sized to the slot Payload gives it (18px, 16px below 1024px). A larger
+ * explicit size is clipped by the header's overflow.
  */
-export function BrandIcon() {
+export async function BrandIcon() {
+  const business = await getBusinessDetails()
+  const name = business.companyName || 'Smart Move'
+
   return (
-    <svg viewBox="0 0 64 64" width="26" height="26" role="img" aria-label="Smart Move">
-      <rect width="64" height="64" rx="14" fill="#003d7e" />
-      <path
-        d="M20 42.5c2.7 2 5.7 3 9 3 4.2 0 6.9-1.8 6.9-4.6 0-2.4-1.5-3.8-5.7-5l-3.4-1c-5.4-1.6-8-4.3-8-8.5 0-5.3 4.4-8.9 11-8.9 3 0 5.8.7 8.2 2.1l-2.2 5c-1.9-1.1-3.9-1.7-6-1.7-3.6 0-5.9 1.6-5.9 4.1 0 2.1 1.5 3.4 5.3 4.5l3.4 1c5.8 1.7 8.4 4.4 8.4 8.8 0 5.8-4.7 9.6-12 9.6-3.9 0-7.4-1-10.4-3z"
-        fill="#8cc63e"
-      />
-    </svg>
+    // Not next/image: this renders inside Payload's admin bundle.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/brand-icon"
+      alt={name}
+      width={18}
+      height={18}
+      style={{ display: 'block', width: '100%', height: 'auto' }}
+    />
   )
 }

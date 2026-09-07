@@ -61,6 +61,10 @@ export const SiteSettings: GlobalConfig = {
               type: 'upload',
               relationTo: 'media',
               label: 'Browser tab icon',
+              admin: {
+                description:
+                  'A square PNG. Used in the browser tab and the admin navigation. Until one is uploaded, those places show the first letter of the company name.',
+              },
             },
           ],
         },

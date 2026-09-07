@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import React from 'react'
 
+import { Logo } from '@/components/layout/Logo'
 import { Container } from '@/components/ui/Container'
 import { Icon } from '@/components/ui/Icon'
 import { formatAddress, getBusinessDetails, getSiteSettings, mapLink, telHref } from '@/lib/site'
@@ -33,7 +34,11 @@ export async function Footer() {
       <Container>
         <div className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:py-16">
           <div className="lg:col-span-1">
-            <p className="font-display text-xl font-semibold text-white">{business.companyName}</p>
+            <Logo
+              logo={settings.logoLight || settings.logo}
+              companyName={business.companyName}
+              tone="light"
+            />
             {business.tagline ? (
               <p className="mt-2 text-sm text-navy-200">{business.tagline}</p>
             ) : null}

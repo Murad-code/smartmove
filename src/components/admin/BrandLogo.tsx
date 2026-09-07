@@ -1,7 +1,8 @@
 import React from 'react'
 
-import { getBusinessDetails, getSiteSettings } from '@/lib/site'
+import { brandInitial } from '@/lib/brand'
 import { toImage } from '@/lib/properties/mappers'
+import { getBusinessDetails, getSiteSettings } from '@/lib/site'
 
 /**
  * Replaces Payload's own logo on the sign-in screen.
@@ -51,7 +52,7 @@ export async function BrandLogo() {
           fontWeight: 700,
         }}
       >
-        S
+        {brandInitial(name)}
       </span>
       <span style={{ fontSize: '1.6rem', fontWeight: 600, letterSpacing: '-0.02em' }}>{name}</span>
     </div>

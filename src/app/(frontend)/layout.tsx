@@ -10,8 +10,8 @@ import { SkipLink } from '@/components/layout/SkipLink'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { analytics, env } from '@/lib/env'
 import { toImage } from '@/lib/properties/mappers'
-import { realEstateAgentSchema } from '@/lib/structured-data'
 import { getBusinessDetails, getSiteSettings } from '@/lib/site'
+import { realEstateAgentSchema } from '@/lib/structured-data'
 
 import '@/styles/globals.css'
 
@@ -56,7 +56,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(env.siteUrl),
     icons: {
-      icon: favicon ? [{ url: favicon.url }] : [{ url: '/icon.svg', type: 'image/svg+xml' }],
+      icon: favicon ? [{ url: favicon.url }] : [{ url: '/brand-icon' }],
     },
     title: {
       default: settings.defaultSeo?.titleSuffix || business.companyName,
@@ -69,7 +69,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
-  const business = await getBusinessDetails()
+  const [business, settings] = await Promise.all([getBusinessDetails(), getSiteSettings()])
   const analyticsEnabled = Boolean(analytics.provider && analytics.id)
 
   return (
@@ -82,7 +82,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         </main>
         <Footer />
 
-        <JsonLd data={realEstateAgentSchema(business)} />
+        <JsonLd data={realEstateAgentSchema(business, settings)} />
 
         {analyticsEnabled ? (
           <>
