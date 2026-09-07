@@ -18,6 +18,24 @@ test('the mobile menu opens, navigates and closes', async ({ page }) => {
   await expect(menu).toBeHidden()
 })
 
+test('every mobile menu item is on screen when the menu opens', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Open the menu' }).click()
+
+  const menu = page.getByRole('dialog', { name: 'Menu' })
+
+  // The panel must cover the viewport, not just the header. `backdrop-filter`
+  // on the header once made it the containing block for the fixed overlay,
+  // which squashed the panel to the header's height and clipped every item.
+  const viewport = page.viewportSize()!
+  const box = (await menu.boundingBox())!
+  expect(box.height).toBeGreaterThan(viewport.height * 0.9)
+
+  for (const label of ['Properties', 'Landlords', 'Tenants', 'Services', 'About', 'Contact']) {
+    await expect(menu.getByRole('link', { name: label })).toBeInViewport({ ratio: 0.9 })
+  }
+})
+
 test('the mobile menu closes with the Escape key', async ({ page }) => {
   await page.goto('/')
 
@@ -26,6 +44,23 @@ test('the mobile menu closes with the Escape key', async ({ page }) => {
 
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog', { name: 'Menu' })).toBeHidden()
+})
+
+test("the layout opts in to Next's scroll reset while smooth scrolling is on", async ({ page }) => {
+  await page.goto('/')
+
+  // globals.css sets `scroll-behavior: smooth` for in-page anchors. Since
+  // Next 16 that silently swallows the scroll reset on a route change, so
+  // visitors land halfway down the page they just opened, unless the layout
+  // opts in with this attribute. Keep the two in step.
+  const { smooth, optIn } = await page.evaluate(() => ({
+    smooth: getComputedStyle(document.documentElement).scrollBehavior === 'smooth',
+    optIn: document.documentElement.getAttribute('data-scroll-behavior'),
+  }))
+
+  if (smooth) {
+    expect(optIn, 'html needs data-scroll-behavior="smooth"').toBe('smooth')
+  }
 })
 
 test('the menu offers a direct way to call the office', async ({ page }) => {

@@ -12,6 +12,11 @@ import { cleanupTestUser, seedTestUser, testUser } from '../helpers/seedUser'
 
 test.describe.configure({ mode: 'serial' })
 
+// Payload treats max-width 1440px as a collapsed hamburger sidebar. Playwright's
+// Desktop Chrome viewport is 1280px, so clicks on sidebar links hit the page
+// content instead of the nav. Use a real desktop width for these journeys.
+test.use({ viewport: { width: 1600, height: 900 } })
+
 test.beforeAll(async () => {
   await seedTestUser()
 })
@@ -138,6 +143,7 @@ test('enquiries sent through the website appear in the admin panel', async ({ pa
 test('the sidebar and header make it obvious how to go home and log out', async ({ page }) => {
   await page.goto('/admin/collections/properties')
 
+  await expect(page.locator('aside.nav')).toHaveClass(/nav--nav-open/)
   await page.locator('.nav').getByRole('link', { name: 'Dashboard', exact: true }).click()
   await expect(page).toHaveURL(/\/admin\/?$/)
 

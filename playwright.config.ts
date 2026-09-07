@@ -43,5 +43,13 @@ export default defineConfig({
     reuseExistingServer: true,
     url: baseURL,
     timeout: 120_000,
+    env: {
+      // The enquiry journeys submit real forms, so each run would send a real
+      // notification once the sending domain is verified. Next leaves
+      // already-set variables alone, so this takes precedence over .env.
+      // Only applies to a server Playwright starts itself: with
+      // reuseExistingServer, a `pnpm dev` you started keeps your own setting.
+      EMAIL_PROVIDER: 'console',
+    },
   },
 })

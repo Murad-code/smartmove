@@ -15,8 +15,8 @@ export const businessDetails = {
   companyName: 'Smart Move',
   tagline: 'Independent letting agents in Scunthorpe',
   telephone: '01724 856260',
-  email: 'sales@smartmove4u.co.uk',
-  enquiriesEmail: 'sales@smartmove4u.co.uk',
+  email: 'smartmove4u@muradsprojects.co.uk',
+  enquiriesEmail: 'smartmove4u@muradsprojects.co.uk',
   address: {
     line1: '96 Frodingham Road',
     line2: '',
