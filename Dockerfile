@@ -52,17 +52,8 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
 ENV DATABASE_URL=postgres://build:build@127.0.0.1:5432/build \
     PAYLOAD_SECRET=build-time-placeholder
 
-# The Turbopack cache is hundreds of megabytes and is not needed by either of
-# the stages built from here.
+# The Turbopack cache is hundreds of megabytes and is not needed at runtime.
 RUN pnpm build && rm -rf .next/cache
-
-
-# --- Migrations ------------------------------------------------------------
-# Payload's CLI reads the TypeScript config through tsx, so migrations run from
-# the build stage where the source and the development dependencies still
-# exist. Compose runs this to completion before starting the app.
-FROM builder AS migrator
-CMD ["pnpm", "migrate"]
 
 
 # --- Runtime ---------------------------------------------------------------
@@ -73,7 +64,8 @@ ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \
     HOSTNAME=0.0.0.0 \
-    MEDIA_DIR=/app/media
+    MEDIA_DIR=/app/media \
+    SEED_ASSET_DIR=/app/seed-assets
 
 # Never run the application as root.
 RUN addgroup --system --gid 1001 nodejs && \
@@ -81,6 +73,12 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Brand marks and demo photographs, read by the seed that runs on first boot
+# from src/instrumentation.ts. Migrations need nothing here: `prodMigrations`
+# applies them on the first database connection. Between the two, a production
+# host needs no source checkout and no separate setup step.
+COPY --chown=nextjs:nodejs src/scripts/demo-assets ./seed-assets
 
 # Mount points. Declared before dropping privileges so the volumes are owned
 # by the application user.
