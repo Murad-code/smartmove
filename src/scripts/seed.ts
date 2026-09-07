@@ -19,12 +19,50 @@ import { businessDetails, homePage, pages, services, siteSettings } from './seed
  *   pnpm seed
  *
  * The admin user, business details, services and pages are always written,
- * which is exactly what a first deployment needs. The eight demo properties
- * are development scaffolding and are only written when
+ * which is exactly what a first deployment needs. Brand marks in
+ * `demo-assets/brand` come from the live smartmove4u.co.uk logo. The eight
+ * demo properties are development scaffolding and are only written when
  * SEED_DEMO_PROPERTIES=true, so a real site never starts with fake stock.
  */
 
 const ASSET_DIR = path.resolve(import.meta.dirname, 'demo-assets')
+const BRAND_DIR = path.join(ASSET_DIR, 'brand')
+
+async function upsertBrandImage(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  {
+    filename,
+    alt,
+  }: {
+    filename: string
+    alt: string
+  },
+): Promise<number> {
+  const existing = await payload.find({
+    collection: 'media',
+    where: { alt: { equals: alt } },
+    limit: 1,
+    overrideAccess: true,
+  })
+
+  if (existing.docs[0]) return existing.docs[0].id
+
+  const filePath = path.join(BRAND_DIR, filename)
+  const data = await fs.readFile(filePath)
+  const media = await payload.create({
+    collection: 'media',
+    data: { alt },
+    file: {
+      data,
+      mimetype: 'image/png',
+      name: filename,
+      size: data.byteLength,
+    },
+    overrideAccess: true,
+  })
+
+  return media.id
+}
 
 async function main() {
   const seedDemoProperties = process.env.SEED_DEMO_PROPERTIES === 'true'
@@ -57,6 +95,21 @@ async function main() {
   }
 
   // --- Globals -------------------------------------------------------------
+  const [logoId, logoLightId, faviconId] = await Promise.all([
+    upsertBrandImage(payload, {
+      filename: 'logo.png',
+      alt: 'Smart Move logo',
+    }),
+    upsertBrandImage(payload, {
+      filename: 'logo-light.png',
+      alt: 'Smart Move logo for dark backgrounds',
+    }),
+    upsertBrandImage(payload, {
+      filename: 'favicon.png',
+      alt: 'Smart Move browser tab icon',
+    }),
+  ])
+
   await payload.updateGlobal({
     slug: 'business-details',
     data: businessDetails,
@@ -65,7 +118,12 @@ async function main() {
 
   await payload.updateGlobal({
     slug: 'site-settings',
-    data: siteSettings,
+    data: {
+      ...siteSettings,
+      logo: logoId,
+      logoLight: logoLightId,
+      favicon: faviconId,
+    },
     overrideAccess: true,
   })
 
