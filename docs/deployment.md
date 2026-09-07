@@ -1,378 +1,301 @@
 # Deploying to a VPS
 
-Written for a fresh Ubuntu 24.04 server. Every command can be pasted as-is;
-replace `smartmove4u.co.uk` with the real domain and `deploy` with whatever
-user you create.
+The VPS never builds and never needs a source checkout. GitHub Actions builds
+the image and publishes it to GitHub Container Registry; the server pulls it.
 
-Two TLS options are described. **Nginx with Certbot is the recommended path**
-and is what the shipped configuration is set up for. Cloudflare is covered at
-the end for the case where the domain is already behind it.
+The container migrates its own database on first connect and, on a fresh
+database, seeds the starter content. A deployment is therefore two commands.
+
+**Topology.** nginx is already installed on the VPS and serves other sites on
+ports 80 and 443, so this stack publishes nothing publicly: the app listens on
+`127.0.0.1:3001` and the host's nginx proxies a subdomain to it. Postgres is not
+published at all and is reachable only from the app container.
+
+```
+Internet
+  → host nginx (TLS, rate limits, caching)     :80 / :443
+    → app container                            127.0.0.1:3001
+      → postgres container                     internal network only
+```
 
 ---
 
-## 1. Server preparation
+## Part 1 — Publish the image
 
-Connect as root for the first few steps.
-
-```bash
-ssh root@YOUR_SERVER_IP
-```
+Once per release, from your machine.
 
 ```bash
-apt update && apt upgrade -y
-apt install -y ca-certificates curl gnupg ufw fail2ban rclone git
-timedatectl set-timezone Europe/London
+git tag v1.0.0 && git push origin v1.0.0
 ```
 
-Create a non-root user to run the deployment.
+That runs [`.github/workflows/release.yml`](../.github/workflows/release.yml),
+which builds `linux/amd64` and pushes these tags to
+`ghcr.io/murad-code/smartmove`:
+
+| Tag             | Meaning                                           |
+| --------------- | ------------------------------------------------- |
+| `v1.0.0`, `1.0` | The exact release. Use this in production.        |
+| `latest`        | Whatever was published most recently.             |
+| `sha-abc1234`   | The commit, for tracing a mystery back to source. |
+
+You can also publish without tagging from the Actions tab → Release → Run
+workflow.
+
+> `NEXT_PUBLIC_SITE_URL` is inlined into the JavaScript bundle at build time,
+> so it is set in the workflow, not on the server. If the domain ever changes,
+> change `SITE_URL` in the workflow and publish again.
+
+### The registry package is private
+
+The image contains the demo photographs, which are not ours to republish, so
+keep the GHCR package private and give the VPS a read-only token.
+
+1. GitHub → Settings → Developer settings → Personal access tokens → **Tokens
+   (classic)** → Generate new token, scope **`read:packages`** only.
+2. On the VPS:
 
 ```bash
-adduser --disabled-password --gecos "" deploy
-usermod -aG sudo deploy
-mkdir -p /home/deploy/.ssh
-cp /root/.ssh/authorized_keys /home/deploy/.ssh/
-chown -R deploy:deploy /home/deploy/.ssh
-chmod 700 /home/deploy/.ssh && chmod 600 /home/deploy/.ssh/authorized_keys
+echo 'YOUR_TOKEN' | docker login ghcr.io -u Murad-code --password-stdin
 ```
 
-## 2. SSH security
+---
+
+## Part 2 — Prepare the server
+
+Once per server.
 
 ```bash
-sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sed -i 's/^#\?KbdInteractiveAuthentication.*/KbdInteractiveAuthentication no/' /etc/ssh/sshd_config
-systemctl restart ssh
+scp deploy/vps-setup.sh you@vps:/tmp/
+ssh you@vps 'sudo bash /tmp/vps-setup.sh'
 ```
 
-**Open a second terminal and confirm `ssh deploy@YOUR_SERVER_IP` works before
-closing this one.** Locking yourself out of a fresh VPS is a bad afternoon.
+It prints what currently owns ports 80 and 443, installs Docker if missing,
+installs `certbot`'s nginx plugin and `htpasswd`, and creates `/opt/smartmove`.
+It does not touch nginx's global configuration or the firewall.
 
-## 3. Firewall
+---
+
+## Part 3 — DNS
+
+Add an `A` record for the subdomain pointing at the VPS, then confirm it has
+propagated before asking certbot for a certificate:
 
 ```bash
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow OpenSSH
-ufw allow 80/tcp
-ufw allow 443/tcp
-ufw --force enable
-ufw status verbose
+dig +short smartmove4u.muradsprojects.co.uk
 ```
 
-Postgres is never published to the host, so port 5432 stays closed. Nothing
-else needs to be open.
+If that returns Cloudflare addresses rather than your VPS IP, the record is
+proxied. Either set it to DNS-only while you issue the certificate, or use a
+Cloudflare origin certificate instead of certbot.
 
-## 4. Docker
+---
+
+## Part 4 — nginx
 
 ```bash
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
-  | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-chmod a+r /etc/apt/keyrings/docker.gpg
-
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
-https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
-  > /etc/apt/sources.list.d/docker.list
-
-apt update
-apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-usermod -aG docker deploy
-systemctl enable --now docker
+scp deploy/nginx/smartmove-zones.conf you@vps:/tmp/
+scp deploy/nginx/smartmove4u.muradsprojects.co.uk.conf you@vps:/tmp/
 ```
 
-Log out and back in as `deploy` so the group membership takes effect.
+On the VPS:
 
 ```bash
-docker --version && docker compose version
+sudo mv /tmp/smartmove-zones.conf /etc/nginx/conf.d/
+sudo mv /tmp/smartmove4u.muradsprojects.co.uk.conf /etc/nginx/sites-available/
+sudo ln -sf /etc/nginx/sites-available/smartmove4u.muradsprojects.co.uk.conf \
+            /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
-## 5. DNS
+`smartmove-zones.conf` holds the rate-limit zones, which have to live in
+nginx's `http` block. Every name in it is prefixed `smartmove_` so it cannot
+clash with the other sites on the server.
 
-Before requesting a certificate, point the domain at the server and wait for it
-to propagate.
-
-| Type | Name  | Value                                     |
-| ---- | ----- | ----------------------------------------- |
-| A    | `@`   | your server's IPv4 address                |
-| A    | `www` | your server's IPv4 address                |
-| AAAA | `@`   | your server's IPv6 address, if it has one |
+Then issue the certificate. certbot rewrites the site file to add the TLS
+server block and the HTTP redirect:
 
 ```bash
-dig +short smartmove4u.co.uk
+sudo certbot --nginx -d smartmove4u.muradsprojects.co.uk
 ```
 
-Do not continue until that returns the server's address.
+`nginx -t` will fail at this point with "connection refused" only when nginx is
+reloaded _and_ the app is not running yet. That is harmless; carry on.
 
-## 6. Get the code
+---
+
+## Part 5 — Configure and start
 
 ```bash
-sudo mkdir -p /opt/smartmove
-sudo chown deploy:deploy /opt/smartmove
-git clone YOUR_REPOSITORY_URL /opt/smartmove
-cd /opt/smartmove
+scp docker-compose.prod.yml you@vps:/opt/smartmove/
+scp deploy/update.sh you@vps:/opt/smartmove/
+cp .env.production.example .env.production   # fill it in locally
+scp .env.production you@vps:/opt/smartmove/
 ```
 
-## 7. Environment variables
+Generate the two machine secrets rather than inventing them:
 
 ```bash
-cp .env.example .env
-nano .env
+openssl rand -hex 24   # POSTGRES_PASSWORD
+openssl rand -hex 32   # PAYLOAD_SECRET
 ```
 
-Fill in at least:
-
-```bash
-POSTGRES_USER=smartmove
-POSTGRES_PASSWORD=          # openssl rand -base64 32
-POSTGRES_DB=smartmove
-DATABASE_URL=               # leave blank; Compose builds it from the three above
-PAYLOAD_SECRET=             # openssl rand -hex 32
-NEXT_PUBLIC_SITE_URL=https://smartmove4u.co.uk
-EMAIL_PROVIDER=resend
-RESEND_API_KEY=
-EMAIL_FROM=Smart Move Website <website@smartmove4u.co.uk>
-EMAIL_TO=sales@smartmove4u.co.uk
-SEED_ADMIN_EMAIL=admin@smartmove4u.co.uk
-SEED_ADMIN_PASSWORD=        # change it after the first sign-in
-```
-
-Generate the two secrets:
-
-```bash
-openssl rand -base64 32   # POSTGRES_PASSWORD
-openssl rand -hex 32      # PAYLOAD_SECRET
-```
-
-Lock the file down:
-
-```bash
-chmod 600 .env
-```
-
-`.env` is in `.gitignore` and must never be committed.
-
-Full reference: [environment-variables.md](environment-variables.md).
-
-## 8. Set the domain in the Nginx configuration
-
-```bash
-sed -i 's/smartmove4u\.co\.uk/YOUR_DOMAIN/g' docker/nginx/conf.d/smartmove.conf
-```
-
-## 9. First certificate
-
-Nginx will not start without a certificate, and Certbot needs Nginx to answer
-the challenge, so break the cycle by starting Nginx with the HTTPS block
-commented out.
-
-```bash
-# Comment out the 443 server block temporarily
-sed -i '/^server {$/,$ s/^/#/' docker/nginx/conf.d/smartmove.conf.tmp 2>/dev/null || true
-cp docker/nginx/conf.d/smartmove.conf /tmp/smartmove.conf.full
-awk '/^server \{$/{n++} n<2 || /acme-challenge/ {print}' /tmp/smartmove.conf.full \
-  > docker/nginx/conf.d/smartmove.conf
-
-docker compose -f docker-compose.prod.yml up -d nginx
-
-docker compose -f docker-compose.prod.yml run --rm certbot certonly \
-  --webroot -w /var/www/certbot \
-  -d smartmove4u.co.uk -d www.smartmove4u.co.uk \
-  --email YOUR_EMAIL --agree-tos --no-eff-email
-
-# Put the full configuration back
-cp /tmp/smartmove.conf.full docker/nginx/conf.d/smartmove.conf
-```
-
-## 10. Start everything
+Then on the VPS:
 
 ```bash
 cd /opt/smartmove
-docker compose -f docker-compose.prod.yml up -d --build
+chmod 600 .env.production
+docker compose -f docker-compose.prod.yml --env-file .env.production pull
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d
 ```
 
-The first build takes a few minutes. Compose starts things in order: Postgres,
-then the `migrate` service which applies database migrations and exits, then
-the app, then Nginx and the certificate renewer.
+Watch the first boot. On an empty database you should see the migration run and
+then the seed:
 
 ```bash
-docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml --env-file .env.production logs -f app
 ```
 
-Every service should be `running` or, for `migrate`, `exited (0)`.
-
-## 11. Create the first admin account and content
-
-```bash
-docker compose -f docker-compose.prod.yml run --rm --entrypoint sh migrate -c "pnpm seed"
+```
+Migrating: 20260906_111931_initial
+Migrated:  20260906_111931_initial (630ms)
+Created admin user you@example.com
+Seeded 4 services
+Seeded 9 pages
+Seed complete.
 ```
 
-This creates the admin user from `.env` and writes the starter pages, services
-and business details. It does **not** create demo properties unless
-`SEED_DEMO_PROPERTIES=true`, which you do not want on a real site.
+`RUN_SEED_ON_BOOT=true` only seeds a database with no users in it, so it is
+safe to leave set: every later restart logs `Seed skipped: this site is already
+set up` and changes nothing.
 
-It is safe to re-run: existing documents are updated, not duplicated.
+---
 
-## 12. Check it
+## Part 6 — Protect the preview
+
+While the site carries the demo properties, keep it off the open web. Their
+photographs and written particulars belong to another agency (see
+[client-content-required.md](client-content-required.md)).
+
+`SITE_NOINDEX=true` in `.env.production` already blocks crawlers and sends
+`noindex` on every page. Add a password as well:
 
 ```bash
-curl -I https://smartmove4u.co.uk
-curl https://smartmove4u.co.uk/healthz
+sudo htpasswd -c /etc/nginx/.htpasswd-smartmove smartmove
+sudo sed -i 's/# auth_basic/auth_basic/' \
+  /etc/nginx/sites-available/smartmove4u.muradsprojects.co.uk.conf
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Remove both when the site carries only Smart Move's own content, and set
+`SITE_NOINDEX=false` at the same time.
+
+---
+
+## Part 7 — Check it
+
+```bash
+curl -sI https://smartmove4u.muradsprojects.co.uk/healthz    # 200
+curl -s  https://smartmove4u.muradsprojects.co.uk/robots.txt # Disallow: / while noindex
 ```
 
 Then in a browser:
 
-- `https://smartmove4u.co.uk` — the home page
-- `https://smartmove4u.co.uk/admin` — sign in with `SEED_ADMIN_EMAIL`
+- The home page renders with the Smart Move logo.
+- `/properties` lists the properties and the filters work.
+- A property page opens and its gallery works on a phone.
+- `/admin` signs in with `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`.
+- Submitting an enquiry stores it under Enquiries and sends the email.
 
-**Change the admin password immediately** in the admin panel under People.
-
-## 13. Backups
-
-Not optional. See [backups.md](backups.md), which covers configuring off-site
-storage and the cron entry.
+**Change the admin password after the first sign-in**, and remove
+`SEED_ADMIN_PASSWORD` from `.env.production` once you have.
 
 ---
 
 ## Routine operations
 
-### Deploy a change
+### Deploy a new version
 
 ```bash
-cd /opt/smartmove
-git pull
-docker compose -f docker-compose.prod.yml up -d --build
+git tag v1.0.1 && git push origin v1.0.1     # from your machine
+ssh you@vps 'cd /opt/smartmove && ./update.sh v1.0.1'
 ```
 
-Migrations run automatically before the new app container starts. There is a
-few seconds of downtime while the container is replaced, which is acceptable
-for a site of this size.
-
-### Restart
-
-```bash
-docker compose -f docker-compose.prod.yml restart app
-```
+`update.sh` pins the tag in `.env.production`, pulls, restarts and waits for the
+health check, printing the last 50 log lines if it does not come up. Migrations
+apply themselves as the new container connects.
 
 ### Roll back
 
-Every deployment is a git commit, so rolling back is checking out the previous
-one and rebuilding:
-
 ```bash
-cd /opt/smartmove
-git log --oneline -10
-git checkout <previous-commit>
-docker compose -f docker-compose.prod.yml up -d --build
+./update.sh v1.0.0
 ```
 
-If the bad deployment included a database migration, roll that back **first**,
-while the old code is still running:
-
-```bash
-docker compose -f docker-compose.prod.yml run --rm migrate pnpm payload migrate:down
-```
-
-If the schema change was destructive, restore from a backup instead. See
-[backups.md](backups.md).
+Rolling back the image does not roll back the database. A release that adds a
+migration is not reversible by this route; restore from a backup instead
+([backups.md](backups.md)).
 
 ### Logs
 
 ```bash
-# Everything, live
-docker compose -f docker-compose.prod.yml logs -f
-
-# Just the application
-docker compose -f docker-compose.prod.yml logs -f app
-
-# Errors only
-docker compose -f docker-compose.prod.yml logs app | grep '"level":"error"'
+cd /opt/smartmove
+C="docker compose -f docker-compose.prod.yml --env-file .env.production"
+$C logs -f app                 # live
+$C logs --tail=200 app         # recent
+$C logs app | grep '"level":"error"'
+sudo tail -f /var/log/nginx/smartmove.error.log
 ```
 
-Logs rotate at 10 MB with five files kept per service.
-
-### Update the base images
+### Restart, stop
 
 ```bash
-docker compose -f docker-compose.prod.yml pull
-docker compose -f docker-compose.prod.yml up -d --build
-docker image prune -f
+$C restart app
+$C down          # keeps the volumes
 ```
 
-Worth doing monthly, along with `apt update && apt upgrade` on the host.
+Never `docker compose down -v` on the server: `-v` deletes the database and
+every uploaded photograph.
 
----
+### Re-apply the seed content
 
-## Option B: Cloudflare in front of the VPS
-
-If Cloudflare is already proxying the domain, you can let it terminate TLS
-instead of running Certbot.
-
-1. Set Cloudflare's SSL/TLS mode to **Full (strict)**.
-2. Generate a Cloudflare Origin Certificate and save it on the server as
-   `/opt/smartmove/certs/fullchain.pem` and `privkey.pem`.
-3. In `docker-compose.prod.yml`, remove the `certbot` service and mount
-   `./certs:/etc/letsencrypt/live/smartmove4u.co.uk:ro` on nginx instead of the
-   `certbot_conf` volume.
-4. Restrict the firewall to Cloudflare's published address ranges so nobody can
-   reach the origin directly:
+Only while a demo is being iterated on, and never once the client has started
+editing, because it overwrites their changes:
 
 ```bash
-for ip in $(curl -s https://www.cloudflare.com/ips-v4); do ufw allow from "$ip" to any port 443; done
-ufw delete allow 443/tcp
+# set RUN_SEED_ON_BOOT=force in .env.production
+$C up -d && $C logs -f app
+# then set it back to true
 ```
 
-The certificate then never expires within Cloudflare's lifetime and there is
-nothing to renew. The trade-off is that Cloudflare can see your traffic in
-plaintext at their edge, and the site stops working if Cloudflare is
-misconfigured. For a small business site either option is fine; Certbot keeps
-you independent, which is why it is the default here.
+### Update Postgres and the base image
+
+```bash
+$C pull && $C up -d
+```
+
+Take a backup first. Postgres major versions do not upgrade in place; pin
+`postgres:17-alpine` and plan a `pg_dump`/restore when you move off it.
 
 ---
 
 ## Troubleshooting
 
-**`docker compose ps` shows the app restarting.**
-Check the logs: `docker compose -f docker-compose.prod.yml logs app`. The usual
-causes are a missing `PAYLOAD_SECRET` or a `DATABASE_URL` that does not match
-the Postgres credentials.
+| Symptom                                              | Cause and fix                                                                                                                                              |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `502 Bad Gateway`                                    | The app container is not up, or `APP_PORT` and the nginx `upstream` disagree. Check `$C ps` and `ss -tlnp                                                  | grep 3001`. |
+| `denied` on `docker compose pull`                    | The VPS is not logged in to GHCR, or the token lacks `read:packages`. Repeat the `docker login` in Part 1.                                                 |
+| Site loads but every link points at `localhost:3000` | The image was built with the wrong `NEXT_PUBLIC_SITE_URL`. It is baked in at build time: fix `SITE_URL` in the release workflow and publish again.         |
+| `exec format error`                                  | An arm64 image on an x86-64 host. The workflow builds `linux/amd64`; do not `docker load` an image built on an Apple Silicon Mac.                          |
+| Migration says it is waiting for a batch             | A development-mode command ran against this database and wrote a `batch = -1` row. See [operations.md](operations.md).                                     |
+| Enquiries stored but no email                        | `EMAIL_PROVIDER` is still `console`, or Resend is rejecting the sender. Resend only accepts a `from` on a domain verified with it, or its sandbox address. |
+| Uploads vanish after a deploy                        | The `media` volume is not mounted. `docker volume ls` should show `smartmove_media`.                                                                       |
 
-**The migrate service asks a question and hangs.**
-It has detected that the database schema was pushed by a development-mode run.
-That should never happen in production. It means a command was run against this
-database with `NODE_ENV` set to something other than `production`. Restore from
-a backup rather than answering yes, which would cause data loss.
+---
 
-**Certbot fails with "challenge failed".**
-DNS is not pointing at the server yet, or port 80 is blocked. Check
-`dig +short YOUR_DOMAIN` and `ufw status`.
+## What has to be backed up
 
-**Nginx will not start: "cannot load certificate".**
-The certificate has not been issued yet. Follow step 9.
+Two things, and the database alone is not enough:
 
-**Property photographs return 500 or do not appear.**
-The media volume is not mounted or is empty:
+- the `postgres_data` volume — all content and enquiries
+- the `media` volume — every uploaded photograph
 
-```bash
-docker compose -f docker-compose.prod.yml exec app ls /app/media | head
-```
-
-If it is empty but the CMS lists images, restore the media archive from a
-backup.
-
-**Enquiries arrive in the CMS but no email is sent.**
-The enquiry is saved first, on purpose, so nothing is lost. Check the log for
-`Failed to send enquiry notification` and verify `RESEND_API_KEY`, `EMAIL_FROM`
-(the domain must be verified with the provider) and `EMAIL_TO`.
-
-**The site is slow.**
-Check `docker stats`. If Postgres is using all the memory on a small VPS, the
-usual fix is adding swap:
-
-```bash
-fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
-echo '/swapfile none swap sw 0 0' >> /etc/fstab
-```
-
-**Everything is broken and you need to start over.**
-The database and media are in named Docker volumes, so they survive
-`docker compose down`. Only `down -v` destroys them. Take a backup first.
+See [backups.md](backups.md).

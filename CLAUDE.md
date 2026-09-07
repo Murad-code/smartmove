@@ -198,6 +198,24 @@ config override, not by editing anything in `node_modules`.
 - Use `admin.condition` to hide fields that do not apply.
 - Prefer sensible defaults over asking the owner a question.
 
+### Production start-up
+
+Two things happen automatically in the container, and both are load-bearing:
+
+- `prodMigrations` in `payload.config.ts` applies migrations on the first
+  database connection when `NODE_ENV=production`. This is why the VPS needs no
+  source checkout and no migration step. Keep `src/migrations/index.ts` in the
+  config's import graph.
+- `src/instrumentation.ts` runs the seed on boot when `RUN_SEED_ON_BOOT` is
+  set. Seeding cannot be a standalone script in production: the Next standalone
+  build inlines the Payload config into its own server chunks, so `payload` is
+  not resolvable from outside the server process. `src/scripts/seed-run.ts`
+  holds the work; `src/scripts/seed.ts` is only the `pnpm seed` entry point.
+
+`robots.ts` is `force-dynamic` on purpose. One image is built and deployed to
+environments that disagree about whether they may be indexed, so `SITE_NOINDEX`
+has to be read per request rather than baked in.
+
 ### Database
 
 - Never edit a generated migration.
