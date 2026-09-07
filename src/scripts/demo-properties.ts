@@ -243,7 +243,7 @@ export function buildDemoProperties(): DemoProperty[] {
         furnishedStatus: presentation.furnishedStatus ?? property.furnishedStatus,
         availableFrom: availableFrom(presentation.availableInDays),
         shortDescription: buildShortDescription(property.paragraphs),
-        keyFeatures: property.keyFeatures.map((feature) => ({ feature })),
+        keyFeatures: property.keyFeatures,
         description: buildDescription(property.paragraphs),
         addressLine1: property.addressLine1,
         addressLine2: property.addressLine2,

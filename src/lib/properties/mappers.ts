@@ -86,9 +86,9 @@ export function toPropertyDetail(doc: Property): PropertyDetail {
     petsConsidered: Boolean(doc.petsConsidered),
     gardenIncluded: Boolean(doc.gardenIncluded),
     parking: (doc.parking as PropertyDetail['parking']) ?? undefined,
-    keyFeatures: (doc.keyFeatures ?? [])
-      .map((row) => row.feature)
-      .filter((feature): feature is string => Boolean(feature)),
+    keyFeatures: (doc.keyFeatures ?? []).filter((feature): feature is string =>
+      Boolean(feature?.trim()),
+    ),
     description: doc.description ?? undefined,
     images: toImages(doc.images),
     seo: doc.meta

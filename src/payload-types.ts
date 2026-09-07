@@ -174,14 +174,9 @@ export interface Property {
    */
   shortDescription: string;
   /**
-   * Short bullet points, for example "Off-street parking".
+   * Short bullet points, for example "Off-street parking". Type one and press Enter to add it.
    */
-  keyFeatures?:
-    | {
-        feature: string;
-        id?: string | null;
-      }[]
-    | null;
+  keyFeatures?: string[] | null;
   /**
    * The main write-up shown on the property page.
    */
@@ -752,12 +747,7 @@ export interface PropertiesSelect<T extends boolean = true> {
   furnishedStatus?: T;
   availableFrom?: T;
   shortDescription?: T;
-  keyFeatures?:
-    | T
-    | {
-        feature?: T;
-        id?: T;
-      };
+  keyFeatures?: T;
   description?: T;
   images?: T;
   addressLine1?: T;

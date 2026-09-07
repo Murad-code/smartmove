@@ -201,22 +201,15 @@ export const Properties: CollectionConfig = {
             },
             {
               name: 'keyFeatures',
-              type: 'array',
-              label: 'Key features',
-              labels: { singular: 'Feature', plural: 'Features' },
+              type: 'text',
+              hasMany: true,
               maxRows: 12,
+              label: 'Key features',
               admin: {
-                description: 'Short bullet points, for example "Off-street parking".',
-                initCollapsed: false,
+                description:
+                  'Short bullet points, for example "Off-street parking". Type one and press Enter to add it.',
+                placeholder: 'Type a feature and press Enter',
               },
-              fields: [
-                {
-                  name: 'feature',
-                  type: 'text',
-                  required: true,
-                  label: false,
-                },
-              ],
             },
             {
               name: 'description',
