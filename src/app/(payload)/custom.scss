@@ -19,3 +19,27 @@ html[data-theme='light'] {
   font-size: 0.7rem;
   opacity: 0.75;
 }
+
+.nav-dashboard {
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--theme-elevation-100);
+}
+
+.header-log-out {
+  display: inline-flex;
+  align-items: center;
+  height: 2rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--theme-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.header-log-out:hover {
+  background: var(--theme-elevation-50);
+}

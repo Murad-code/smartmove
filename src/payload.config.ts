@@ -39,17 +39,20 @@ export default buildConfig({
     // The admin panel is presented as Smart Move's own software, not as a
     // third-party CMS. This replaces every piece of Payload branding a member
     // of staff would otherwise see: the logo on the sign-in screen, the mark
-    // in the navigation, the browser tab icon and the page metadata.
+    // in the navigation, the browser tab icon and the page metadata. The
+    // compact mark and tab icon both resolve through /brand-icon.
     components: {
       graphics: {
         Logo: '@/components/admin/BrandLogo#BrandLogo',
         Icon: '@/components/admin/BrandIcon#BrandIcon',
       },
+      beforeNavLinks: ['@/components/admin/DashboardNavLink#DashboardNavLink'],
+      actions: ['@/components/admin/HeaderLogout#HeaderLogout'],
     },
     meta: {
       titleSuffix: ' — Smart Move',
       description: 'Manage the Smart Move website',
-      icons: [{ rel: 'icon', type: 'image/svg+xml', url: '/admin-icon.svg' }],
+      icons: [{ rel: 'icon', url: '/brand-icon' }],
       openGraph: {
         title: 'Smart Move',
         description: 'Manage the Smart Move website',

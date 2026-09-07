@@ -28,6 +28,7 @@ test('the sidebar shows business language, not developer language', async ({ pag
   await page.goto('/admin')
 
   const nav = page.locator('.nav')
+  await expect(nav.getByRole('link', { name: 'Dashboard', exact: true })).toBeVisible()
   await expect(nav.getByRole('link', { name: 'Properties', exact: true })).toBeVisible()
   await expect(nav.getByRole('link', { name: 'Website pages' })).toBeVisible()
   await expect(nav.getByRole('link', { name: 'Enquiries' })).toBeVisible()
@@ -49,7 +50,7 @@ test('the admin panel carries no CMS vendor branding', async ({ page }) => {
   }
 
   await expect(page).toHaveTitle(/Smart Move/)
-  await expect(page.locator('link[rel="icon"]').first()).toHaveAttribute('href', '/admin-icon.svg')
+  await expect(page.locator('link[rel="icon"]').first()).toHaveAttribute('href', '/brand-icon')
 })
 
 test('the sign-in screen shows the client brand, not the CMS brand', async ({ page }) => {
@@ -57,7 +58,7 @@ test('the sign-in screen shows the client brand, not the CMS brand', async ({ pa
   await page.goto('/admin/login')
 
   await expect(page.getByLabel('Email')).toBeVisible()
-  await expect(page.getByText('Smart Move').first()).toBeVisible()
+  await expect(page.getByRole('img', { name: 'Smart Move' }).first()).toBeVisible()
   await expect(page.locator('body')).not.toContainText(/payload/i)
 })
 
@@ -132,4 +133,14 @@ test('enquiries sent through the website appear in the admin panel', async ({ pa
   await expect(page.getByRole('columnheader', { name: /Name/ })).toBeVisible()
   await expect(page.getByRole('columnheader', { name: /Type of enquiry/ })).toBeVisible()
   await expect(page.getByRole('columnheader', { name: /Dealt with/ })).toBeVisible()
+})
+
+test('the sidebar and header make it obvious how to go home and log out', async ({ page }) => {
+  await page.goto('/admin/collections/properties')
+
+  await page.locator('.nav').getByRole('link', { name: 'Dashboard', exact: true }).click()
+  await expect(page).toHaveURL(/\/admin\/?$/)
+
+  await page.locator('.header-log-out').click()
+  await expect(page.getByLabel('Email')).toBeVisible()
 })

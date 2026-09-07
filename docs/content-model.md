@@ -188,6 +188,9 @@ restricted to paragraphs, h2–h4, bold, italic, lists and links, so nothing an
 editor writes can break the page design.
 
 The panel carries no CMS vendor branding: `admin.components.graphics` supplies
-the sign-in logo (read from Website Settings when the client has uploaded one)
-and the navigation mark, `admin.meta` supplies the tab icon and metadata, and
-an `i18n` override replaces the one interface string that named the CMS.
+the sign-in logo (the Website Settings logo, or a wordmark) and the navigation
+mark (`/brand-icon`, which follows the uploaded favicon). `admin.meta` points
+the tab icon at the same route, and an `i18n` override replaces the one
+interface string that named the CMS. The sidebar opens with a Dashboard link
+back to the admin homepage, and the header has a Log out button beside the
+profile icon.
