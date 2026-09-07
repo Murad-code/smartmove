@@ -1,0 +1,86 @@
+# Builds the production image and publishes it to GitHub Container Registry.
+#
+# Triggered by a version tag, or by hand from the Actions tab. The VPS then
+# only ever pulls; it never builds and never needs a source checkout.
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Extra tag to publish alongside latest (e.g. v1.0.1)'
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  # Baked into the bundle at build time, so it has to be the real public URL.
+  SITE_URL: https://smartmove4u.muradsprojects.co.uk
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Log in to the registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Work out the image tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=${{ inputs.tag }},enable=${{ inputs.tag != '' }}
+            type=raw,value=latest
+            type=sha,format=short
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: runner
+          # The VPS is x86-64. Building only the one architecture keeps the
+          # job to a few minutes; add linux/arm64 here if that ever changes.
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=${{ env.SITE_URL }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Summary
+        run: |
+          {
+            echo "### Published"
+            echo
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+            echo
+            echo "On the VPS:"
+            echo '```bash'
+            echo "cd /opt/smartmove"
+            echo "docker compose -f docker-compose.prod.yml --env-file .env.production pull"
+            echo "docker compose -f docker-compose.prod.yml --env-file .env.production up -d"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
