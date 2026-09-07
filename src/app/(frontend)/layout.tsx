@@ -65,6 +65,9 @@ export async function generateMetadata(): Promise<Metadata> {
     description: settings.defaultSeo?.description || business.tagline || undefined,
     applicationName: business.companyName,
     formatDetection: { telephone: true, address: false, email: false },
+    // Belt and braces alongside robots.txt: a preview deployment sends the
+    // header too, so a crawler that ignores robots.txt still sees noindex.
+    ...(env.noindex ? { robots: { index: false, follow: false } } : {}),
   }
 }
 
@@ -73,7 +76,15 @@ export default async function FrontendLayout({ children }: { children: React.Rea
   const analyticsEnabled = Boolean(analytics.provider && analytics.id)
 
   return (
-    <html lang="en-GB" className={`${inter.variable} ${sourceSerif.variable}`}>
+    // `data-scroll-behavior` is what makes Next suspend the `scroll-behavior:
+    // smooth` in globals.css for the duration of a route change. Without it,
+    // Next 16 leaves the smooth rule in place, its scroll reset is swallowed,
+    // and the new page opens at the previous page's scroll offset.
+    <html
+      lang="en-GB"
+      data-scroll-behavior="smooth"
+      className={`${inter.variable} ${sourceSerif.variable}`}
+    >
       <body className="flex min-h-screen flex-col">
         <SkipLink />
         <Header />

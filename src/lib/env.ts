@@ -29,6 +29,13 @@ export const env = {
   isProduction,
   isTest,
 
+  /**
+   * Blocks all crawlers and adds `noindex` to every page. Set on preview
+   * deployments so a staging copy never competes with the real site in search
+   * or exposes demo content to indexing.
+   */
+  noindex: process.env.SITE_NOINDEX === 'true',
+
   databaseUrl: required('DATABASE_URL', process.env.DATABASE_URL),
   payloadSecret: required('PAYLOAD_SECRET', process.env.PAYLOAD_SECRET),
   siteUrl: siteUrl(),
