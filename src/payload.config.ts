@@ -21,6 +21,8 @@ import { Pages } from './collections/Pages'
 import { Properties } from './collections/Properties'
 import { Services } from './collections/Services'
 import { Users } from './collections/Users'
+import { payloadEmailAdapter } from './lib/email/payload-adapter'
+import { migrations } from './migrations'
 import { BusinessDetails } from './globals/BusinessDetails'
 import { HomePage } from './globals/HomePage'
 import { SiteSettings } from './globals/SiteSettings'
@@ -109,6 +111,10 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, 'migrations'),
     // Production schema changes go through committed migrations only.
     push: process.env.NODE_ENV !== 'production',
+    // Bundling the migrations into the build lets the container migrate itself
+    // on first connect, so a production host needs no source checkout and no
+    // separate migration step. Only used when NODE_ENV=production.
+    prodMigrations: migrations,
   }),
 
   plugins: [
@@ -131,6 +137,10 @@ export default buildConfig({
   upload: {
     limits: { fileSize: 15_000_000 },
   },
+
+  // Password resets and admin invitations. Without this Payload writes them
+  // to the console and a locked-out member of staff has no way back in.
+  email: payloadEmailAdapter,
 
   secret: process.env.PAYLOAD_SECRET || '',
   sharp,
