@@ -21,9 +21,10 @@ import { businessDetails, homePage, pages, services, siteSettings } from './seed
  * to re-run after changing the content in `seed-content.ts`.
  *
  * The admin user, business details, services and pages are always written,
- * which is exactly what a first deployment needs. Everything in
+ * which is exactly what a first deployment needs. The logo in
  * `demo-assets/brand` comes from the live smartmove4u.co.uk site and is Smart
- * Move's own: the logo, and the photograph of the Frodingham Road shopfront.
+ * Move's own. `office.jpg` beside it is a generated shopfront, not a
+ * photograph of the real premises, so treat it as illustrative.
  *
  * `SEED_DEMO=true` adds the rest of the demonstration site in one go: the six
  * demo listings and the home page photography taken from them. One flag, and
@@ -58,6 +59,12 @@ async function upsertImage(
     overrideAccess: true,
   })
 
+  // `alt` is the identity: the seed re-runs on every boot of a demo box, so
+  // this has to be a no-op once the image is there. Comparing file sizes to
+  // spot an edited source does not work, because what is stored is Payload's
+  // WebP conversion rather than the bytes on disk, and re-uploading coins a
+  // new filename rather than replacing the old one. To swap an image, give it
+  // a new `alt` here, or delete it in the admin panel and re-seed.
   if (existing.docs[0]) return existing.docs[0].id
 
   const data = await fs.readFile(filePath)
@@ -87,9 +94,8 @@ function upsertBrandImage(
  * Photographs for the home page.
  *
  * These come out of the demo listings, so they carry exactly the same
- * restriction: development scaffolding, never published by a production seed.
- * The shopfront is separate. That one is Smart Move's own photograph, taken
- * from their existing website, so it is always seeded.
+ * restriction: they only appear when SEED_DEMO is on. The office photograph is
+ * separate, and is seeded either way.
  */
 const HOME_SCENES = {
   heroOne: {
@@ -209,9 +215,11 @@ export async function runSeed(payload: Payload, options: RunSeedOptions = {}): P
     overrideAccess: true,
   })
 
-  const shopfrontId = await upsertBrandImage(payload, {
-    filename: 'shopfront.jpg',
-    alt: 'The Smart Move office on Frodingham Road, Scunthorpe',
+  // The alt is deliberately not the street address: this is a generated
+  // shopfront, and the door number on it is not Frodingham Road's.
+  const officeId = await upsertBrandImage(payload, {
+    filename: 'office.jpg',
+    alt: 'The Smart Move office, a corner shopfront with property cards in the window',
   })
   const scenes = useDemoContent ? await upsertHomeScenes(payload) : null
 
@@ -228,7 +236,7 @@ export async function runSeed(payload: Payload, options: RunSeedOptions = {}): P
           return { ...slide, image: scenes && key ? scenes[key] : undefined }
         }),
       },
-      intro: { ...homePage.intro, image: shopfrontId },
+      intro: { ...homePage.intro, image: officeId },
       landlords: { ...homePage.landlords, image: scenes?.landlords },
       tenants: { ...homePage.tenants, image: scenes?.tenants },
     } as never,

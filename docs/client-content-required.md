@@ -83,14 +83,12 @@ legal requirements for a letting agent in England.
 These read as real content, which is exactly why they are dangerous. All of it
 is written in `src/scripts/seed-content.ts` and marked `DEMO CONTENT` there.
 
-| Item                      | What is currently there                                                                                                                                                                    |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Home page reviews**     | Three invented reviews attributed to "Rachel Bennett", "Dave Thornhill" and "Priya Sharma". These people do not exist and none of these things were said. Replace or delete before launch. |
-| **Home page figures**     | "20+ years letting in Scunthorpe" and "350+ local tenancies arranged" are illustrative and unverified. "Full management from 8%" came from the old website and still needs confirming.     |
-| **Home page photographs** | The banner, landlord and tenant photographs are pulled from the demo listings and belong to another agency. They only appear when `SEED_DEMO=true`.                                        |
-
-The shopfront photograph on the home page is the exception: that one is Smart
-Move's own, taken from the existing website, and can stay.
+| Item                      | What is currently there                                                                                                                                                                                                                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Home page reviews**     | Three invented reviews attributed to "Rachel Bennett", "Dave Thornhill" and "Priya Sharma". These people do not exist and none of these things were said. Replace or delete before launch.                                                                                      |
+| **Home page figures**     | "20+ years letting in Scunthorpe" and "350+ local tenancies arranged" are illustrative and unverified. "From 8% property management" came from the old website and still needs confirming.                                                                                      |
+| **Home page photographs** | The banner, landlord and tenant photographs are pulled from the demo listings and belong to another agency. They only appear when `SEED_DEMO=true`.                                                                                                                             |
+| **The office photograph** | A generated image of a shopfront, not the real premises. The fascia reads "Sales \| Lettings \| Property Management", the door is number 12, and the window advertises Saturday 9am–1pm — none of which match Smart Move. Replace with a real photograph of 96 Frodingham Road. |
 
 ## Accounts and services needed before launch
 
