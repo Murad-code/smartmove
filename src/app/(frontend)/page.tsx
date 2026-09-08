@@ -2,13 +2,14 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import React from 'react'
 
+import { HeroCarousel, type HeroSlide } from '@/components/layout/HeroCarousel'
 import { LivePreview } from '@/components/layout/LivePreview'
 import { PropertyGrid } from '@/components/property/PropertyCard'
 import { ButtonLink } from '@/components/ui/Button'
-import { Container } from '@/components/ui/Container'
 import { Icon } from '@/components/ui/Icon'
 import { RichText } from '@/components/ui/RichText'
 import { Section, SectionHeading } from '@/components/ui/Section'
+import { TestimonialGrid } from '@/components/ui/Testimonial'
 import { findFeaturedProperties } from '@/lib/properties'
 import { toImage } from '@/lib/properties/mappers'
 import { previewRequested } from '@/lib/preview'
@@ -17,11 +18,14 @@ import { getBusinessDetails, getHomePage } from '@/lib/site'
 
 export async function generateMetadata(): Promise<Metadata> {
   const [home, business] = await Promise.all([getHomePage(), getBusinessDetails()])
+  // The first slide is what a visitor and a link preview both land on.
+  const lead = home.hero?.slides?.[0]
+
   return buildMetadata({
-    title: business.tagline || home.hero?.heading,
-    description: home.hero?.subheading,
+    title: business.tagline || lead?.heading,
+    description: lead?.subheading,
     path: '/',
-    image: home.hero?.image,
+    image: lead?.image,
   })
 }
 
@@ -34,62 +38,41 @@ export default async function HomePage({
   const [home, business] = await Promise.all([getHomePage(), getBusinessDetails()])
   const properties = await findFeaturedProperties(home.featuredProperties?.limit ?? 3)
 
-  const heroImage = toImage(home.hero?.image)
+  const slides: HeroSlide[] = (home.hero?.slides ?? []).map((slide, position) => {
+    const image = toImage(slide.image)
+    return {
+      id: slide.id ?? String(position),
+      heading: slide.heading,
+      subheading: slide.subheading,
+      imageUrl: image?.heroUrl ?? image?.wideUrl ?? image?.url ?? null,
+      primaryCta: slide.primaryCta ?? null,
+      secondaryCta: slide.secondaryCta ?? null,
+    }
+  })
+
+  // A database that has been migrated but not re-seeded has no slides yet, and
+  // a home page with no banner and no h1 is worse than a plain one. The old
+  // single-field hero fell back the same way.
+  const heroSlides: HeroSlide[] = slides.length
+    ? slides
+    : [{ id: 'fallback', heading: business.tagline || 'Letting agents in Scunthorpe' }]
+
   const introImage = toImage(home.intro?.image)
   const landlordImage = toImage(home.landlords?.image)
   const tenantImage = toImage(home.tenants?.image)
+  const testimonials = home.testimonials?.items ?? []
 
   return (
     <>
       <LivePreview enabled={preview} />
 
       {/* Hero -------------------------------------------------------------- */}
-      <section className="relative isolate overflow-hidden bg-navy-900">
-        {heroImage ? (
-          <>
-            <Image
-              src={heroImage.heroUrl ?? heroImage.wideUrl ?? heroImage.url}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-            {/* Dark wash so the heading keeps AA contrast whatever photo the
-                owner uploads. */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 bg-gradient-to-r from-navy-950/90 via-navy-950/75 to-navy-950/40"
-            />
-          </>
-        ) : null}
-
-        <Container className="relative py-20 sm:py-28 lg:py-32">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl text-white sm:text-5xl lg:text-6xl">
-              {home.hero?.heading ?? 'Letting agents in Scunthorpe'}
-            </h1>
-            {home.hero?.subheading ? (
-              <p className="mt-6 text-lg text-navy-100 sm:text-xl">{home.hero.subheading}</p>
-            ) : null}
-
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              {home.hero?.primaryCta?.label && home.hero.primaryCta.href ? (
-                <ButtonLink href={home.hero.primaryCta.href} size="large" variant="accent">
-                  {home.hero.primaryCta.label}
-                  <Icon name="arrow-right" className="size-4" />
-                </ButtonLink>
-              ) : null}
-              {home.hero?.secondaryCta?.label && home.hero.secondaryCta.href ? (
-                <ButtonLink href={home.hero.secondaryCta.href} size="large" variant="inverse">
-                  {home.hero.secondaryCta.label}
-                </ButtonLink>
-              ) : null}
-            </div>
-          </div>
-
-          {home.highlights?.length ? (
-            <ul className="mt-14 grid gap-4 sm:grid-cols-3">
+      <HeroCarousel
+        slides={heroSlides}
+        autoplay={home.hero?.autoplay !== false}
+        footer={
+          home.highlights?.length ? (
+            <ul className="mt-12 grid gap-4 sm:grid-cols-3">
               {home.highlights.map((item) => (
                 <li
                   key={item.id ?? item.title}
@@ -102,9 +85,9 @@ export default async function HomePage({
                 </li>
               ))}
             </ul>
-          ) : null}
-        </Container>
-      </section>
+          ) : null
+        }
+      />
 
       {/* Introduction ------------------------------------------------------ */}
       {home.intro?.heading || home.intro?.body ? (
@@ -117,7 +100,7 @@ export default async function HomePage({
               <RichText data={home.intro.body} className="mt-5" />
             </div>
             {introImage ? (
-              <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100">
+              <div className="reveal relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                 <Image
                   src={introImage.wideUrl ?? introImage.url}
                   alt={introImage.alt}
@@ -128,6 +111,24 @@ export default async function HomePage({
               </div>
             ) : null}
           </div>
+        </Section>
+      ) : null}
+
+      {/* Figures ----------------------------------------------------------- */}
+      {home.stats?.length ? (
+        <Section background="navy" spacing="tight">
+          <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {home.stats.map((stat) => (
+              <div key={stat.id ?? stat.label} className="reveal flex flex-col-reverse">
+                {/* Reversed so the figure reads first while the markup keeps
+                    the term before its description. */}
+                <dt className="mt-2 text-sm text-navy-100">{stat.label}</dt>
+                <dd className="font-display text-4xl font-semibold text-white sm:text-5xl">
+                  {stat.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </Section>
       ) : null}
 
@@ -169,7 +170,7 @@ export default async function HomePage({
         <Section>
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
             {landlordImage ? (
-              <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100">
+              <div className="reveal relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                 <Image
                   src={landlordImage.wideUrl ?? landlordImage.url}
                   alt={landlordImage.alt}
@@ -213,7 +214,7 @@ export default async function HomePage({
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
             <div className="lg:order-2">
               {tenantImage ? (
-                <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100">
+                <div className="reveal relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                   <Image
                     src={tenantImage.wideUrl ?? tenantImage.url}
                     alt={tenantImage.alt}
@@ -264,10 +265,10 @@ export default async function HomePage({
             {home.whyUs.reasons.map((reason) => (
               <li
                 key={reason.id ?? reason.title}
-                className="rounded-card border border-ink-200 bg-white p-6 shadow-card"
+                className="reveal rounded-card border border-ink-200 bg-white p-6 shadow-card transition-shadow hover:shadow-raised"
               >
                 <span className="grid size-11 place-items-center rounded-lg bg-navy-50 text-navy-700">
-                  <Icon name="shield" />
+                  <Icon name={reason.icon ?? 'shield'} />
                 </span>
                 <h3 className="mt-4 text-lg">{reason.title}</h3>
                 {reason.description ? (
@@ -276,6 +277,20 @@ export default async function HomePage({
               </li>
             ))}
           </ul>
+        </Section>
+      ) : null}
+
+      {/* What people say ---------------------------------------------------- */}
+      {testimonials.length ? (
+        <Section background="grey">
+          <SectionHeading
+            heading={home.testimonials?.heading || 'What people say about us'}
+            intro={home.testimonials?.intro}
+            align="center"
+          />
+          <div className="mt-12">
+            <TestimonialGrid items={testimonials} />
+          </div>
         </Section>
       ) : null}
 

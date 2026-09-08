@@ -1,6 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
 import { anyone, isStaff } from '@/access'
+import { iconField } from '@/fields/icon'
 
 /**
  * Home page.
@@ -33,40 +34,66 @@ export const HomePage: GlobalConfig = {
               label: false,
               fields: [
                 {
-                  name: 'heading',
-                  type: 'text',
-                  required: true,
-                  label: 'Main heading',
-                  admin: { placeholder: 'Renting made straightforward in Scunthorpe' },
-                },
-                {
-                  name: 'subheading',
-                  type: 'textarea',
-                  label: 'Text underneath',
-                },
-                {
-                  name: 'image',
-                  type: 'upload',
-                  relationTo: 'media',
-                  label: 'Background photo',
-                },
-                {
-                  name: 'primaryCta',
-                  type: 'group',
-                  label: 'Main button',
+                  name: 'slides',
+                  type: 'array',
+                  label: 'Banner',
+                  labels: { singular: 'Slide', plural: 'Slides' },
+                  minRows: 1,
+                  maxRows: 5,
+                  admin: {
+                    description: 'One slide shows as a still banner. Add a second and they rotate.',
+                  },
                   fields: [
-                    { name: 'label', type: 'text', label: 'Button text' },
-                    { name: 'href', type: 'text', label: 'Where it goes' },
+                    {
+                      name: 'heading',
+                      type: 'text',
+                      required: true,
+                      label: 'Main heading',
+                      admin: { placeholder: 'Renting made straightforward in Scunthorpe' },
+                    },
+                    {
+                      name: 'subheading',
+                      type: 'textarea',
+                      label: 'Text underneath',
+                    },
+                    {
+                      name: 'image',
+                      type: 'upload',
+                      relationTo: 'media',
+                      label: 'Background photo',
+                    },
+                    {
+                      name: 'primaryCta',
+                      type: 'group',
+                      label: 'Main button',
+                      fields: [
+                        { name: 'label', type: 'text', label: 'Button text' },
+                        { name: 'href', type: 'text', label: 'Where it goes' },
+                      ],
+                    },
+                    {
+                      name: 'secondaryCta',
+                      type: 'group',
+                      label: 'Second button',
+                      fields: [
+                        { name: 'label', type: 'text', label: 'Button text' },
+                        { name: 'href', type: 'text', label: 'Where it goes' },
+                      ],
+                    },
                   ],
                 },
                 {
-                  name: 'secondaryCta',
-                  type: 'group',
-                  label: 'Second button',
-                  fields: [
-                    { name: 'label', type: 'text', label: 'Button text' },
-                    { name: 'href', type: 'text', label: 'Where it goes' },
-                  ],
+                  name: 'autoplay',
+                  type: 'checkbox',
+                  label: 'Move through the slides on their own',
+                  defaultValue: true,
+                  admin: {
+                    description:
+                      'Visitors can always use the arrows. Anyone who has asked their device to reduce motion sees a still banner either way.',
+                    // Nothing to rotate until there is a second slide.
+                    condition: (_data, siblingData) =>
+                      Array.isArray(siblingData?.slides) && siblingData.slides.length > 1,
+                  },
                 },
               ],
             },
@@ -98,6 +125,33 @@ export const HomePage: GlobalConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   label: 'Photo alongside the text',
+                },
+              ],
+            },
+            {
+              name: 'stats',
+              type: 'array',
+              label: 'Figures worth putting up front',
+              labels: { singular: 'Figure', plural: 'Figures' },
+              maxRows: 4,
+              admin: {
+                description:
+                  'Shown as a band across the page. Leave empty to hide it. Four reads best.',
+              },
+              fields: [
+                {
+                  name: 'value',
+                  type: 'text',
+                  required: true,
+                  label: 'The figure',
+                  admin: { placeholder: '20+' },
+                },
+                {
+                  name: 'label',
+                  type: 'text',
+                  required: true,
+                  label: 'What it means',
+                  admin: { placeholder: 'Years letting in Scunthorpe' },
                 },
               ],
             },
@@ -215,6 +269,7 @@ export const HomePage: GlobalConfig = {
                   fields: [
                     { name: 'title', type: 'text', required: true, label: 'Title' },
                     { name: 'description', type: 'textarea', label: 'Description' },
+                    iconField({ defaultValue: 'shield' }),
                   ],
                 },
               ],
@@ -235,6 +290,55 @@ export const HomePage: GlobalConfig = {
                   fields: [
                     { name: 'label', type: 'text', required: true, label: 'Button text' },
                     { name: 'href', type: 'text', required: true, label: 'Where it goes' },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'What people say',
+          fields: [
+            {
+              name: 'testimonials',
+              type: 'group',
+              label: false,
+              fields: [
+                {
+                  name: 'heading',
+                  type: 'text',
+                  label: 'Heading',
+                  defaultValue: 'What people say about us',
+                },
+                { name: 'intro', type: 'textarea', label: 'Short introduction' },
+                {
+                  name: 'items',
+                  type: 'array',
+                  label: 'Reviews',
+                  labels: { singular: 'Review', plural: 'Reviews' },
+                  maxRows: 6,
+                  admin: {
+                    description: 'Leave empty to hide this section. Three reads best.',
+                  },
+                  fields: [
+                    {
+                      name: 'quote',
+                      type: 'textarea',
+                      required: true,
+                      label: 'What they said',
+                    },
+                    { name: 'name', type: 'text', required: true, label: 'Their name' },
+                    {
+                      name: 'role',
+                      type: 'select',
+                      label: 'They are a',
+                      defaultValue: 'tenant',
+                      options: [
+                        { label: 'Tenant', value: 'tenant' },
+                        { label: 'Landlord', value: 'landlord' },
+                        { label: 'Seller', value: 'seller' },
+                      ],
+                    },
                   ],
                 },
               ],
