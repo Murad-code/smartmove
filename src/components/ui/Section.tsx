@@ -87,7 +87,11 @@ export function SectionHeading({
           {eyebrow}
         </p>
       ) : null}
-      <Tag className={cn('text-3xl sm:text-4xl', tone === 'light' && 'text-white')}>{heading}</Tag>
+      {/* `drift-title` slides the heading against the scroll rather than on a
+          timer, which is what makes it feel attached to the wheel. */}
+      <Tag className={cn('drift-title text-3xl sm:text-4xl', tone === 'light' && 'text-white')}>
+        {heading}
+      </Tag>
       {intro ? (
         <p className={cn('mt-4 text-lg', tone === 'light' ? 'text-navy-100' : 'text-ink-600')}>
           {intro}
