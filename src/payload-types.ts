@@ -610,7 +610,7 @@ export interface Enquiry {
   createdAt: string;
 }
 /**
- * People who can sign in and manage this website.
+ * Accounts that can sign in and manage this website.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".

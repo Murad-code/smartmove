@@ -1,6 +1,7 @@
 import type { Access, FieldAccess } from 'payload'
 
 import type { User } from '@/payload-types'
+import { isRootAdminEmail } from '@/lib/root-user'
 
 /**
  * Access helpers.
@@ -19,6 +20,21 @@ export const anyone: Access = () => true
 export const isAdmin: Access = ({ req: { user } }) => roleOf(user) === 'admin'
 
 export const isAdminField: FieldAccess = ({ req: { user } }) => roleOf(user) === 'admin'
+
+/** Admins may delete staff accounts except the owner address in SEED_ADMIN_EMAIL. */
+export const isAdminNotRoot: Access = async ({ req, id }) => {
+  if (roleOf(req.user) !== 'admin') return false
+  if (!id) return true
+
+  const account = await req.payload.findByID({
+    collection: 'users',
+    id,
+    depth: 0,
+    overrideAccess: true,
+  })
+
+  return !isRootAdminEmail(account.email)
+}
 
 export const isStaff: Access = ({ req: { user } }) => {
   const role = roleOf(user)

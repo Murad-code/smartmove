@@ -1,10 +1,11 @@
-import type { CollectionConfig } from 'payload'
+import { APIError, type CollectionConfig } from 'payload'
 
-import { isAdmin, isAdminField, isAdminOrSelf } from '@/access'
+import { isAdmin, isAdminField, isAdminNotRoot, isAdminOrSelf } from '@/access'
+import { isRootAdminEmail } from '@/lib/root-user'
 
 export const Users: CollectionConfig = {
   slug: 'users',
-  labels: { singular: 'Person', plural: 'People' },
+  labels: { singular: 'User', plural: 'Users' },
   auth: {
     tokenExpiration: 60 * 60 * 8,
     cookies: {
@@ -16,15 +17,33 @@ export const Users: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'email', 'role'],
     group: 'Settings',
-    description: 'People who can sign in and manage this website.',
+    description: 'Accounts that can sign in and manage this website.',
   },
   access: {
     read: isAdminOrSelf,
     create: isAdmin,
     update: isAdminOrSelf,
-    delete: isAdmin,
-    // Only admins see the "People" section at all.
-    admin: ({ req: { user } }) => Boolean(user),
+    delete: isAdminNotRoot,
+    // Only admins see the Users section at all.
+    admin: ({ req: { user } }) => {
+      if (!user || !('role' in user)) return false
+      return user.role === 'admin'
+    },
+  },
+  hooks: {
+    beforeDelete: [
+      async ({ req, id }) => {
+        const account = await req.payload.findByID({
+          collection: 'users',
+          id,
+          depth: 0,
+          overrideAccess: true,
+        })
+        if (isRootAdminEmail(account.email)) {
+          throw new APIError('The owner account cannot be deleted.', 403)
+        }
+      },
+    ],
   },
   fields: [
     {
@@ -38,6 +57,7 @@ export const Users: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'editor',
+      saveToJWT: true,
       label: 'What can this person do?',
       options: [
         { label: 'Manage everything, including staff accounts', value: 'admin' },

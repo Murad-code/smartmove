@@ -120,6 +120,9 @@ Four generated sizes, all converted to WebP: `thumbnail` (400×300),
 | `name` |                                                                                                |
 | `role` | `admin` or `editor`. Field-level access is admin-only, so an editor cannot promote themselves. |
 
+The address in `SEED_ADMIN_EMAIL` is treated as the owner account: admins can
+create other admins under Users, but that owner row cannot be deleted.
+
 Sessions last eight hours, with `SameSite=Lax` cookies that are `Secure` in
 production.
 
@@ -180,7 +183,7 @@ Four groups, matching how the owner thinks about the site:
 Properties        Properties
 Website content   Website pages, Services, Media, Home Page
 Enquiries         Enquiries
-Settings          People, Business Details, Website Settings
+Settings          Users, Business Details, Website Settings
 ```
 
 Payload's internal collections are not exposed. The rich-text toolbar is
