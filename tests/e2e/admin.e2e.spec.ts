@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 import { login } from '../helpers/login'
+import { cleanupFolders } from '../helpers/seedFolders'
 import { cleanupTestUser, seedTestUser, testUser } from '../helpers/seedUser'
 
 /**
@@ -163,6 +164,45 @@ test('an admin can open the form to add another user', async ({ page }) => {
   await expect(page.locator('#field-name')).toBeVisible()
   await expect(page.locator('#field-email')).toBeVisible()
   await expect(page.locator('#field-role')).toBeVisible()
+})
+
+test('property photographs can be filed into folders', async ({ page }) => {
+  const folder = '14 Test Avenue, Ashby'
+
+  await page.goto('/admin/collections/media')
+
+  // The owner finds folders as a tab on Media, not as a separate nav entry.
+  await page.getByRole('button', { name: 'By Folder' }).click()
+  await page.waitForURL(/\/admin\/collections\/media\/folders$/)
+
+  // Payload renders this control as a div, so it has no button role.
+  await page.locator('.create-new-doc-in-folder__button').first().click()
+
+  const drawer = page.locator('.drawer__content').first()
+  await drawer.locator('#field-name').fill(folder)
+  await drawer.getByRole('button', { name: 'Save', exact: true }).click()
+
+  await expect(page.locator('.collection-folder-list').getByText(folder)).toBeVisible()
+
+  // A folder is filing, so creating one asks for a name and nothing else.
+  await expect(page.locator('#field-folderType')).toHaveCount(0)
+
+  await cleanupFolders([folder])
+})
+
+test('folders stay out of the sidebar and out of the URL', async ({ page }) => {
+  await page.goto('/admin/collections/media/folders')
+
+  // Only Media is filed, so there is no second route to the same folder tree.
+  const browseByFolder = await page.goto('/admin/browse-by-folder')
+  await expect(page.getByText('Nothing found')).toBeVisible()
+  expect(browseByFolder?.status()).toBe(404)
+
+  // The generated folder collection is Payload's, and names it by default.
+  await page.goto('/admin/collections/media/folders')
+  await expect(page).toHaveURL(/\/admin\/collections\/media\/folders$/)
+  await expect(page.locator('body')).not.toContainText(/payload/i)
+  await expect(page.locator('.nav').getByRole('link', { name: /folder/i })).toHaveCount(0)
 })
 
 test('the sidebar and header make it obvious how to go home and log out', async ({ page }) => {
