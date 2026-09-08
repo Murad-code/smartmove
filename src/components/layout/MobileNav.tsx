@@ -150,6 +150,10 @@ export function MobileNav({
                 aria-modal="true"
                 aria-label="Menu"
                 tabIndex={-1}
+                // Keeps the smooth-scrolling wrapper out of this panel's own
+                // overflow, so a long menu scrolls natively instead of
+                // dragging the page behind it.
+                data-lenis-prevent
                 className={cn(
                   'absolute inset-y-0 right-0 flex w-full max-w-sm flex-col overflow-y-auto bg-white shadow-raised',
                   closing ? 'animate-panel-out' : 'animate-panel-in',

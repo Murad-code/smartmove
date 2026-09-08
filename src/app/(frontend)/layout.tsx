@@ -3,10 +3,15 @@ import { Inter, Source_Serif_4 } from 'next/font/google'
 import React from 'react'
 
 import { Analytics } from '@/components/layout/Analytics'
+import { BackToTop } from '@/components/layout/BackToTop'
 import { CookieConsent } from '@/components/layout/CookieConsent'
 import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
+import { Motion } from '@/components/layout/Motion'
+import { PointerEffects } from '@/components/layout/PointerEffects'
+import { ScrollProgress } from '@/components/layout/ScrollProgress'
 import { SkipLink } from '@/components/layout/SkipLink'
+import { SmoothScroll } from '@/components/layout/SmoothScroll'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { analytics, env } from '@/lib/env'
 import { toImage } from '@/lib/properties/mappers'
@@ -41,6 +46,17 @@ const sourceSerif = Source_Serif_4({
  * `revalidatePath` in Payload `afterChange` hooks. See docs/architecture.md.
  */
 export const dynamic = 'force-dynamic'
+
+/**
+ * Arms the motion system before the first paint.
+ *
+ * Everything that starts hidden and is revealed on scroll is gated on
+ * `data-motion`, so that the page renders complete when scripting is
+ * unavailable and when the visitor has asked for less movement. Setting the
+ * flag from an effect instead would paint the content, then hide it, then
+ * animate it back in. See docs/motion.md.
+ */
+const ARM_MOTION = `try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.dataset.motion='on'}catch(e){}`
 
 export const viewport: Viewport = {
   themeColor: '#003d7e',
@@ -83,15 +99,37 @@ export default async function FrontendLayout({ children }: { children: React.Rea
     <html
       lang="en-GB"
       data-scroll-behavior="smooth"
+      // The `ARM_MOTION` script below sets `data-motion` on this element
+      // before React hydrates, which React would otherwise report as a
+      // mismatch. It is one attribute added on purpose, so it is suppressed
+      // here rather than moved somewhere that would paint first.
+      suppressHydrationWarning
       className={`${inter.variable} ${sourceSerif.variable}`}
     >
       <body className="flex min-h-screen flex-col">
+        <script dangerouslySetInnerHTML={{ __html: ARM_MOTION }} />
+
+        {/* What the back-to-top link anchors to. Anchoring to `main` instead
+            lands a little way down, because the header sits above it in
+            normal flow. */}
+        <div id="top" />
+
         <SkipLink />
+        <ScrollProgress />
         <Header />
         <main id="main" className="flex-1">
           {children}
         </main>
         <Footer />
+        <BackToTop />
+
+        {/* The whole client-side motion layer: smoothed scrolling, one
+            IntersectionObserver for reveals and counters, and the decorative
+            pointer effects. Nothing else on the site needs `'use client'` for
+            any of it. */}
+        <SmoothScroll />
+        <Motion />
+        <PointerEffects />
 
         <JsonLd data={realEstateAgentSchema(business, settings)} />
 
