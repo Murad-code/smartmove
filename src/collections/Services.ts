@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { isStaff, publishedOrStaff } from '@/access'
 import { pageBlocks } from '@/blocks'
+import { iconField } from '@/fields/icon'
 import { slugField } from '@/fields/slug'
 
 export const Services: CollectionConfig = {
@@ -42,22 +43,7 @@ export const Services: CollectionConfig = {
       label: 'One-line summary',
       admin: { description: 'Shown on the services overview and in search results.' },
     },
-    {
-      name: 'icon',
-      type: 'select',
-      label: 'Icon',
-      defaultValue: 'key',
-      options: [
-        { label: 'Key', value: 'key' },
-        { label: 'House', value: 'house' },
-        { label: 'Shield', value: 'shield' },
-        { label: 'Spanner', value: 'spanner' },
-        { label: 'Chart', value: 'chart' },
-        { label: 'Document', value: 'document' },
-        { label: 'People', value: 'people' },
-        { label: 'Pound sign', value: 'pound' },
-      ],
-    },
+    iconField(),
     {
       name: 'audience',
       type: 'select',
