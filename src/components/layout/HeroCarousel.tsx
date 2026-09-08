@@ -182,7 +182,12 @@ export function HeroCarousel({
         </>
       ) : null}
 
-      <Container className="hero-scrub-content relative py-20 sm:py-28 lg:py-32">
+      <Container
+        className={cn(
+          'hero-scrub-content relative pt-20 sm:pt-28 lg:pt-32',
+          !footer && 'pb-20 sm:pb-28 lg:pb-32',
+        )}
+      >
         <div className="grid" aria-live={rotating ? 'off' : 'polite'}>
           {slides.map((slide, position) => {
             const active = position === index
@@ -274,12 +279,12 @@ export function HeroCarousel({
           </div>
         ) : null}
 
-        {footer ? (
-          <div className="rise" style={rise(900)}>
-            {footer}
-          </div>
-        ) : null}
       </Container>
+
+      {/* Outside the heading scrub, so the cards do not fade on scroll. */}
+      {footer ? (
+        <Container className="relative z-10 pb-20 sm:pb-28 lg:pb-32">{footer}</Container>
+      ) : null}
     </section>
   )
 }
