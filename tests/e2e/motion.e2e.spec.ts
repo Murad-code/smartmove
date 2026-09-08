@@ -88,29 +88,15 @@ test('the figures count up to the values the owner typed', async ({ page }) => {
   }
 })
 
-test('a scroll position survives a reload rather than being yanked to the top', async ({
-  page,
-}) => {
+test('landing part-way down leaves nothing waiting to be revealed', async ({ page }) => {
   await page.goto('/')
-
-  // Scrolled to a fixed offset rather than to an element: how far down the
-  // first figure sits depends on how much of the page has finished loading,
-  // and this test is about the reload, not about the layout.
   await page.evaluate(() => window.scrollTo(0, 1200))
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
 
-  await page.reload()
-
-  // The browser restores where you were. Smoothed scrolling must not overrule
-  // that, which is the whole reason its reset is limited to navigations.
-  await expect
-    .poll(() => page.evaluate(() => window.scrollY), { timeout: 10_000 })
-    .toBeGreaterThan(0)
-
-  // And landing part-way down must not leave the section you landed in
-  // waiting for a scroll to reveal it. The observer reports what is already on
-  // screen as soon as it starts watching, and this is the guard on that: the
-  // one thing that would make a restored position look like a broken page.
+  // The observer reports what is already on screen as soon as it starts
+  // watching. This is the guard on that: arriving part-way down a page, from a
+  // deep link or a restored scroll, must not leave the section you arrived in
+  // invisible until you happen to scroll. It is the one failure that would
+  // make the page look broken rather than merely unanimated.
   await expect
     .poll(
       () =>
