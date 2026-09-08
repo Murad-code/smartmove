@@ -6,7 +6,14 @@ import type { Payload } from 'payload'
 import { env } from '@/lib/env'
 
 import { buildDemoProperties } from './demo-properties'
-import { businessDetails, homePage, pages, services, siteSettings } from './seed-content'
+import {
+  businessDetails,
+  demoHomeTestimonials,
+  homePage,
+  pages,
+  services,
+  siteSettings,
+} from './seed-content'
 
 /**
  * The seed itself, as a function.
@@ -27,10 +34,10 @@ import { businessDetails, homePage, pages, services, siteSettings } from './seed
  * photograph of the real premises, so treat it as illustrative.
  *
  * `SEED_DEMO=true` adds the rest of the demonstration site in one go: the six
- * demo listings and the home page photography taken from them. One flag, and
- * it works in production, because the demo is shown to prospective clients
- * from a real deployment. Nothing it writes is Smart Move's, so a site running
- * with it set should also have SITE_NOINDEX=true.
+ * demo listings, the home page photography taken from them, and the invented
+ * home page reviews. One flag, and it works in production, because the demo is
+ * shown to prospective clients from a real deployment. Nothing it writes is
+ * Smart Move's, so a site running with it set should also have SITE_NOINDEX=true.
  */
 
 // The production image copies the assets to a fixed path rather than keeping
@@ -239,6 +246,7 @@ export async function runSeed(payload: Payload, options: RunSeedOptions = {}): P
       intro: { ...homePage.intro, image: officeId },
       landlords: { ...homePage.landlords, image: scenes?.landlords },
       tenants: { ...homePage.tenants, image: scenes?.tenants },
+      testimonials: useDemoContent ? demoHomeTestimonials : homePage.testimonials,
     } as never,
     overrideAccess: true,
   })
@@ -355,8 +363,9 @@ export async function runSeed(payload: Payload, options: RunSeedOptions = {}): P
   // Smart Move's, not just the listings.
   payload.logger.warn(
     'SEED_DEMO is on. The listings and the home page photography use images and ' +
-      'particulars belonging to a third-party agency. Keep SITE_NOINDEX=true, ' +
-      'and clear SEED_DEMO before this becomes a real client site.',
+      'particulars belonging to a third-party agency, and the home page reviews ' +
+      'are invented. Keep SITE_NOINDEX=true, and clear SEED_DEMO before this ' +
+      'becomes a real client site.',
   )
 
   payload.logger.info('Seed complete.')

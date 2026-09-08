@@ -206,6 +206,8 @@ export const homePage = {
   testimonials: {
     heading: 'What people say about us',
     intro: 'Reviews from landlords and tenants we look after will appear here.',
+    // Empty on a real seed so the home page hides the section. Demo quotes
+    // live in `demoHomeTestimonials` and are applied only with SEED_DEMO.
     items: [],
   },
   closingCta: {
@@ -216,6 +218,37 @@ export const homePage = {
       { label: 'Contact us', href: '/contact' },
     ],
   },
+}
+
+/**
+ * DEMO CONTENT. Written to show the home page reviews section working and
+ * attributed to people who do not exist. Nothing here came from a real
+ * customer, and none of it may go live. Only applied when `SEED_DEMO=true`.
+ * See docs/client-content-required.md.
+ */
+export const demoHomeTestimonials = {
+  heading: 'What people say about us',
+  intro: 'A few words from landlords and tenants we look after.',
+  items: [
+    {
+      quote:
+        'We have rented through Smart Move for three years and any time something has gone wrong they have sorted it within a couple of days. The boiler packed in over a bank holiday and someone was out on the Tuesday morning.',
+      name: 'Rachel Bennett',
+      role: 'tenant' as const,
+    },
+    {
+      quote:
+        'I have got four properties with them on full management and honestly I barely think about them. The statement comes through every month, and if there is a problem I hear it from them before I hear it from the tenant.',
+      name: 'Dave Thornhill',
+      role: 'landlord' as const,
+    },
+    {
+      quote:
+        'Moved up from Doncaster and did not know the area at all. They were straight with me about which streets would suit and did not push me at anything over my budget. Had the keys within a fortnight.',
+      name: 'Priya Sharma',
+      role: 'tenant' as const,
+    },
+  ],
 }
 
 export const services = [
