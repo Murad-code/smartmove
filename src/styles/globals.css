@@ -192,3 +192,42 @@
     color: var(--color-ink-600);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Entrance animation
+   ---------------------------------------------------------------------------
+   Scroll-driven animations need no observer and no client component, so cards
+   can fade up without turning a server component into a client one. Browsers
+   without `animation-timeline` skip the @supports block and render the element
+   in place, which is the correct fallback rather than a hidden element that
+   never appears.
+
+   Gated on `no-preference` explicitly: the blanket reduced-motion rule in the
+   base layer clamps `animation-duration`, and a scroll-driven animation takes
+   its progress from the timeline rather than from the duration, so it would
+   otherwise slip through.
+--------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    @layer components {
+      .reveal {
+        animation: reveal-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 60%;
+      }
+    }
+  }
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
