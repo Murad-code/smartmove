@@ -90,11 +90,30 @@ export const siteSettings = {
 
 export const homePage = {
   hero: {
-    heading: 'Letting and managing property in Scunthorpe',
-    subheading:
-      'An independent, locally based letting agent looking after landlords and tenants across Scunthorpe and North Lincolnshire.',
-    primaryCta: { label: 'See available properties', href: '/properties' },
-    secondaryCta: { label: 'Book a valuation', href: '/landlords#enquiry' },
+    autoplay: true,
+    slides: [
+      {
+        heading: 'Letting and managing property in Scunthorpe',
+        subheading:
+          'An independent, locally based letting agent looking after landlords and tenants across Scunthorpe and North Lincolnshire.',
+        primaryCta: { label: 'See available properties', href: '/properties' },
+        secondaryCta: { label: 'Book a valuation', href: '/landlords#enquiry' },
+      },
+      {
+        heading: 'Full management, handled end to end',
+        subheading:
+          'Marketing, referencing, rent collection, inspections and repairs. You get a statement every month and someone who picks up the phone.',
+        primaryCta: { label: 'What management covers', href: '/services/property-management' },
+        secondaryCta: { label: 'Book a valuation', href: '/landlords#enquiry' },
+      },
+      {
+        heading: 'Looking for somewhere to rent?',
+        subheading:
+          'Houses, flats and bungalows across Scunthorpe and the surrounding villages, listed as soon as they become available.',
+        primaryCta: { label: 'Browse properties', href: '/properties' },
+        secondaryCta: { label: 'Register your requirements', href: '/register-interest' },
+      },
+    ],
   },
   highlights: [
     { title: 'Locally based', description: 'Our office is on Frodingham Road in Scunthorpe.' },
@@ -108,6 +127,14 @@ export const homePage = {
       'Because we are independent and local, you speak to the people who know your property rather than a call centre. Whether you own one property or several, we can take on as much or as little of the work as you would like.',
     ),
   },
+  // DEMO CONTENT. These figures are illustrative and have not been confirmed
+  // with the client. Listed in docs/client-content-required.md.
+  stats: [
+    { value: '8%', label: 'Full management from' },
+    { value: '20+', label: 'Years letting in Scunthorpe' },
+    { value: '350+', label: 'Local tenancies arranged' },
+    { value: '1', label: 'Point of contact, start to finish' },
+  ],
   featuredProperties: {
     heading: 'Available to rent now',
     intro: 'A selection of what we currently have on our books.',
@@ -138,35 +165,68 @@ export const homePage = {
   },
   whyUs: {
     heading: 'Why people choose Smart Move',
-    intro: 'A small, established local agency rather than a national chain.',
+    intro: 'An established independent agency with its own office in the centre of Scunthorpe.',
     reasons: [
       {
         title: 'Local knowledge',
+        icon: 'house',
         description:
           'We live and work in Scunthorpe, so we know what a property should let for and how quickly.',
       },
       {
         title: 'Independent',
+        icon: 'shield',
         description:
           'No head office targets. We give you a straight answer about what your property will achieve.',
       },
       {
         title: 'One point of contact',
+        icon: 'people',
         description: 'You deal with the same people from valuation through to move-in and beyond.',
       },
       {
         title: 'Flexible service levels',
+        icon: 'key',
         description:
           'Take the full management service, or just tenant finding, depending on how involved you want to be.',
       },
       {
         title: 'Properly referenced tenants',
+        icon: 'document',
         description: 'Credit checks and referencing on every application before we recommend it.',
       },
       {
         title: 'Repairs handled',
+        icon: 'spanner',
         description:
           'We arrange trades, oversee the work and keep you informed, so you are not chasing anyone.',
+      },
+    ],
+  },
+  // DEMO CONTENT. Written to show the section working and attributed to people
+  // who do not exist. Nothing here came from a real customer, and none of it
+  // may go live. See docs/client-content-required.md.
+  testimonials: {
+    heading: 'What people say about us',
+    intro: 'A few words from landlords and tenants we look after.',
+    items: [
+      {
+        quote:
+          'We have rented through Smart Move for three years and any time something has gone wrong they have sorted it within a couple of days. The boiler packed in over a bank holiday and someone was out on the Tuesday morning.',
+        name: 'Rachel Bennett',
+        role: 'tenant',
+      },
+      {
+        quote:
+          'I have got four properties with them on full management and honestly I barely think about them. The statement comes through every month, and if there is a problem I hear it from them before I hear it from the tenant.',
+        name: 'Dave Thornhill',
+        role: 'landlord',
+      },
+      {
+        quote:
+          'Moved up from Doncaster and did not know the area at all. They were straight with me about which streets would suit and did not push me at anything over my budget. Had the keys within a fortnight.',
+        name: 'Priya Sharma',
+        role: 'tenant',
       },
     ],
   },
@@ -540,7 +600,7 @@ export const pages = [
             'Smart Move is an independent, locally based letting agent specialising in residential lettings and property management. Our office is at 96 Frodingham Road in Scunthorpe, and we work with landlords and tenants across Scunthorpe and the surrounding area.',
           ),
           paragraph(
-            'We are small enough that you deal with the same people every time, and we would rather give you a straight answer than an optimistic one.',
+            'You deal with the same people from the first valuation through to move-in and beyond, and we would rather give you a straight answer than an optimistic one.',
           ),
           heading('Our approach'),
           bulletList([
