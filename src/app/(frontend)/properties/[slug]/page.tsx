@@ -59,9 +59,13 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
     findRelatedProperties(property.id, 3),
   ])
 
-  const mapQuery = encodeURIComponent(
-    [property.displayLocation, property.postcode].filter(Boolean).join(', '),
-  )
+  const mapsHref = property.postcode
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        [property.displayLocation, property.postcode].filter(Boolean).join(', '),
+      )}`
+    : undefined
+
+  const addressText = [property.displayLocation, property.postcode].filter(Boolean).join(', ')
 
   return (
     <>
@@ -117,10 +121,24 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
 
               <h1 className="mt-3 text-3xl sm:text-4xl">{property.title}</h1>
 
-              <p className="mt-2 flex items-center gap-2 text-lg text-ink-600">
-                <Icon name="pin" className="size-5 shrink-0 text-navy-500" />
-                {property.displayLocation}
-                {property.postcode ? `, ${property.postcode}` : ''}
+              <p className="mt-2 text-lg text-ink-600">
+                {mapsHref ? (
+                  <a
+                    href={mapsHref}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="inline-flex items-center gap-2 font-medium text-navy-700 underline"
+                  >
+                    <Icon name="pin" className="size-5 shrink-0" />
+                    {addressText}
+                    <span className="sr-only">(opens Google Maps)</span>
+                  </a>
+                ) : (
+                  <span className="inline-flex items-center gap-2">
+                    <Icon name="pin" className="size-5 shrink-0 text-navy-500" />
+                    {addressText}
+                  </span>
+                )}
               </p>
 
               {/* One price element for every screen size. Repeating it in the
@@ -159,10 +177,10 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
               )}
             </div>
 
-            {property.postcode ? (
+            {mapsHref ? (
               <p className="mt-8">
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+                  href={mapsHref}
                   rel="noopener noreferrer"
                   target="_blank"
                   className="inline-flex items-center gap-2 font-medium text-navy-700 underline"

@@ -23,6 +23,45 @@ test('a visitor can reach the property list from the home page', async ({ page }
   await expect(page.getByRole('article').first()).toBeVisible()
 })
 
+test('the property address and the map link both open Google Maps', async ({ page }) => {
+  await page.goto('/properties')
+  await page.getByRole('article').first().getByRole('link').first().click()
+
+  const address = page.getByRole('link', { name: /opens Google Maps/ })
+  await expect(address).toHaveAttribute('href', /google\.com\/maps\/search/)
+  await expect(address).toHaveAttribute('target', '_blank')
+
+  const href = await address.getAttribute('href')
+  expect(href).toBeTruthy()
+  await expect(page.getByRole('link', { name: 'See this area on a map' })).toHaveAttribute(
+    'href',
+    href ?? '',
+  )
+})
+
+test('the property gallery advances with the next photo control', async ({ page }) => {
+  await page.goto('/properties')
+  await page.getByRole('article').first().getByRole('link').first().click()
+
+  await expect(page.getByText(/Photo 1 of/)).toBeVisible()
+  await page.getByRole('button', { name: 'Next photo' }).click()
+  await expect(page.getByText(/Photo 2 of/)).toBeVisible()
+})
+
+test('the property gallery can be dragged to the next photo', async ({ page }) => {
+  await page.goto('/properties')
+  await page.getByRole('article').first().getByRole('link').first().click()
+
+  const gallery = page.getByRole('list', { name: /photographs$/ })
+  const box = (await gallery.boundingBox())!
+  await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(box.x + box.width * 0.2, box.y + box.height / 2, { steps: 12 })
+  await page.mouse.up()
+
+  await expect(page.getByText(/Photo 2 of/)).toBeVisible()
+})
+
 test('a visitor can open a property and see its details', async ({ page }) => {
   await page.goto('/properties')
 

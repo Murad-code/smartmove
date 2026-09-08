@@ -71,6 +71,23 @@ test('the menu offers a direct way to call the office', async ({ page }) => {
   await expect(menu.getByRole('link', { name: /^Call / })).toHaveAttribute('href', /^tel:/)
 })
 
+test('a visitor can swipe the property gallery', async ({ page }) => {
+  await page.goto('/properties')
+  await page.getByRole('article').first().getByRole('link').first().click()
+
+  const gallery = page.getByRole('list', { name: /photographs$/ })
+  await expect(page.getByText(/Photo 1 of/)).toBeVisible()
+
+  await gallery.evaluate((el) => {
+    const second = el.children[1]
+    if (!(second instanceof HTMLElement)) return
+    const left = second.offsetLeft - (el.clientWidth - second.clientWidth) / 2
+    el.scrollTo({ left })
+  })
+
+  await expect(page.getByText(/Photo 2 of/)).toBeVisible()
+})
+
 test('property cards stack into a single column on a phone', async ({ page }) => {
   await page.goto('/properties')
 
