@@ -19,9 +19,11 @@ import { businessDetails, homePage, pages, services, siteSettings } from './seed
  * to re-run after changing the content in `seed-content.ts`.
  *
  * The admin user, business details, services and pages are always written,
- * which is exactly what a first deployment needs. Brand marks in
- * `demo-assets/brand` come from the live smartmove4u.co.uk logo. The six demo
- * properties are development scaffolding and are only written when
+ * which is exactly what a first deployment needs. Everything in
+ * `demo-assets/brand` comes from the live smartmove4u.co.uk site and is Smart
+ * Move's own: the logo, and the photograph of the Frodingham Road shopfront.
+ * The six demo properties, and the home page scene photographs taken from
+ * them, are development scaffolding and are only written when
  * SEED_DEMO_PROPERTIES=true, so a real site never starts with fake stock.
  */
 
@@ -32,12 +34,14 @@ const ASSET_DIR = process.env.SEED_ASSET_DIR
   : path.resolve(process.cwd(), 'src/scripts/demo-assets')
 const BRAND_DIR = path.join(ASSET_DIR, 'brand')
 
-async function upsertBrandImage(
+async function upsertImage(
   payload: Payload,
   {
+    filePath,
     filename,
     alt,
   }: {
+    filePath: string
     filename: string
     alt: string
   },
@@ -51,14 +55,13 @@ async function upsertBrandImage(
 
   if (existing.docs[0]) return existing.docs[0].id
 
-  const filePath = path.join(BRAND_DIR, filename)
   const data = await fs.readFile(filePath)
   const media = await payload.create({
     collection: 'media',
     data: { alt },
     file: {
       data,
-      mimetype: 'image/png',
+      mimetype: filename.endsWith('.png') ? 'image/png' : 'image/jpeg',
       name: filename,
       size: data.byteLength,
     },
@@ -66,6 +69,67 @@ async function upsertBrandImage(
   })
 
   return media.id
+}
+
+function upsertBrandImage(
+  payload: Payload,
+  { filename, alt }: { filename: string; alt: string },
+): Promise<number> {
+  return upsertImage(payload, { filePath: path.join(BRAND_DIR, filename), filename, alt })
+}
+
+/**
+ * Photographs for the home page.
+ *
+ * These come out of the demo listings, so they carry exactly the same
+ * restriction: development scaffolding, never published by a production seed.
+ * The shopfront is separate. That one is Smart Move's own photograph, taken
+ * from their existing website, so it is always seeded.
+ */
+const HOME_SCENES = {
+  heroOne: {
+    file: 'langley-drive-scunthorpe/01.jpg',
+    alt: 'Detached house with a bay window and a front lawn on a Scunthorpe street',
+  },
+  heroTwo: {
+    file: 'st-johns-road-scunthorpe/01.jpg',
+    alt: 'Brick end-terrace house behind a low garden wall',
+  },
+  heroThree: {
+    file: 'langley-drive-scunthorpe/03.jpg',
+    alt: 'Living room with a wooden floor, an armchair and a bright window',
+  },
+  landlords: {
+    file: 'horbury-close-scunthorpe/01.jpg',
+    alt: 'Semi-detached house with a driveway and a lawn to the front',
+  },
+  tenants: {
+    file: 'st-johns-road-scunthorpe/02.jpg',
+    alt: 'Furnished living room with a fireplace and a corner sofa',
+  },
+} as const
+
+type HomeScene = keyof typeof HOME_SCENES
+
+/** The order the hero slides in `seed-content.ts` expect their photographs. */
+const HERO_ORDER = ['heroOne', 'heroTwo', 'heroThree'] as const
+
+async function upsertHomeScenes(payload: Payload): Promise<Record<HomeScene, number>> {
+  const entries = await Promise.all(
+    (Object.keys(HOME_SCENES) as HomeScene[]).map(
+      async (key) =>
+        [
+          key,
+          await upsertImage(payload, {
+            filePath: path.join(ASSET_DIR, HOME_SCENES[key].file),
+            filename: `home-${key}.jpg`,
+            alt: HOME_SCENES[key].alt,
+          }),
+        ] as const,
+    ),
+  )
+
+  return Object.fromEntries(entries) as Record<HomeScene, number>
 }
 
 export type RunSeedOptions = {
@@ -77,8 +141,19 @@ export type RunSeedOptions = {
 }
 
 export async function runSeed(payload: Payload, options: RunSeedOptions = {}): Promise<void> {
-  const seedDemoProperties =
+  const demoRequested =
     options.includeDemoProperties === true || process.env.SEED_DEMO_PROPERTIES === 'true'
+
+  // The demo particulars and photographs belong to the agency that published
+  // them, so a production build will not publish them by accident. A private,
+  // password-protected preview is a legitimate use, and the flag that allows
+  // it is named so it cannot be set without meaning to. Decided here because
+  // the home page imagery draws on the same photographs and has to obey the
+  // same answer.
+  const acknowledged = process.env.SEED_DEMO_PROPERTIES_THIRD_PARTY_ACKNOWLEDGED === 'true'
+  const blockedInProduction =
+    options.includeDemoProperties !== true && process.env.NODE_ENV === 'production' && !acknowledged
+  const useDemoContent = demoRequested && !blockedInProduction
 
   // --- Admin user ----------------------------------------------------------
   const email = process.env.SEED_ADMIN_EMAIL || 'admin@smartmove4u.co.uk'
@@ -139,11 +214,29 @@ export async function runSeed(payload: Payload, options: RunSeedOptions = {}): P
     overrideAccess: true,
   })
 
+  const shopfrontId = await upsertBrandImage(payload, {
+    filename: 'shopfront.jpg',
+    alt: 'The Smart Move office on Frodingham Road, Scunthorpe',
+  })
+  const scenes = useDemoContent ? await upsertHomeScenes(payload) : null
+
   await payload.updateGlobal({
     slug: 'home-page',
     // The generated global type is stricter than the plain seed literals, and
     // asserting once here is clearer than annotating every nested group.
-    data: homePage as never,
+    data: {
+      ...homePage,
+      hero: {
+        ...homePage.hero,
+        slides: homePage.hero.slides.map((slide, position) => {
+          const key = HERO_ORDER[position]
+          return { ...slide, image: scenes && key ? scenes[key] : undefined }
+        }),
+      },
+      intro: { ...homePage.intro, image: shopfrontId },
+      landlords: { ...homePage.landlords, image: scenes?.landlords },
+      tenants: { ...homePage.tenants, image: scenes?.tenants },
+    } as never,
     overrideAccess: true,
   })
   payload.logger.info('Updated Business Details, Website Settings and Home Page')
@@ -197,23 +290,13 @@ export async function runSeed(payload: Payload, options: RunSeedOptions = {}): P
   payload.logger.info(`Seeded ${pages.length} pages`)
 
   // --- Demo properties -----------------------------------------------------
-  if (!seedDemoProperties) {
+  if (!demoRequested) {
     payload.logger.info('Skipping demo properties (set SEED_DEMO_PROPERTIES=true to add them)')
     payload.logger.info('Seed complete.')
     return
   }
 
-  // The demo particulars and photographs belong to the agency that published
-  // them, so a production build will not publish them by accident. A private,
-  // password-protected preview is a legitimate use, and the flag that allows
-  // it is named so it cannot be set without meaning to.
-  const acknowledged = process.env.SEED_DEMO_PROPERTIES_THIRD_PARTY_ACKNOWLEDGED === 'true'
-
-  if (
-    options.includeDemoProperties !== true &&
-    process.env.NODE_ENV === 'production' &&
-    !acknowledged
-  ) {
+  if (blockedInProduction) {
     payload.logger.warn(
       'Skipping demo properties: this is a production build and they use ' +
         'third-party photographs and particulars. For a private preview set ' +
