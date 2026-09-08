@@ -3,6 +3,7 @@ import type { Where } from 'payload'
 
 import { PUBLIC_PROPERTY_STATUSES } from '@/collections/Properties'
 import { getPayloadClient } from '@/lib/payload'
+import { previewQuery } from '@/lib/preview-session'
 
 import { toPropertyDetail, toPropertySummary } from './mappers'
 import type { PropertyDetail, PropertyFilters, PropertyPage, PropertySummary } from './types'
@@ -99,20 +100,29 @@ export const findFeaturedProperties = cache(async (limit = 3): Promise<PropertyS
   return [...selected, ...topUp.docs.map(toPropertySummary)]
 })
 
-export const findPropertyBySlug = cache(async (slug: string): Promise<PropertyDetail | null> => {
-  const payload = await getPayloadClient()
+/**
+ * Properties have no draft/published split, so the only thing preview changes
+ * here is visibility: a member of staff previewing a listing sees it whatever
+ * its availability, including the two statuses hidden from the website.
+ */
+export const findPropertyBySlug = cache(
+  async (slug: string, preview = false): Promise<PropertyDetail | null> => {
+    const payload = await getPayloadClient()
+    const { user } = await previewQuery(preview)
 
-  const result = await payload.find({
-    collection: 'properties',
-    where: { slug: { equals: slug } },
-    depth: 1,
-    limit: 1,
-    overrideAccess: false,
-  })
+    const result = await payload.find({
+      collection: 'properties',
+      where: { slug: { equals: slug } },
+      depth: 1,
+      limit: 1,
+      overrideAccess: false,
+      user,
+    })
 
-  const doc = result.docs[0]
-  return doc ? toPropertyDetail(doc) : null
-})
+    const doc = result.docs[0]
+    return doc ? toPropertyDetail(doc) : null
+  },
+)
 
 /** Other available properties to show at the foot of a property page. */
 export const findRelatedProperties = cache(
