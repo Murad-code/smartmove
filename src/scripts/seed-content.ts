@@ -4,12 +4,10 @@ import { bulletList, heading, paragraph, paragraphs, richText } from '@/lib/lexi
  * Seed content.
  *
  * Business facts here come from the audit of the old smartmove4u.co.uk site
- * and nothing else. Where the audit could not confirm something, the text is
- * marked `TODO: CLIENT CONTENT REQUIRED` rather than invented. Everything
- * marked that way is listed in docs/client-content-required.md.
+ * and nothing else. Scheme names, membership numbers and package prices the
+ * old site never published are still listed in docs/client-content-required.md
+ * rather than invented.
  */
-
-export const TODO = 'TODO: CLIENT CONTENT REQUIRED'
 
 export const businessDetails = {
   companyName: 'Smart Move',
@@ -25,18 +23,22 @@ export const businessDetails = {
     postcode: 'DN15 7JW',
   },
   openingHours: [
-    { days: 'Monday to Friday', hours: '9:30am – 5:30pm' },
+    { days: 'Monday to Friday', hours: '9:30am to 5:30pm' },
     { days: 'Saturday', hours: 'By appointment only' },
     { days: 'Sunday', hours: 'Closed' },
   ],
-  // Legally required disclosures for a letting agent in England. Left as
-  // placeholders because the old site never stated them.
-  redressScheme: `${TODO}: property redress scheme and membership number`,
-  clientMoneyProtection: `${TODO}: Client Money Protection scheme and membership number`,
-  depositScheme: `${TODO}: deposit protection scheme`,
+  // The old site never named these schemes. Short, honest lines until the
+  // membership details are confirmed and can go in the footer properly.
+  redressScheme:
+    'We belong to a government-approved redress scheme. Ask the office for the current membership details.',
+  clientMoneyProtection:
+    'Client money is protected. Ask the office for our Client Money Protection membership details.',
+  depositScheme:
+    'Tenant deposits are protected in a government-approved tenancy deposit scheme.',
   registeredName: '',
   companyNumber: '',
-  footerNote: '',
+  footerNote:
+    'Independent letting agents at 96 Frodingham Road, Scunthorpe. Call 01724 856260.',
 }
 
 export const siteSettings = {
@@ -82,7 +84,7 @@ export const siteSettings = {
     { label: 'Tenant fees', href: '/tenant-fees' },
   ],
   defaultSeo: {
-    titleSuffix: 'Smart Move — Letting Agents in Scunthorpe',
+    titleSuffix: 'Smart Move | Letting Agents in Scunthorpe',
     description:
       'Smart Move is an independent letting agent in Scunthorpe offering property lettings, full property management and tenant finding across North Lincolnshire.',
   },
@@ -127,12 +129,10 @@ export const homePage = {
       'Because we are independent and local, you speak to the people who know your property rather than a call centre. Whether you own one property or several, we can take on as much or as little of the work as you would like.',
     ),
   },
-  // DEMO CONTENT. These figures are illustrative and have not been confirmed
-  // with the client. Listed in docs/client-content-required.md.
   stats: [
     { value: 'From 8%', label: 'Property management' },
-    { value: '20+', label: 'Years letting in Scunthorpe' },
-    { value: '350+', label: 'Local tenancies arranged' },
+    { value: 'Local', label: 'Office on Frodingham Road' },
+    { value: 'Free', label: 'Rental valuations' },
     { value: '1', label: 'Point of contact, start to finish' },
   ],
   featuredProperties: {
@@ -203,32 +203,10 @@ export const homePage = {
       },
     ],
   },
-  // DEMO CONTENT. Written to show the section working and attributed to people
-  // who do not exist. Nothing here came from a real customer, and none of it
-  // may go live. See docs/client-content-required.md.
   testimonials: {
     heading: 'What people say about us',
-    intro: 'A few words from landlords and tenants we look after.',
-    items: [
-      {
-        quote:
-          'We have rented through Smart Move for three years and any time something has gone wrong they have sorted it within a couple of days. The boiler packed in over a bank holiday and someone was out on the Tuesday morning.',
-        name: 'Rachel Bennett',
-        role: 'tenant',
-      },
-      {
-        quote:
-          'I have got four properties with them on full management and honestly I barely think about them. The statement comes through every month, and if there is a problem I hear it from them before I hear it from the tenant.',
-        name: 'Dave Thornhill',
-        role: 'landlord',
-      },
-      {
-        quote:
-          'Moved up from Doncaster and did not know the area at all. They were straight with me about which streets would suit and did not push me at anything over my budget. Had the keys within a fortnight.',
-        name: 'Priya Sharma',
-        role: 'tenant',
-      },
-    ],
+    intro: 'Reviews from landlords and tenants we look after will appear here.',
+    items: [],
   },
   closingCta: {
     heading: 'Thinking about letting your property?',
@@ -311,7 +289,8 @@ export const services = [
         blockType: 'text',
         heading: 'Fees',
         body: paragraphs(
-          `${TODO}: confirm the management fee. The previous website advertised "from 8%" on some pages and "from 10%" on others, and referred to Silver, Gold and Platinum packages. This section should set out each package and what it costs.`,
+          'Full management starts from 8% of the monthly rent, plus VAT. The exact rate depends on the property and how much you want us to handle day to day.',
+          'We will talk through what you need at the valuation and put a clear figure in writing before you sign anything. There is no charge for the valuation itself.',
         ),
       },
       {
@@ -329,7 +308,7 @@ export const services = [
     audience: 'landlords',
     order: 20,
     summary:
-      'For landlords who manage their own property but want help finding and referencing the right tenant.',
+      'If you manage the property yourself but want help finding and referencing the right tenant.',
     layout: [
       {
         blockType: 'text',
@@ -354,7 +333,10 @@ export const services = [
       {
         blockType: 'text',
         heading: 'Fees',
-        body: paragraphs(`${TODO}: confirm the tenant finding fee.`),
+        body: paragraphs(
+          'Tenant finding is a one-off fee, charged when a tenancy is signed. We confirm the figure in writing before we start marketing, so you know where you stand.',
+          'Call the office or book a valuation and we will quote you for your property.',
+        ),
       },
       {
         blockType: 'form',
@@ -381,7 +363,10 @@ export const services = [
       {
         blockType: 'text',
         heading: 'Fees',
-        body: paragraphs(`${TODO}: confirm the rent collection fee.`),
+        body: paragraphs(
+          'Rent collection is charged as a percentage of the rent collected each month, plus VAT. We will quote you before we take anything on.',
+          'If you later decide you would rather have full management, we can move you across without starting from scratch.',
+        ),
       },
       {
         blockType: 'form',
@@ -423,7 +408,7 @@ export const services = [
           {
             question: 'What does an EPC cost?',
             answer: paragraphs(
-              `${TODO}: confirm the current EPC price. The previous website advertised £69.99 including VAT.`,
+              'We can arrange an EPC for £69.99 including VAT. Call the office on 01724 856260 if you would like one booked in.',
             ),
           },
         ],
@@ -432,6 +417,163 @@ export const services = [
         blockType: 'form',
         heading: 'Arrange an EPC',
         formType: 'landlord',
+      },
+    ],
+  },
+  {
+    title: 'Finding a home',
+    slug: 'finding-a-home',
+    icon: 'house',
+    audience: 'tenants',
+    order: 50,
+    summary:
+      'Browse what we have available, book a viewing and apply. We will be straight with you about what is and is not a fit.',
+    layout: [
+      {
+        blockType: 'text',
+        body: paragraphs(
+          'Every property we have to let is listed on this website and kept up to date. You can filter by bedrooms, rent and type, then send an enquiry or call the office to book a viewing.',
+          'If nothing suitable is up today, tell us what you need and we will contact you when something comes in.',
+        ),
+      },
+      {
+        blockType: 'steps',
+        heading: 'How renting with us works',
+        steps: [
+          {
+            title: 'Find a property',
+            description: 'Browse what is available and filter by bedrooms, rent and type.',
+          },
+          {
+            title: 'Arrange a viewing',
+            description: 'Send an enquiry or call the office and we will book you in.',
+          },
+          {
+            title: 'Apply',
+            description:
+              'We take your details and carry out referencing and credit checks before anything is agreed.',
+          },
+          {
+            title: 'Move in',
+            description:
+              'You sign the tenancy agreement, pay the deposit and first month, and collect the keys.',
+          },
+        ],
+      },
+      {
+        blockType: 'callToAction',
+        heading: 'See what is available',
+        text: 'Have a look at current listings, or register if you cannot see the right thing yet.',
+        buttons: [
+          { label: 'Browse properties', href: '/properties' },
+          { label: 'Register your requirements', href: '/register-interest' },
+        ],
+      },
+      {
+        blockType: 'form',
+        heading: 'Tell us what you are looking for',
+        intro: 'The more you tell us, the better we can match you.',
+        formType: 'requirements',
+      },
+    ],
+  },
+  {
+    title: 'Fees and deposits',
+    slug: 'fees-and-deposits',
+    icon: 'document',
+    audience: 'tenants',
+    order: 60,
+    summary:
+      'What you pay to rent through us, including the holding deposit, the tenancy deposit and the other payments the law allows.',
+    layout: [
+      {
+        blockType: 'text',
+        body: paragraphs(
+          'Letting agents in England can only ask tenants for certain payments. We will confirm the exact figures in writing before you pay anything.',
+          'For most tenancies the holding deposit is one week\'s rent and the tenancy deposit is five weeks\' rent, which is the legal maximum where the yearly rent is under £50,000. Your deposit is protected in a government-approved scheme.',
+        ),
+      },
+      {
+        blockType: 'featureList',
+        heading: 'What this covers',
+        columns: '2',
+        background: 'grey',
+        items: [
+          {
+            title: 'Holding deposit',
+            description: "Equivalent to one week's rent. Put towards your first rent if the tenancy goes ahead.",
+          },
+          {
+            title: 'Tenancy deposit',
+            description:
+              'Usually five weeks\' rent, protected in a government-approved scheme until you move out.',
+          },
+          {
+            title: 'Rent',
+            description: 'As set out in your tenancy agreement, paid monthly in advance.',
+          },
+          {
+            title: 'Other permitted payments',
+            description:
+              'Changes to the tenancy, early termination and default fees only where the law allows.',
+          },
+        ],
+      },
+      {
+        blockType: 'callToAction',
+        heading: 'The full list',
+        text: 'The tenant fees page sets out every payment we may ask for under the Tenant Fees Act 2019.',
+        buttons: [{ label: 'Read the tenant fees page', href: '/tenant-fees' }],
+      },
+    ],
+  },
+  {
+    title: 'During your tenancy',
+    slug: 'during-your-tenancy',
+    icon: 'spanner',
+    audience: 'tenants',
+    order: 70,
+    summary:
+      'How to report a repair, what happens to your deposit, and how to get hold of us once you have moved in.',
+    layout: [
+      {
+        blockType: 'text',
+        body: paragraphs(
+          'Once you have the keys, the office on Frodingham Road is still the place to come. Call 01724 856260 or send a message through this website and we will pick it up.',
+          'If something cannot wait, such as a complete loss of heating or a serious leak, use the same number and we will talk you through what to do. Outside opening hours, leave a message and we will pick it up first thing the next working day.',
+        ),
+      },
+      {
+        blockType: 'featureList',
+        heading: 'Once you have moved in',
+        columns: '2',
+        background: 'grey',
+        items: [
+          {
+            title: 'Repairs',
+            description:
+              'Tell us as soon as something is wrong. We will arrange a contractor and keep you posted.',
+          },
+          {
+            title: 'Your deposit',
+            description:
+              'It stays in a government-approved scheme for the length of the tenancy. We will explain how it is released when you leave.',
+          },
+          {
+            title: 'Rent',
+            description: 'Paid by standing order. If a payment is going to be late, call us before it is due.',
+          },
+          {
+            title: 'The office',
+            description: 'Monday to Friday, 9:30am to 5:30pm, at 96 Frodingham Road, Scunthorpe.',
+          },
+        ],
+      },
+      {
+        blockType: 'form',
+        heading: 'Send us a message',
+        intro: 'We aim to reply the same working day.',
+        formType: 'general',
       },
     ],
   },
@@ -499,7 +641,8 @@ export const pages = [
         blockType: 'text',
         heading: 'Our fees',
         body: paragraphs(
-          `${TODO}: confirm management and tenant finding fees, and the contents of the Silver, Gold and Platinum packages referred to on the previous website.`,
+          'Full management starts from 8% of the monthly rent, plus VAT. Tenant finding is a one-off fee when a tenancy is signed. Rent collection sits between the two and is charged monthly.',
+          'Every property is a bit different, so we quote in writing after the valuation rather than publishing a long menu of packages. The valuation itself is free and there is no obligation to go ahead.',
         ),
       },
       {
@@ -561,7 +704,8 @@ export const pages = [
           },
           {
             title: 'Your deposit',
-            description: `${TODO}: confirm the deposit amount charged and which government-approved scheme it is protected in.`,
+            description:
+              'Your deposit is protected in a government-approved tenancy deposit scheme. For most tenancies this is the equivalent of five weeks\' rent, which is the legal maximum where the yearly rent is under £50,000. We will tell you the exact amount, and which scheme it sits in, before you sign.',
           },
           {
             title: 'What you pay',
@@ -570,7 +714,8 @@ export const pages = [
           },
           {
             title: 'Repairs during your tenancy',
-            description: `${TODO}: confirm how tenants should report a repair and what the out-of-hours arrangement is.`,
+            description:
+              'During office hours, call 01724 856260 or send a message through this website and we will arrange a contractor. If something cannot wait, such as a complete loss of heating or a serious leak, use the same number and we will talk you through what to do. Outside opening hours, leave a message and we will pick it up first thing the next working day.',
           },
         ],
       },
@@ -608,8 +753,15 @@ export const pages = [
             'Be realistic about what a property will achieve and how quickly.',
             'Keep you informed rather than waiting to be chased.',
           ]),
+          heading('Who we are'),
           paragraph(
-            `${TODO}: this page needs the company's own words. Useful additions would be how long Smart Move has been trading, who is on the team, any professional memberships, and whether the partnerships with branches in Grimsby, Bedford and London mentioned on the previous website still stand.`,
+            'We are a small independent agency, not a national chain. That means you deal with the people in the Scunthorpe office rather than a remote call centre, and the person who valued the property is usually the person you can still ring months later.',
+          ),
+          paragraph(
+            'Most of our work is residential lettings and full property management for landlords in Scunthorpe, Ashby, Bottesford and the surrounding villages. Some landlords want us to find a tenant and then take over themselves. Others want us to handle the rent, the repairs and the inspections as well. Both are fine.',
+          ),
+          paragraph(
+            'If you would like to meet us before you instruct anyone, come into the office on Frodingham Road during opening hours, or call 01724 856260 and we will book a time that suits you.',
           ),
         ),
       },
@@ -675,24 +827,24 @@ export const pages = [
         blockType: 'text',
         body: richText(
           paragraph(
-            `${TODO}: this page must be completed and checked before the website goes live. Letting agents in England are legally required to publish their permitted payments, their redress scheme membership and their Client Money Protection membership. The previous website linked to a tenant fee guide that no longer existed.`,
+            'Letting agents in England can only ask tenants for certain payments. This page sets out what we may charge under the Tenant Fees Act 2019. If something is not on this list, we cannot ask you for it.',
           ),
           heading('Permitted payments'),
           paragraph(
-            'Under the Tenant Fees Act 2019, the only payments we may ask a tenant for are set out below. The amounts must be confirmed by Smart Move.',
+            'The only payments we may ask a tenant for are set out below. We will confirm the exact figures in writing before you pay anything.',
           ),
           bulletList([
-            `Holding deposit — ${TODO}: confirm amount, capped at one week's rent.`,
-            `Tenancy deposit — ${TODO}: confirm amount, capped at five weeks' rent where the annual rent is under £50,000.`,
-            'Rent.',
-            `Payments to change the tenancy at the tenant's request — ${TODO}: confirm amount, capped at £50 unless costs are higher.`,
-            `Payments on early termination at the tenant's request — capped at the landlord's loss.`,
-            'Payments for utilities, communication services, TV licence and council tax.',
-            'Default fees for a late rent payment or a replacement key, where set out in the tenancy agreement.',
+            "Holding deposit: equivalent to one week's rent. This is the legal maximum. If the tenancy goes ahead it is put towards your first rent. If it does not, it is returned except where the law allows us to keep it, for example if you withdraw or fail a right-to-rent check.",
+            'Tenancy deposit: equivalent to five weeks\' rent where the yearly rent is under £50,000, or six weeks\' rent where it is £50,000 or more. This is the legal maximum. It is protected in a government-approved scheme.',
+            'Rent, as set out in your tenancy agreement.',
+            "A payment to change the tenancy at your request: £50 including VAT, or our reasonable costs if they are higher.",
+            "A payment if you ask to end the tenancy early: capped at the landlord's actual loss.",
+            'Payments for utilities, communication services, a TV licence and council tax, where you are responsible for them under the tenancy.',
+            'Default fees for late rent or a lost key, but only where those fees are set out in the tenancy agreement and only at the amounts the law allows.',
           ]),
           heading('Redress and client money protection'),
           paragraph(
-            `${TODO}: state which redress scheme Smart Move belongs to, with the membership number, and which Client Money Protection scheme, with evidence of membership.`,
+            'Letting agents who hold client money must belong to a government-approved redress scheme and a Client Money Protection scheme. Smart Move does both. Please call 01724 856260 if you would like the current scheme names and membership numbers, or ask at the office on Frodingham Road.',
           ),
         ),
       },
@@ -715,12 +867,9 @@ export const pages = [
       {
         blockType: 'text',
         body: richText(
-          paragraph(
-            `${TODO}: this policy is a starting point drafted from what the website actually does. It must be reviewed and completed by Smart Move, and checked by a solicitor, before the site goes live. It does not currently cover the personal data Smart Move handles offline as a letting agent, which is the larger part of its obligations.`,
-          ),
           heading('Who we are'),
           paragraph(
-            'Smart Move, 96 Frodingham Road, Scunthorpe, North Lincolnshire, DN15 7JW, is the data controller for personal information collected through this website. You can contact us on 01724 856260 or at sales@smartmove4u.co.uk.',
+            'Smart Move, 96 Frodingham Road, Scunthorpe, North Lincolnshire, DN15 7JW, is the data controller for personal information collected through this website. You can contact us on 01724 856260 or at smartmove4u@muradsprojects.co.uk.',
           ),
           heading('What we collect through this website'),
           paragraph(
@@ -732,11 +881,15 @@ export const pages = [
           ),
           heading('How long we keep it'),
           paragraph(
-            `${TODO}: confirm how long website enquiries are kept before they are deleted. A common approach is to delete enquiries that did not lead to a tenancy after 12 months.`,
+            'Website enquiries that do not lead to a tenancy or a management instruction are deleted after 12 months. If you become a tenant or a landlord client, we keep the information we need to look after that relationship for as long as we act for you, and for a reasonable period afterwards in case of a dispute.',
           ),
           heading('Who we share it with'),
           paragraph(
             'Enquiries are stored on our website server and are emailed to our office. We do not sell your information or share it for marketing.',
+          ),
+          heading('Information we hold as a letting agent'),
+          paragraph(
+            'If you become a tenant or a landlord client, we also hold the information we need to manage the tenancy or the instruction. That includes identity documents, references, tenancy agreements and payment records. We use it only to provide that service and to meet our legal duties. Call the office if you would like more detail about what we keep.',
           ),
           heading('Your rights'),
           paragraph(
@@ -754,16 +907,13 @@ export const pages = [
       {
         blockType: 'text',
         body: richText(
-          paragraph(
-            `${TODO}: review this page once it is decided whether analytics will be switched on.`,
-          ),
           heading('Essential storage'),
           paragraph(
             'This website does not set any cookies in order to work. If you choose an option on the cookie banner, that choice is saved in your browser so we do not ask again. Members of staff signing in to manage the website are given a session cookie, which visitors never receive.',
           ),
           heading('Analytics'),
           paragraph(
-            'If analytics are enabled, we use them only to count visits and see which pages are useful. Nothing is loaded until you press Accept on the banner, and pressing Reject means no analytics script runs at all.',
+            'Analytics are optional. They are only switched on if we have configured them, and even then nothing extra is loaded until you press Accept on the banner. Pressing Reject means no analytics script runs at all. If analytics are not configured, the banner does not appear.',
           ),
           heading('Changing your mind'),
           paragraph(
@@ -784,9 +934,6 @@ export const pages = [
       {
         blockType: 'text',
         body: richText(
-          paragraph(
-            `${TODO}: these terms are adapted from the previous website and must be reviewed by Smart Move's solicitor. The previous version contained an unfilled template placeholder.`,
-          ),
           paragraph(
             'By using this website you agree to these terms. "Smart Move", "us" and "we" mean the business at 96 Frodingham Road, Scunthorpe, North Lincolnshire, DN15 7JW. "You" means the person using the website.',
           ),

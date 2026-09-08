@@ -387,9 +387,9 @@
 /* ---------------------------------------------------------------------------
    Hover mechanics
 
-   Hovering a card should move more than one thing. The lift, the image zoom,
-   the gradient wash and the arrow all run on the same curve and the same
-   duration tier, so five changes read as one gesture.
+   Hovering a card should move more than one thing. The lift, the image zoom
+   and the gradient wash all run on the same curve and the same duration
+   tier, so several changes read as one gesture.
 --------------------------------------------------------------------------- */
 
 @layer components {
@@ -473,7 +473,8 @@
   }
 
   /* 24 seconds is slow enough that you never catch the photo moving. It only
-     stops the hero feeling like a screenshot. */
+     stops a large still from feeling like a screenshot. Used on the hero and
+     the three split-section photographs. */
   .ken-burns {
     animation: ken-burns 24s ease-in-out infinite alternate;
   }
@@ -686,12 +687,6 @@
         animation-timeline: view();
         animation-range: cover 0% cover 35%;
       }
-
-      .curtain-in {
-        animation: curtain-in linear both;
-        animation-timeline: view();
-        animation-range: cover 2% cover 30%;
-      }
     }
   }
 }
@@ -731,16 +726,6 @@
 
   to {
     translate: 0 0;
-  }
-}
-
-@keyframes curtain-in {
-  from {
-    clip-path: inset(12% 12% 12% 12%);
-  }
-
-  to {
-    clip-path: inset(0% 0% 0% 0%);
   }
 }
 

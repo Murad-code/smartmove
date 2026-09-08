@@ -174,7 +174,7 @@ Stripping the effects away, five decisions do the work:
 | Smooth scrolling (Lenis)                 | **Take.** This is the "fluid" the brief is about.                                                                                                                     |
 | Custom cursor ring                       | **Skip.** Built, tried, and taken back out: the client did not want a second cursor, and it is the one effect that draws attention to itself rather than to the page. |
 | 3D card tilt                             | **Adapt.** Kept, but ±3.5°/±5° instead of ±6°/±8°.                                                                                                                    |
-| About-image clip-path curtain            | **Take.** Applied to the three split-section photos.                                                                                                                  |
+| About-image clip-path curtain            | **Skip.** A scrubbed clip-path opening, stacked with image drift, felt theatrical on editorial photos of the office and houses. Those three use the same 24s Ken Burns as the hero instead. |
 | Chapter numerals, CTA background settle  | **Skip.** Numerals are an editorial device that needs the rest of that system to mean anything, and our CTA band has no background photo to settle.                   |
 | Scroll cue under the hero                | **Skip.** Our hero is not full-height, so a cue would point at content already on screen.                                                                             |
 | Pinned horizontal gallery                | **Skip.** See below.                                                                                                                                                  |
@@ -248,8 +248,7 @@ reach for a hook.
 | `.reveal-group`                                                    | The same, staggering direct children 110ms apart                         |
 | `.drift-media`                                                     | Oversized image drifting inside its frame, scrubbed, plus the hover zoom |
 | `.drift-title`                                                     | Heading sliding against the scroll, scrubbed                             |
-| `.curtain-in`                                                      | `clip-path` opening from inset, scrubbed                                 |
-| `.ken-burns`                                                       | 24s imperceptible zoom on a photo                                        |
+| `.ken-burns`                                                       | 24s imperceptible zoom on a photo (hero and split-section images)        |
 | `.marquee` / `.marquee-track`                                      | Seamless looping strip, pauses on hover and focus                        |
 | `.lift-card`                                                       | Hover lift, and the cursor-follow tilt on a fine pointer                 |
 | `.sheen`                                                           | Gradient sweep on hover, plus a nudge on a trailing icon                 |

@@ -4,6 +4,7 @@ import React from 'react'
 
 import { PropertyStatusBadge } from '@/components/ui/Badge'
 import { Icon } from '@/components/ui/Icon'
+import { cn } from '@/lib/cn'
 import { formatRent, pluralise } from '@/lib/format'
 import { PROPERTY_TYPE_LABELS } from '@/lib/properties/labels'
 import type { PropertySummary } from '@/lib/properties/types'
@@ -48,9 +49,9 @@ export function PropertyCard({
           </div>
         )}
 
-        {/* Five things move on one hover: the card lifts, the photo pushes in,
-            this wash deepens, the arrow turns and the shadow spreads. That is
-            the difference between a card that responds and one that lights up. */}
+        {/* The photo is left clear. Hover still moves several things at once:
+            the card lifts, the image pushes in, this wash deepens and the
+            shadow spreads. A small arrow by the title is the only click cue. */}
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-gradient-to-t from-navy-950/55 to-transparent to-55% opacity-0 transition-opacity duration-400 ease-smooth group-hover:opacity-100"
@@ -59,25 +60,22 @@ export function PropertyCard({
         <div className="absolute top-3 left-3">
           <PropertyStatusBadge status={property.status} />
         </div>
-
-        <span
-          aria-hidden="true"
-          className="absolute right-3.5 bottom-3.5 grid size-11 place-items-center rounded-full bg-accent-400 text-navy-950 shadow-raised transition-transform duration-400 ease-smooth group-hover:rotate-45"
-        >
-          <Icon name="arrow-right" className="size-5" />
-        </span>
       </div>
 
       <div className="flex flex-1 flex-col p-5">
         <p className="text-xl font-semibold text-navy-800">{formatRent(property.monthlyRent)}</p>
 
-        <h3 className="mt-1.5 text-lg leading-snug">
+        <h3 className="mt-1.5 flex items-start justify-between gap-3 text-lg leading-snug">
           <Link
             href={`/properties/${property.slug}`}
             className="after:absolute after:inset-0 after:content-['']"
           >
             {property.title}
           </Link>
+          <Icon
+            name="arrow-right"
+            className="mt-1 size-4 shrink-0 text-navy-400 transition-transform duration-300 ease-smooth group-hover:translate-x-0.5 group-hover:text-navy-700"
+          />
         </h3>
 
         <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-500">
@@ -114,11 +112,14 @@ export function PropertyCard({
 /**
  * The home page's featured properties.
  *
- * A horizontal rail rather than a grid. On a phone each card is just under a
- * screen wide and the track snaps, so a swipe settles on one card at a time
- * with the edge of the next one showing to say there is more. From `sm` up the
- * snap loosens to `proximity`, because on a wide screen a scroll that insists
- * on landing exactly on a card fights the trackpad.
+ * A horizontal rail rather than a grid. On a phone each card is almost the
+ * width of the screen. The first snaps to the start (in line with the heading)
+ * and the last to the end; anything in between snaps to the centre, so a card
+ * with neighbours on both sides sits in the middle of the screen with a sliver
+ * of each showing. `snap-always` is what stops a flick skipping two or three
+ * cards. From `sm` up the snap loosens to `proximity` and a normal stop,
+ * because on a wide screen a scroll that insists on landing exactly on a card
+ * fights the trackpad.
  *
  * Card widths are worked out from the visible width of the rail, so the three
  * featured properties fill a desktop row exactly and there is no scroll and no
@@ -141,17 +142,24 @@ export function PropertyRail({
     <div className="-mx-5 sm:-mx-6 lg:-mx-8">
       <ul
         className={[
-          'rail reveal-group flex snap-x snap-mandatory overflow-x-auto sm:snap-proximity',
+          'rail reveal-group flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain sm:snap-proximity',
           // Vertical room for the hover lift and its shadow, which the
           // horizontal overflow would otherwise clip.
-          'gap-5 px-5 py-4 sm:gap-6 sm:px-6 lg:px-8',
+          'gap-3 px-5 py-4 sm:gap-6 sm:px-6 lg:px-8',
           'scroll-px-5 sm:scroll-px-6 lg:scroll-px-8',
         ].join(' ')}
       >
         {properties.map((property, index) => (
           <li
             key={property.id}
-            className="flex w-[86%] shrink-0 snap-start sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
+            className={cn(
+              'flex w-[calc(100%-1.5rem)] shrink-0 snap-always sm:w-[calc((100%-1.5rem)/2)] sm:snap-normal lg:w-[calc((100%-3rem)/3)]',
+              index === 0
+                ? 'snap-start'
+                : index === properties.length - 1
+                  ? 'snap-end'
+                  : 'snap-center',
+            )}
           >
             <PropertyCard property={property} priority={index < priorityCount} />
           </li>

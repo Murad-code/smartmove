@@ -355,9 +355,8 @@ export async function runSeed(payload: Payload, options: RunSeedOptions = {}): P
   // Smart Move's, not just the listings.
   payload.logger.warn(
     'SEED_DEMO is on. The listings and the home page photography use images and ' +
-      'particulars belonging to a third-party agency, and the home page reviews ' +
-      'and figures are invented. Keep SITE_NOINDEX=true, and clear SEED_DEMO ' +
-      'before this becomes a real client site.',
+      'particulars belonging to a third-party agency. Keep SITE_NOINDEX=true, ' +
+      'and clear SEED_DEMO before this becomes a real client site.',
   )
 
   payload.logger.info('Seed complete.')

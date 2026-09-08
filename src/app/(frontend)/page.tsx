@@ -109,13 +109,13 @@ export default async function HomePage({
               <RichText data={home.intro.body} className="mt-5" />
             </div>
             {introImage ? (
-              <div className="curtain-in relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                 <Image
                   src={introImage.wideUrl ?? introImage.url}
                   alt={introImage.alt}
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="drift-media object-cover"
+                  className="ken-burns object-cover"
                 />
               </div>
             ) : null}
@@ -168,13 +168,13 @@ export default async function HomePage({
         <Section>
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
             {landlordImage ? (
-              <div className="curtain-in relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                 <Image
                   src={landlordImage.wideUrl ?? landlordImage.url}
                   alt={landlordImage.alt}
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="drift-media object-cover"
+                  className="ken-burns object-cover"
                 />
               </div>
             ) : null}
@@ -212,13 +212,13 @@ export default async function HomePage({
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
             <div className="lg:order-2">
               {tenantImage ? (
-                <div className="curtain-in relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                   <Image
                     src={tenantImage.wideUrl ?? tenantImage.url}
                     alt={tenantImage.alt}
                     fill
                     sizes="(min-width: 1024px) 50vw, 100vw"
-                    className="drift-media object-cover"
+                    className="ken-burns object-cover"
                   />
                 </div>
               ) : null}
