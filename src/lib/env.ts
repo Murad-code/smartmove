@@ -20,8 +20,17 @@ function required(name: string, value: string | undefined): string {
   return value
 }
 
+/**
+ * Public origin of the site, no trailing slash.
+ *
+ * `NEXT_PUBLIC_SITE_URL` is inlined by Next at build time, which is what the
+ * browser bundle needs. Emails and password-reset links run on the server and
+ * must not use that inlined value: a production image built on a laptop would
+ * otherwise point staff at localhost. `SITE_URL` is read at runtime and is
+ * what Compose should set on the VPS.
+ */
 function siteUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const raw = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
   return raw.replace(/\/+$/, '')
 }
 
@@ -38,7 +47,9 @@ export const env = {
 
   databaseUrl: required('DATABASE_URL', process.env.DATABASE_URL),
   payloadSecret: required('PAYLOAD_SECRET', process.env.PAYLOAD_SECRET),
-  siteUrl: siteUrl(),
+  get siteUrl() {
+    return siteUrl()
+  },
 
   email: {
     provider: (process.env.EMAIL_PROVIDER || 'console') as 'console' | 'resend',
@@ -57,7 +68,7 @@ export const env = {
       return Boolean(this.siteKey && this.secretKey)
     },
   },
-} as const
+}
 
 /** Analytics config is read on the client too, so it cannot use `env` above. */
 export const analytics = {

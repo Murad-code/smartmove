@@ -41,9 +41,19 @@ which builds `linux/amd64` and pushes these tags to
 You can also publish without tagging from the Actions tab → Release → Run
 workflow.
 
-> `NEXT_PUBLIC_SITE_URL` is inlined into the JavaScript bundle at build time,
-> so it is set in the workflow, not on the server. If the domain ever changes,
-> change `SITE_URL` in the workflow and publish again.
+> Two different variables, same hostname:
+>
+> - **`NEXT_PUBLIC_SITE_URL`** is inlined into the JavaScript bundle at **image
+>   build** time. Set it as a build-arg (`docker build --build-arg
+>   NEXT_PUBLIC_SITE_URL=https://…`) or in `.github/workflows/release.yml`.
+>   Changing it only on the server does not fix canonicals or Open Graph URLs.
+> - **`SITE_URL`** is read at **runtime** for enquiry notification links and
+>   password-reset / invite emails. `docker-compose.prod.yml` copies it from
+>   `NEXT_PUBLIC_SITE_URL` in `.env.production`. If email links point at
+>   localhost, the container is missing `SITE_URL`.
+>
+> If the public domain ever changes, update both the build-arg / workflow and
+> `.env.production`, then publish a new image.
 
 ### The registry package is private
 
@@ -283,7 +293,8 @@ Take a backup first. Postgres major versions do not upgrade in place; pin
 | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `502 Bad Gateway`                                    | The app container is not up, or `APP_PORT` and the nginx `upstream` disagree. Check `$C ps` and `ss -tlnp                                                  | grep 3001`. |
 | `denied` on `docker compose pull`                    | The VPS is not logged in to GHCR, or the token lacks `read:packages`. Repeat the `docker login` in Part 1.                                                 |
-| Site loads but every link points at `localhost:3000` | The image was built with the wrong `NEXT_PUBLIC_SITE_URL`. It is baked in at build time: fix `SITE_URL` in the release workflow and publish again.         |
+| Site loads but every link points at `localhost:3000` | The image was built with the wrong `NEXT_PUBLIC_SITE_URL`. It is baked in at build time: fix the build-arg / `SITE_URL` in the release workflow and publish again. |
+| Enquiry email "View in admin" points at localhost    | The container is missing runtime `SITE_URL`. `docker-compose.prod.yml` should set `SITE_URL: ${NEXT_PUBLIC_SITE_URL}`. Restart the stack; no rebuild needed for this one. |
 | `exec format error`                                  | An arm64 image on an x86-64 host. The workflow builds `linux/amd64`; do not `docker load` an image built on an Apple Silicon Mac.                          |
 | Migration says it is waiting for a batch             | A development-mode command ran against this database and wrote a `batch = -1` row. See [operations.md](operations.md).                                     |
 | Enquiries stored but no email                        | `EMAIL_PROVIDER` is still `console`, or Resend is rejecting the sender. Resend only accepts a `from` on a domain verified with it, or its sandbox address. |

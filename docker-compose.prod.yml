@@ -61,6 +61,9 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-smartmove}
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:?set PAYLOAD_SECRET in .env.production}
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+      # Runtime origin for emails and password-reset links. Next inlines
+      # NEXT_PUBLIC_* at build time, so this must not rely on that value.
+      SITE_URL: ${NEXT_PUBLIC_SITE_URL}
       # Blocks crawlers and sends noindex. Leave true on a preview deployment.
       SITE_NOINDEX: ${SITE_NOINDEX:-false}
       EMAIL_PROVIDER: ${EMAIL_PROVIDER:-console}

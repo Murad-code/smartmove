@@ -176,6 +176,21 @@ Turnstile, storage and notification. Do not reimplement any of that.
 The enquiry is stored **before** the email is attempted. A mail failure must
 never look like a failed submission to the visitor.
 
+### Site URL (emails vs the browser)
+
+Next inlines every `NEXT_PUBLIC_*` variable at **image build** time. Changing
+`NEXT_PUBLIC_SITE_URL` only in docker-compose does **not** fix canonicals,
+Open Graph tags, or other client bundle URLs. A local `docker build` must pass
+`--build-arg NEXT_PUBLIC_SITE_URL=https://…` (CI sets it in
+`.github/workflows/release.yml`). If the public domain changes, rebuild.
+
+**Email links are different.** Enquiry notifications and Payload password-reset
+/ invite emails read `SITE_URL` at **runtime** via `env.siteUrl` in
+`src/lib/env.ts`. `docker-compose.prod.yml` sets `SITE_URL` from
+`NEXT_PUBLIC_SITE_URL` in `.env.production`. Never build email links from a
+bare `process.env.NEXT_PUBLIC_SITE_URL` — that bakes `localhost` into
+production mail. A test in `tests/int/email.int.spec.ts` guards this.
+
 ### Admin branding
 
 The admin panel is presented as Smart Move's own software. `admin.components.graphics`
