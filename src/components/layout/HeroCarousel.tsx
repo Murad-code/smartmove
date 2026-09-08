@@ -46,6 +46,16 @@ function usable(cta: HeroCta): cta is { label: string; href: string } {
   return Boolean(cta?.label && cta?.href)
 }
 
+/**
+ * The hero is already on screen when the page loads, so its parts arrive on a
+ * clock rather than on scroll. The delays are hand-picked rather than evenly
+ * spaced: the gap after the heading is the longest, because that is the line
+ * the visitor is actually reading.
+ */
+function rise(delayMs: number): React.CSSProperties {
+  return { '--rise-delay': `${delayMs}ms` } as React.CSSProperties
+}
+
 export function HeroCarousel({
   slides,
   autoplay = true,
@@ -118,27 +128,32 @@ export function HeroCarousel({
         if (Math.abs(travelled) > SWIPE_PX) go(travelled < 0 ? 1 : -1)
       }}
     >
-      {slides.map((slide, position) =>
-        slide.imageUrl ? (
-          <div
-            key={slide.id}
-            aria-hidden="true"
-            className={cn(
-              'absolute inset-0 transition-opacity duration-1000 ease-out',
-              position === index ? 'opacity-100' : 'opacity-0',
-            )}
-          >
-            <Image
-              src={slide.imageUrl}
-              alt=""
-              fill
-              priority={position === 0}
-              sizes="100vw"
-              className="scale-105 object-cover"
-            />
-          </div>
-        ) : null,
-      )}
+      {/* One wrapper around every slide so the scroll-linked push-in is written
+          once rather than per slide. The photo inside also drifts on its own
+          24-second cycle, which is slow enough that you never catch it moving
+          and is the whole reason a still hero stops feeling like a screenshot. */}
+      <div aria-hidden="true" className="hero-scrub-bg absolute inset-0">
+        {slides.map((slide, position) =>
+          slide.imageUrl ? (
+            <div
+              key={slide.id}
+              className={cn(
+                'absolute inset-0 transition-opacity duration-1000 ease-out',
+                position === index ? 'opacity-100' : 'opacity-0',
+              )}
+            >
+              <Image
+                src={slide.imageUrl}
+                alt=""
+                fill
+                priority={position === 0}
+                sizes="100vw"
+                className="ken-burns object-cover"
+              />
+            </div>
+          ) : null,
+        )}
+      </div>
 
       {/* Dark wash so the heading keeps AA contrast whatever photo is uploaded. */}
       <div
@@ -151,7 +166,7 @@ export function HeroCarousel({
           <button
             type="button"
             onClick={() => go(-1)}
-            className="absolute top-1/2 left-4 z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-navy-950/40 text-white backdrop-blur-sm transition-colors hover:bg-navy-950/75 lg:grid"
+            className="hero-scrub-content absolute top-1/2 left-4 z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-navy-950/40 text-white backdrop-blur-sm transition-colors hover:bg-navy-950/75 lg:grid"
           >
             <Icon name="chevron-left" />
             <span className="sr-only">Previous slide</span>
@@ -159,7 +174,7 @@ export function HeroCarousel({
           <button
             type="button"
             onClick={() => go(1)}
-            className="absolute top-1/2 right-4 z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-navy-950/40 text-white backdrop-blur-sm transition-colors hover:bg-navy-950/75 lg:grid"
+            className="hero-scrub-content absolute top-1/2 right-4 z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-navy-950/40 text-white backdrop-blur-sm transition-colors hover:bg-navy-950/75 lg:grid"
           >
             <Icon name="chevron-right" />
             <span className="sr-only">Next slide</span>
@@ -167,7 +182,7 @@ export function HeroCarousel({
         </>
       ) : null}
 
-      <Container className="relative py-20 sm:py-28 lg:py-32">
+      <Container className="hero-scrub-content relative py-20 sm:py-28 lg:py-32">
         <div className="grid" aria-live={rotating ? 'off' : 'polite'}>
           {slides.map((slide, position) => {
             const active = position === index
@@ -187,12 +202,21 @@ export function HeroCarousel({
                   active ? 'opacity-100' : 'pointer-events-none opacity-0',
                 )}
               >
-                <Heading className={HEADING}>{slide.heading}</Heading>
+                {/* The heading rises from behind its own box rather than
+                    fading in. Two elements and one keyframe, and it is the
+                    single most effective thing in the motion system. */}
+                <Heading className={HEADING}>
+                  <span className="rise-mask">
+                    <span>{slide.heading}</span>
+                  </span>
+                </Heading>
                 {slide.subheading ? (
-                  <p className="mt-6 text-lg text-navy-100 sm:text-xl">{slide.subheading}</p>
+                  <p className="rise mt-6 text-lg text-navy-100 sm:text-xl" style={rise(600)}>
+                    {slide.subheading}
+                  </p>
                 ) : null}
 
-                <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <div className="rise mt-9 flex flex-col gap-3 sm:flex-row" style={rise(750)}>
                   {usable(slide.primaryCta ?? null) ? (
                     <ButtonLink href={slide.primaryCta!.href!} size="large" variant="accent">
                       {slide.primaryCta!.label}
@@ -211,7 +235,7 @@ export function HeroCarousel({
         </div>
 
         {many ? (
-          <div className="mt-8 flex items-center gap-1">
+          <div className="rise mt-8 flex items-center gap-1" style={rise(900)}>
             <ul className="flex items-center gap-1">
               {slides.map((slide, position) => (
                 <li key={slide.id}>
@@ -250,7 +274,11 @@ export function HeroCarousel({
           </div>
         ) : null}
 
-        {footer}
+        {footer ? (
+          <div className="rise" style={rise(900)}>
+            {footer}
+          </div>
+        ) : null}
       </Container>
     </section>
   )
