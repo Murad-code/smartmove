@@ -214,8 +214,8 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
       </Container>
 
       {related.length ? (
-        <Section background="grey">
-          <h2 className="text-2xl sm:text-3xl">Other properties available</h2>
+        <Section background="grey" animate={false}>
+          <h2 className="reveal text-2xl sm:text-3xl">Other properties available</h2>
           <div className="mt-8">
             <PropertyGrid properties={related} priorityCount={0} />
           </div>

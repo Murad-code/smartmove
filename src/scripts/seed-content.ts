@@ -130,7 +130,7 @@ export const homePage = {
   // DEMO CONTENT. These figures are illustrative and have not been confirmed
   // with the client. Listed in docs/client-content-required.md.
   stats: [
-    { value: '8%', label: 'Full management from' },
+    { value: 'From 8%', label: 'Property management' },
     { value: '20+', label: 'Years letting in Scunthorpe' },
     { value: '350+', label: 'Local tenancies arranged' },
     { value: '1', label: 'Point of contact, start to finish' },

@@ -99,7 +99,7 @@ export function PropertyGrid({
   priorityCount?: number
 }) {
   return (
-    <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <ul className="reveal-group grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {properties.map((property, index) => (
         <li key={property.id} className="flex">
           <PropertyCard property={property} priority={index < priorityCount} />

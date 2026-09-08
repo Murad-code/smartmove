@@ -9,6 +9,7 @@ import { ButtonLink } from '@/components/ui/Button'
 import { Icon } from '@/components/ui/Icon'
 import { RichText } from '@/components/ui/RichText'
 import { Section, SectionHeading } from '@/components/ui/Section'
+import { StatGrid } from '@/components/ui/StatGrid'
 import { TestimonialGrid } from '@/components/ui/Testimonial'
 import { findFeaturedProperties } from '@/lib/properties'
 import { toImage } from '@/lib/properties/mappers'
@@ -100,7 +101,7 @@ export default async function HomePage({
               <RichText data={home.intro.body} className="mt-5" />
             </div>
             {introImage ? (
-              <div className="reveal relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                 <Image
                   src={introImage.wideUrl ?? introImage.url}
                   alt={introImage.alt}
@@ -116,25 +117,14 @@ export default async function HomePage({
 
       {/* Figures ----------------------------------------------------------- */}
       {home.stats?.length ? (
-        <Section background="navy" spacing="tight">
-          <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {home.stats.map((stat) => (
-              <div key={stat.id ?? stat.label} className="reveal flex flex-col-reverse">
-                {/* Reversed so the figure reads first while the markup keeps
-                    the term before its description. */}
-                <dt className="mt-2 text-sm text-navy-100">{stat.label}</dt>
-                <dd className="font-display text-4xl font-semibold text-white sm:text-5xl">
-                  {stat.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
+        <Section background="navy" spacing="tight" animate={false}>
+          <StatGrid stats={home.stats} />
         </Section>
       ) : null}
 
       {/* Featured properties ----------------------------------------------- */}
-      <Section background="grey">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      <Section background="grey" animate={false}>
+        <div className="reveal flex flex-wrap items-end justify-between gap-4">
           <SectionHeading
             heading={home.featuredProperties?.heading || 'Available to rent now'}
             intro={home.featuredProperties?.intro}
@@ -170,7 +160,7 @@ export default async function HomePage({
         <Section>
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
             {landlordImage ? (
-              <div className="reveal relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                 <Image
                   src={landlordImage.wideUrl ?? landlordImage.url}
                   alt={landlordImage.alt}
@@ -214,7 +204,7 @@ export default async function HomePage({
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
             <div className="lg:order-2">
               {tenantImage ? (
-                <div className="reveal relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                   <Image
                     src={tenantImage.wideUrl ?? tenantImage.url}
                     alt={tenantImage.alt}
@@ -255,17 +245,19 @@ export default async function HomePage({
 
       {/* Why us ------------------------------------------------------------ */}
       {home.whyUs?.reasons?.length ? (
-        <Section>
-          <SectionHeading
-            heading={home.whyUs.heading || 'Why people choose Smart Move'}
-            intro={home.whyUs.intro}
-            align="center"
-          />
-          <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <Section animate={false}>
+          <div className="reveal">
+            <SectionHeading
+              heading={home.whyUs.heading || 'Why people choose Smart Move'}
+              intro={home.whyUs.intro}
+              align="center"
+            />
+          </div>
+          <ul className="reveal-group mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {home.whyUs.reasons.map((reason) => (
               <li
                 key={reason.id ?? reason.title}
-                className="reveal rounded-card border border-ink-200 bg-white p-6 shadow-card transition-shadow hover:shadow-raised"
+                className="rounded-card border border-ink-200 bg-white p-6 shadow-card transition-shadow hover:shadow-raised"
               >
                 <span className="grid size-11 place-items-center rounded-lg bg-navy-50 text-navy-700">
                   <Icon name={reason.icon ?? 'shield'} />
@@ -282,12 +274,14 @@ export default async function HomePage({
 
       {/* What people say ---------------------------------------------------- */}
       {testimonials.length ? (
-        <Section background="grey">
-          <SectionHeading
-            heading={home.testimonials?.heading || 'What people say about us'}
-            intro={home.testimonials?.intro}
-            align="center"
-          />
+        <Section background="grey" animate={false}>
+          <div className="reveal">
+            <SectionHeading
+              heading={home.testimonials?.heading || 'What people say about us'}
+              intro={home.testimonials?.intro}
+              align="center"
+            />
+          </div>
           <div className="mt-12">
             <TestimonialGrid items={testimonials} />
           </div>

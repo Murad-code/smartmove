@@ -21,6 +21,7 @@ export function Section({
   containerSize,
   id,
   spacing = 'default',
+  animate = true,
 }: {
   children: React.ReactNode
   background?: SectionBackground
@@ -28,6 +29,15 @@ export function Section({
   containerSize?: 'default' | 'narrow' | 'wide'
   id?: string
   spacing?: 'default' | 'tight' | 'loose'
+  /**
+   * Fade the contents up as the band scrolls into view. On by default, so
+   * every section and every CMS block gets it without opting in.
+   *
+   * Turn it off when something inside wants to animate on its own terms: a
+   * grid using `reveal-group` staggers its own cards, and a parent fading as
+   * one block would hide that.
+   */
+  animate?: boolean
 }) {
   return (
     <section
@@ -40,7 +50,11 @@ export function Section({
         className,
       )}
     >
-      <Container size={containerSize}>{children}</Container>
+      {/* The animation goes on the container, never the section: transforming
+          the band itself would drag its background colour with it. */}
+      <Container size={containerSize} className={cn(animate && 'reveal')}>
+        {children}
+      </Container>
     </section>
   )
 }

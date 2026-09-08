@@ -195,8 +195,9 @@ async function BlockRenderer({ block }: { block: Block }): Promise<React.ReactNo
       const properties = await findFeaturedProperties(block.limit ?? 3)
       if (!properties.length) return null
       return (
-        <Section background="grey">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+        // The card grid staggers itself, so the band must not fade as one.
+        <Section background="grey" animate={false}>
+          <div className="reveal flex flex-wrap items-end justify-between gap-4">
             <SectionHeading heading={block.heading || 'Available now'} intro={block.intro} />
             <ButtonLink href="/properties" variant="secondary">
               See all properties
@@ -232,9 +233,11 @@ async function BlockRenderer({ block }: { block: Block }): Promise<React.ReactNo
 
     case 'testimonials':
       return (
-        <Section background={block.background === 'white' ? 'white' : 'grey'}>
+        <Section background={block.background === 'white' ? 'white' : 'grey'} animate={false}>
           {block.heading ? (
-            <SectionHeading heading={block.heading} intro={block.intro} align="center" />
+            <div className="reveal">
+              <SectionHeading heading={block.heading} intro={block.intro} align="center" />
+            </div>
           ) : null}
           <div className={cn(block.heading && 'mt-12')}>
             <TestimonialGrid items={block.items ?? []} />

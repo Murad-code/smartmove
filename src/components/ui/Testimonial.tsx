@@ -26,10 +26,10 @@ export function TestimonialGrid({ items }: { items: Testimonial[] }) {
   if (!items.length) return null
 
   return (
-    <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <ul className="reveal-group grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item, position) => (
         <li key={item.id ?? position} className="flex">
-          <figure className="reveal flex flex-col rounded-card border border-ink-200 bg-white p-6 shadow-card">
+          <figure className="flex flex-col rounded-card border border-ink-200 bg-white p-6 shadow-card">
             <Icon name="quote" className="size-7 shrink-0 text-accent-400" />
             <blockquote className="mt-4 flex-1 text-ink-700">
               <p>{item.quote}</p>

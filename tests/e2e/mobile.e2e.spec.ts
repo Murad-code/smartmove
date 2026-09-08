@@ -97,3 +97,33 @@ test('nothing overflows horizontally at 320px', async ({ page }) => {
     expect(overflow, `${path} should not scroll sideways at 320px`).toBeLessThanOrEqual(1)
   }
 })
+
+test('the mobile menu animates out and then actually goes away', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Open the menu' }).click()
+
+  const menu = page.getByRole('dialog', { name: 'Menu' })
+  await expect(menu).toBeVisible()
+  await expect(menu).toHaveClass(/animate-panel-in/)
+
+  await menu.getByRole('button', { name: 'Close the menu' }).click()
+
+  // The panel is held in the DOM for the length of the exit animation and
+  // unmounted by a timer afterwards. If that timer were ever replaced with an
+  // `animationend` listener, a browser that skipped the animation would leave
+  // the menu open over a page whose scrolling is still locked.
+  await expect(menu).toBeHidden()
+  await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden')
+})
+
+test('a visitor who asked for less motion gets no menu animation', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Open the menu' }).click()
+  const menu = page.getByRole('dialog', { name: 'Menu' })
+  await expect(menu).toBeVisible()
+
+  await page.keyboard.press('Escape')
+  await expect(menu).toBeHidden()
+})

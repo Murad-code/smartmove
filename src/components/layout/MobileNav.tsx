@@ -13,6 +13,9 @@ export interface NavLink {
   href: string
 }
 
+/** Must match `--animate-panel-out` in globals.css. */
+const MENU_EXIT_MS = 160
+
 /**
  * Mobile navigation.
  *
@@ -47,7 +50,43 @@ export function MobileNav({
   const [openedFor, setOpenedFor] = useState<string | null>(null)
   const open = openedFor === pathname
 
+  // Held open for the length of the exit animation, then unmounted.
+  const [closing, setClosing] = useState(false)
+  const closeTimer = useRef<number | null>(null)
+
   const setOpen = useCallback((next: boolean) => setOpenedFor(next ? pathname : null), [pathname])
+
+  /**
+   * Close on a timer rather than on `animationend`.
+   *
+   * If the animation never runs, an `animationend` listener never fires and
+   * the menu is stuck open with the page behind it locked. A timer always
+   * resolves, so the worst case is a slightly early unmount.
+   */
+  const requestClose = useCallback(
+    ({ returnFocus = false } = {}) => {
+      const instant =
+        typeof window === 'undefined' ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+      const finish = () => {
+        setClosing(false)
+        setOpen(false)
+        if (returnFocus) triggerRef.current?.focus()
+      }
+
+      if (instant) {
+        finish()
+        return
+      }
+
+      setClosing(true)
+      closeTimer.current = window.setTimeout(finish, MENU_EXIT_MS)
+    },
+    [setOpen],
+  )
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current ?? undefined), [])
 
   useEffect(() => {
     if (!open) return
@@ -57,10 +96,7 @@ export function MobileNav({
     panelRef.current?.focus()
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setOpen(false)
-        triggerRef.current?.focus()
-      }
+      if (event.key === 'Escape') requestClose({ returnFocus: true })
     }
 
     document.addEventListener('keydown', onKeyDown)
@@ -68,7 +104,7 @@ export function MobileNav({
       document.body.style.overflow = previousOverflow
       document.removeEventListener('keydown', onKeyDown)
     }
-  }, [open, setOpen])
+  }, [open, requestClose])
 
   return (
     <>
@@ -78,9 +114,20 @@ export function MobileNav({
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls="mobile-navigation"
-        className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-navy-800 hover:bg-navy-50 lg:hidden"
+        className="group inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-navy-800 transition-colors hover:bg-navy-50 active:bg-navy-100 lg:hidden"
       >
-        <Icon name="menu" className="size-6" />
+        {/* Three bars rather than the menu glyph, so they can react to a
+            press. There is no hover on a phone, so `active` is the state that
+            actually gets seen: the bars draw together and the middle one
+            shortens, which reads as the button acknowledging the tap. */}
+        <span
+          aria-hidden="true"
+          className="flex size-6 flex-col items-center justify-center gap-[5px]"
+        >
+          <span className="h-0.5 w-5 rounded-full bg-current transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-active:translate-y-[3px]" />
+          <span className="h-0.5 w-5 rounded-full bg-current transition-all duration-200 ease-out group-hover:w-3.5 group-active:w-2.5" />
+          <span className="h-0.5 w-5 rounded-full bg-current transition-transform duration-200 ease-out group-hover:translate-y-0.5 group-active:-translate-y-[3px]" />
+        </span>
         <span className="sr-only">Open the menu</span>
       </button>
 
@@ -90,8 +137,11 @@ export function MobileNav({
               <button
                 type="button"
                 aria-label="Close the menu"
-                onClick={() => setOpen(false)}
-                className="absolute inset-0 h-full w-full cursor-default bg-navy-950/50"
+                onClick={() => requestClose()}
+                className={cn(
+                  'absolute inset-0 h-full w-full cursor-default bg-navy-950/50',
+                  closing ? 'animate-fade-out' : 'animate-fade-in',
+                )}
               />
               <div
                 ref={panelRef}
@@ -100,17 +150,17 @@ export function MobileNav({
                 aria-modal="true"
                 aria-label="Menu"
                 tabIndex={-1}
-                className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col overflow-y-auto bg-white shadow-raised"
+                className={cn(
+                  'absolute inset-y-0 right-0 flex w-full max-w-sm flex-col overflow-y-auto bg-white shadow-raised',
+                  closing ? 'animate-panel-out' : 'animate-panel-in',
+                )}
               >
                 <div className="flex items-center justify-between border-b border-ink-200 px-5 py-4">
                   <span className="font-display text-lg font-semibold text-navy-900">Menu</span>
                   <button
                     type="button"
-                    onClick={() => {
-                      setOpen(false)
-                      triggerRef.current?.focus()
-                    }}
-                    className="rounded-lg p-2 text-navy-800 hover:bg-navy-50"
+                    onClick={() => requestClose({ returnFocus: true })}
+                    className="rounded-lg p-2 text-navy-800 transition-colors hover:bg-navy-50 active:bg-navy-100"
                   >
                     <Icon name="close" className="size-6" />
                     <span className="sr-only">Close the menu</span>
