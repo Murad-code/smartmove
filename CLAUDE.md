@@ -77,7 +77,7 @@ src/
     healthz/          health check for Docker and Nginx
   collections/        Properties, Pages, Services, Enquiries, Media, Users
   globals/            BusinessDetails, SiteSettings, HomePage
-  blocks/             the nine CMS page sections
+  blocks/             the ten CMS page sections
   access/             shared access-control functions
   fields/             shared field helpers (slugField)
   components/

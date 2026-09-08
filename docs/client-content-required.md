@@ -1,8 +1,13 @@
 # Information needed from Smart Move
 
 Everything below is either missing, unconfirmed, or contradicted by the old
-website. Nothing has been invented: where a fact was not verifiable, the site
-carries a `TODO: CLIENT CONTENT REQUIRED` marker instead of a guess.
+website. Where a fact was not verifiable, the site carries a
+`TODO: CLIENT CONTENT REQUIRED` marker instead of a guess.
+
+**The one exception is the demonstration content listed under "Placeholder
+content that must be replaced".** It was written so the client could see the
+finished layout working, it describes things that never happened, and none of
+it may go live.
 
 **The items marked 🔴 must be resolved before the site goes live.** Several are
 legal requirements for a letting agent in England.
@@ -58,7 +63,7 @@ legal requirements for a letting agent in England.
 | **Logo for dark backgrounds**                              | White-text version of the same lockup, used in the footer.                                                                                                                                                                          |
 | **Favicon**                                                | Square PNG of the green-and-navy house mark. Used in the browser tab and the admin navigation.                                                                                                                                      |
 | **Brand colours**                                          | We have carried over the navy (`#003d7e`) and green (`#8cc63e`) from the old site. The green fails accessibility contrast with white text, so it is used with dark text or as an accent. Confirm these are still the brand colours. |
-| **Home page hero photograph**                              | Ideally something local and recognisable. At least 1920px wide.                                                                                                                                                                     |
+| **Home page banner photographs**                           | The banner rotates through up to five slides, so up to five images. Ideally something local and recognisable. At least 1920px wide.                                                                                                 |
 | **Photographs for the about, landlords and tenants pages** | Real photographs, of the office or the team, are far better than stock.                                                                                                                                                             |
 | **A default sharing image**                                | Shown when someone shares a link on Facebook or WhatsApp.                                                                                                                                                                           |
 | **Real property photographs**                              | 🔴 See the licence note below. The site is seeded with six demo properties whose photographs and particulars belong to another agency and must be deleted before launch.                                                            |
@@ -71,7 +76,21 @@ legal requirements for a letting agent in England.
 | **Landlord service descriptions and fees** | The service list was carried over from the old site. Fees are marked TODO.                                                                                                                                                                                        |
 | **Tenant deposit amount and process**      | Marked TODO on the Tenants page.                                                                                                                                                                                                                                  |
 | **How tenants report a repair**            | Including any out-of-hours arrangement. Marked TODO on the Tenants page.                                                                                                                                                                                          |
-| **Testimonials**                           | Not built. If you have written permission from clients to quote them, a testimonials section is a small addition. We will not invent them.                                                                                                                        |
+| **Testimonials**                           | 🔴 The section is built and currently holds invented reviews. See "Placeholder content that must be replaced". We need real quotes with written permission to publish them.                                                                                       |
+
+## 🔴 Placeholder content that must be replaced
+
+These read as real content, which is exactly why they are dangerous. All of it
+is written in `src/scripts/seed-content.ts` and marked `DEMO CONTENT` there.
+
+| Item                      | What is currently there                                                                                                                                                                    |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Home page reviews**     | Three invented reviews attributed to "Rachel Bennett", "Dave Thornhill" and "Priya Sharma". These people do not exist and none of these things were said. Replace or delete before launch. |
+| **Home page figures**     | "20+ years letting in Scunthorpe" and "350+ local tenancies arranged" are illustrative and unverified. "Full management from 8%" came from the old website and still needs confirming.     |
+| **Home page photographs** | The banner, landlord and tenant photographs are pulled from the demo listings and belong to another agency. They only appear when `SEED_DEMO_PROPERTIES=true`.                             |
+
+The shopfront photograph on the home page is the exception: that one is Smart
+Move's own, taken from the existing website, and can stay.
 
 ## Accounts and services needed before launch
 

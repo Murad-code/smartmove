@@ -161,13 +161,19 @@ button), Footer (three link columns plus the small-print row), Search engines
 ### Home Page (`home-page`)
 
 A global rather than a page document because the home page has a bespoke
-layout. Its fields map one to one onto the sections the design defines: hero,
-highlights, introduction, featured properties, landlord section, tenant
-section, why-us reasons, and the closing call to action.
+layout. Its fields map one to one onto the sections the design defines: hero
+banner, highlights, introduction, figures, featured properties, landlord
+section, tenant section, why-us reasons, reviews, and the closing call to
+action.
+
+The hero is an array of slides rather than a single set of fields. One slide
+renders as a still banner; add a second and they cross-fade, with a checkbox
+to stop them moving on their own. Only the first slide's heading is the page
+`h1`, so the document keeps exactly one whichever slide is showing.
 
 ## Blocks
 
-Nine, deliberately. A general-purpose page builder would let the owner produce
+Ten, deliberately. A general-purpose page builder would let the owner produce
 layouts that do not match the design.
 
 | Block                 | Purpose                                      |
@@ -181,6 +187,7 @@ layouts that do not match the design.
 | Questions and answers | Native `<details>` accordion                 |
 | Our contact details   | Reads from Business Details                  |
 | Enquiry form          | General, landlord or requirements form       |
+| What people say       | Customer reviews as a grid of quote cards    |
 
 Adding a block means defining it in `src/blocks/index.ts`, adding it to
 `pageBlocks`, and adding a case to `RenderBlocks`. The switch is typed against

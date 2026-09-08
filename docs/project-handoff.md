@@ -49,7 +49,7 @@ owner:
   answers to "is it live?".
 - **The rich-text toolbar is restricted** to paragraphs, headings, bold,
   italic, lists and links, so nothing an editor writes can break the design.
-- **Nine curated page sections** rather than a free-form page builder.
+- **Ten curated page sections** rather than a free-form page builder.
 - **Live preview** at three breakpoints.
 - Pages and services keep version history, so an editor can undo.
 - **No CMS vendor branding.** The sign-in screen shows Smart Move's own logo,
