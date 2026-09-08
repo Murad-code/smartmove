@@ -65,7 +65,7 @@ jobs:
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/smartmove_ci
       SEED_ADMIN_EMAIL: admin@smartmove4u.co.uk
       SEED_ADMIN_PASSWORD: CiPassword123!
-      SEED_DEMO_PROPERTIES: 'true'
+      SEED_DEMO: 'true'
     steps:
       - uses: actions/checkout@v4
 
