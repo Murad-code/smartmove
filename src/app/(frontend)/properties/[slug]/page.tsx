@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import React from 'react'
 
 import { PropertyEnquiryForm } from '@/components/forms/PropertyEnquiryForm'
+import { LivePreview } from '@/components/layout/LivePreview'
 import { PropertyFacts } from '@/components/property/PropertyFacts'
 import { PropertyGallery } from '@/components/property/PropertyGallery'
 import { PropertyGrid } from '@/components/property/PropertyCard'
@@ -16,18 +17,20 @@ import { RichText } from '@/components/ui/RichText'
 import { Section } from '@/components/ui/Section'
 import { env } from '@/lib/env'
 import { formatAvailability, formatRent } from '@/lib/format'
+import { previewRequested } from '@/lib/preview'
 import { findPropertyBySlug, findRelatedProperties } from '@/lib/properties'
 import { buildMetadata } from '@/lib/seo'
 import { getBusinessDetails, telHref } from '@/lib/site'
 import { breadcrumbSchema, propertySchema } from '@/lib/structured-data'
 
-export async function generateMetadata({
-  params,
-}: {
+type Props = {
   params: Promise<{ slug: string }>
-}): Promise<Metadata> {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params
-  const property = await findPropertyBySlug(slug)
+  const property = await findPropertyBySlug(slug, previewRequested(await searchParams))
   if (!property) return { title: 'Property not found' }
 
   // Owners often put the area in the title already; only add it when missing.
@@ -45,13 +48,10 @@ export async function generateMetadata({
   })
 }
 
-export default async function PropertyDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function PropertyDetailPage({ params, searchParams }: Props) {
   const { slug } = await params
-  const property = await findPropertyBySlug(slug)
+  const preview = previewRequested(await searchParams)
+  const property = await findPropertyBySlug(slug, preview)
   if (!property) notFound()
 
   const [business, related] = await Promise.all([
@@ -65,6 +65,8 @@ export default async function PropertyDetailPage({
 
   return (
     <>
+      <LivePreview enabled={preview} />
+
       <JsonLd data={propertySchema(property, business)} />
       <JsonLd
         data={breadcrumbSchema([

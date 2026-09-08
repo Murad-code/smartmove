@@ -24,6 +24,7 @@ import { Users } from './collections/Users'
 import { seedDemoEndpoint } from './endpoints/seed-demo'
 import { payloadEmailAdapter } from './lib/email/payload-adapter'
 import { env } from './lib/env'
+import { previewUrl } from './lib/preview'
 import { migrations } from './migrations'
 import { BusinessDetails } from './globals/BusinessDetails'
 import { HomePage } from './globals/HomePage'
@@ -66,18 +67,25 @@ export default buildConfig({
     // Everything the owner needs is in the sidebar; the stock dashboard cards
     // and the API URL row only add noise.
     theme: 'light',
+    // Live preview: the page appears next to the editing form and refreshes
+    // as the document is saved. Enabled here rather than on each collection so
+    // the breakpoints and the URL rule are written once. Everything listed
+    // must have a page on the website that mounts `LivePreview`.
     livePreview: {
+      collections: ['pages', 'services', 'properties'],
+      globals: ['home-page'],
       breakpoints: [
         { label: 'Mobile', name: 'mobile', width: 390, height: 844 },
         { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
         { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
       ],
-      url: ({ data, collectionConfig }) => {
-        const origin = env.siteUrl
+      url: ({ data, collectionConfig, globalConfig }) => {
         const slug = typeof data?.slug === 'string' ? data.slug : ''
-        if (collectionConfig?.slug === 'properties') return `${origin}/properties/${slug}`
-        if (collectionConfig?.slug === 'services') return `${origin}/services/${slug}`
-        return `${origin}/${slug}`
+
+        if (globalConfig?.slug === 'home-page') return previewUrl('/')
+        if (collectionConfig?.slug === 'properties') return previewUrl(`/properties/${slug}`)
+        if (collectionConfig?.slug === 'services') return previewUrl(`/services/${slug}`)
+        return previewUrl(`/${slug}`)
       },
     },
   },

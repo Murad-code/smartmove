@@ -4,9 +4,11 @@ import { notFound } from 'next/navigation'
 import React from 'react'
 
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
+import { LivePreview } from '@/components/layout/LivePreview'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { Container } from '@/components/ui/Container'
 import { findPageBySlug } from '@/lib/pages'
+import { previewRequested } from '@/lib/preview'
 import { toImage } from '@/lib/properties/mappers'
 import { buildMetadata } from '@/lib/seo'
 import { breadcrumbSchema } from '@/lib/structured-data'
@@ -20,13 +22,14 @@ import { breadcrumbSchema } from '@/lib/structured-data'
 
 export const dynamicParams = true
 
-export async function generateMetadata({
-  params,
-}: {
+type Props = {
   params: Promise<{ slug: string }>
-}): Promise<Metadata> {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params
-  const page = await findPageBySlug(slug)
+  const page = await findPageBySlug(slug, previewRequested(await searchParams))
   if (!page) return { title: 'Page not found' }
 
   return buildMetadata({
@@ -37,15 +40,18 @@ export async function generateMetadata({
   })
 }
 
-export default async function CmsPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CmsPage({ params, searchParams }: Props) {
   const { slug } = await params
-  const page = await findPageBySlug(slug)
+  const preview = previewRequested(await searchParams)
+  const page = await findPageBySlug(slug, preview)
   if (!page) notFound()
 
   const heroImage = toImage(page.hero?.image)
 
   return (
     <>
+      <LivePreview enabled={preview} />
+
       <JsonLd
         data={breadcrumbSchema([
           { name: 'Home', path: '/' },

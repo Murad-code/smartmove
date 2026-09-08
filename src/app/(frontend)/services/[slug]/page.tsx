@@ -4,20 +4,23 @@ import { notFound } from 'next/navigation'
 import React from 'react'
 
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
+import { LivePreview } from '@/components/layout/LivePreview'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { Container } from '@/components/ui/Container'
 import { Icon } from '@/components/ui/Icon'
 import { findServiceBySlug } from '@/lib/pages'
+import { previewRequested } from '@/lib/preview'
 import { buildMetadata } from '@/lib/seo'
 import { breadcrumbSchema } from '@/lib/structured-data'
 
-export async function generateMetadata({
-  params,
-}: {
+type Props = {
   params: Promise<{ slug: string }>
-}): Promise<Metadata> {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params
-  const service = await findServiceBySlug(slug)
+  const service = await findServiceBySlug(slug, previewRequested(await searchParams))
   if (!service) return { title: 'Service not found' }
 
   return buildMetadata({
@@ -28,13 +31,16 @@ export async function generateMetadata({
   })
 }
 
-export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ServiceDetailPage({ params, searchParams }: Props) {
   const { slug } = await params
-  const service = await findServiceBySlug(slug)
+  const preview = previewRequested(await searchParams)
+  const service = await findServiceBySlug(slug, preview)
   if (!service) notFound()
 
   return (
     <>
+      <LivePreview enabled={preview} />
+
       <JsonLd
         data={breadcrumbSchema([
           { name: 'Home', path: '/' },

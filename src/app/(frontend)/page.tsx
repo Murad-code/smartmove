@@ -2,6 +2,7 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import React from 'react'
 
+import { LivePreview } from '@/components/layout/LivePreview'
 import { PropertyGrid } from '@/components/property/PropertyCard'
 import { ButtonLink } from '@/components/ui/Button'
 import { Container } from '@/components/ui/Container'
@@ -10,6 +11,7 @@ import { RichText } from '@/components/ui/RichText'
 import { Section, SectionHeading } from '@/components/ui/Section'
 import { findFeaturedProperties } from '@/lib/properties'
 import { toImage } from '@/lib/properties/mappers'
+import { previewRequested } from '@/lib/preview'
 import { buildMetadata } from '@/lib/seo'
 import { getBusinessDetails, getHomePage } from '@/lib/site'
 
@@ -23,7 +25,12 @@ export async function generateMetadata(): Promise<Metadata> {
   })
 }
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const preview = previewRequested(await searchParams)
   const [home, business] = await Promise.all([getHomePage(), getBusinessDetails()])
   const properties = await findFeaturedProperties(home.featuredProperties?.limit ?? 3)
 
@@ -34,6 +41,8 @@ export default async function HomePage() {
 
   return (
     <>
+      <LivePreview enabled={preview} />
+
       {/* Hero -------------------------------------------------------------- */}
       <section className="relative isolate overflow-hidden bg-navy-900">
         {heroImage ? (
