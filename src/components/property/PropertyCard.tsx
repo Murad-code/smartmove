@@ -25,7 +25,10 @@ export function PropertyCard({
   const image = property.mainImage
 
   return (
-    <article className="group relative flex w-full flex-col overflow-hidden rounded-card border border-ink-200 bg-white shadow-card transition-shadow duration-200 hover:shadow-raised focus-within:shadow-raised">
+    // `lift-card` owns the transform, so the hover lift and the pointer tilt
+    // compose instead of overwriting each other. It also carries the shared
+    // transition for the shadow and the border.
+    <article className="lift-card group relative flex w-full flex-col overflow-hidden rounded-card border border-ink-200 bg-white shadow-card hover:border-transparent hover:shadow-raised focus-within:shadow-raised">
       <div className="relative aspect-[4/3] overflow-hidden bg-ink-100">
         {image ? (
           <Image
@@ -34,7 +37,9 @@ export function PropertyCard({
             fill
             priority={priority}
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            // Drifts inside the frame as the card crosses the viewport and
+            // zooms a little further on hover. See docs/motion.md.
+            className="drift-media object-cover"
           />
         ) : (
           <div className="grid h-full place-items-center text-ink-400">
@@ -43,9 +48,24 @@ export function PropertyCard({
           </div>
         )}
 
+        {/* Five things move on one hover: the card lifts, the photo pushes in,
+            this wash deepens, the arrow turns and the shadow spreads. That is
+            the difference between a card that responds and one that lights up. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-navy-950/55 to-transparent to-55% opacity-0 transition-opacity duration-400 ease-smooth group-hover:opacity-100"
+        />
+
         <div className="absolute top-3 left-3">
           <PropertyStatusBadge status={property.status} />
         </div>
+
+        <span
+          aria-hidden="true"
+          className="absolute right-3.5 bottom-3.5 grid size-11 place-items-center rounded-full bg-accent-400 text-navy-950 shadow-raised transition-transform duration-400 ease-smooth group-hover:rotate-45"
+        >
+          <Icon name="arrow-right" className="size-5" />
+        </span>
       </div>
 
       <div className="flex flex-1 flex-col p-5">
