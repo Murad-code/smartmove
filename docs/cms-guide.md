@@ -154,6 +154,29 @@ The section types are:
 | Our contact details   | Your address, phone and hours, pulled in automatically |
 | Enquiry form          | A form people can fill in                              |
 
+### Seeing your changes as you make them
+
+Click the **eye** icon at the top of the screen and your website appears on the
+right, exactly as a visitor sees it. Type in the form on the left and the
+preview keeps up.
+
+The buttons above the preview switch it between a phone, a tablet and a
+computer screen, so you can check a change reads well on a mobile. Click the
+eye again to close it and get the full width of the form back.
+
+This works on website pages, services, properties and the home page. Two
+things to know:
+
+- On **properties** and the **home page** the preview updates when you click
+  **Save**, not as you type. On a property, Save also puts the change on the
+  website, so the preview is showing you the result rather than a rehearsal.
+- On a **new** property the preview appears once you have saved it for the
+  first time.
+
+Nothing you see in the preview is on the public website until you publish or
+save it. A property set to "Not ready yet" shows in your preview and stays
+hidden from visitors.
+
 ### The home page
 
 The home page has its own screen because it is laid out differently. Click

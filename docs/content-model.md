@@ -79,6 +79,9 @@ live, and versions give them an undo.
 | `order`    | number   | Lower comes first                       |
 | `slug`     | text     | Unique, indexed                         |
 
+Drafts with autosave, the same as pages, so live preview keeps up as an editor
+types.
+
 ### Enquiries (`enquiries`)
 
 `create` is closed to everyone. The only path in is the server actions in
@@ -189,6 +192,10 @@ Settings          Users, Business Details, Website Settings
 Payload's internal collections are not exposed. The rich-text toolbar is
 restricted to paragraphs, h2–h4, bold, italic, lists and links, so nothing an
 editor writes can break the page design.
+
+Website pages, Services, Properties and the Home Page open with a live preview
+pane beside the form, at phone, tablet and desktop widths. See
+[live-preview.md](live-preview.md).
 
 The panel carries no CMS vendor branding: `admin.components.graphics` supplies
 the sign-in logo (the Website Settings logo, or a wordmark) and the navigation

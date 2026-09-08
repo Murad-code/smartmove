@@ -21,17 +21,19 @@ stock comes from committed fixtures, so the tests never need network access.
 | `filters.int.spec.ts`       | Parsing filters out of the URL and building them back, including that a visitor cannot ask for hidden statuses                                                                                                              |
 | `format.int.spec.ts`        | Currency, dates, availability wording, pluralising, slug generation                                                                                                                                                         |
 | `content-model.int.spec.ts` | Runs against Postgres: slug generation, automatic publish date, that `let` and `draft` properties are invisible to visitors, that enquiries cannot be created or read publicly, that business details are publicly readable |
+| `live-preview.int.spec.ts`  | That live preview is enabled for the content that has a page and nothing else, the URLs the admin panel builds, and that the preview flag grants nothing without a signed-in member of staff                                |
 
 ### End to end (`tests/e2e`, Playwright)
 
 Two projects: `desktop` (Chrome) and `mobile` (Pixel 7).
 
-| File                    | Covers                                                                                                                                                               |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `browse.e2e.spec.ts`    | Home page, navigating to the listings, opening a property, filtering and that filters survive a reload, the empty state, the legal and contact pages, the custom 404 |
-| `enquiries.e2e.spec.ts` | All four forms submitted successfully, and that validation errors appear against the right fields with `aria-invalid` set                                            |
-| `mobile.e2e.spec.ts`    | Opening the menu and navigating, closing with Escape, the call link, that cards stack in one column, and that nothing scrolls sideways at 320px                      |
-| `admin.e2e.spec.ts`     | The sidebar wording, the tabbed property form, and the whole owner workflow: add a property, see it live, mark it let, see it disappear, delete it                   |
+| File                       | Covers                                                                                                                                                                                    |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `browse.e2e.spec.ts`       | Home page, navigating to the listings, opening a property, filtering and that filters survive a reload, the empty state, the legal and contact pages, the custom 404                      |
+| `enquiries.e2e.spec.ts`    | All four forms submitted successfully, and that validation errors appear against the right fields with `aria-invalid` set                                                                 |
+| `mobile.e2e.spec.ts`       | Opening the menu and navigating, closing with Escape, the call link, that cards stack in one column, and that nothing scrolls sideways at 320px                                           |
+| `admin.e2e.spec.ts`        | The sidebar wording, the tabbed property form, and the whole owner workflow: add a property, see it live, mark it let, see it disappear, delete it                                        |
+| `live-preview.e2e.spec.ts` | The preview pane on a page, a service, a hidden property and the home page, that an autosaved edit reaches the pane, and that the same edit is absent from what a signed-out visitor gets |
 
 The admin file runs in serial mode because the lifecycle test depends on the
 property it creates.

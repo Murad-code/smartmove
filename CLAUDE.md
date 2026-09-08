@@ -82,7 +82,8 @@ src/
   fields/             shared field helpers (slugField)
   components/
     ui/               Button, Container, Section, Field, Badge, Icon, ...
-    layout/           Header, Footer, MobileNav, CookieConsent, Analytics
+    layout/           Header, Footer, MobileNav, CookieConsent, Analytics,
+                      LivePreview
     property/         PropertyCard, PropertyFilters, PropertyGallery, PropertyFacts
     forms/            the four enquiry forms and FormShell
     blocks/           RenderBlocks
@@ -92,6 +93,8 @@ src/
     forms/            zod schemas, spam checks, server actions
     email/            provider-agnostic adapter
     env.ts            the only place process.env is read
+    preview.ts        live preview URLs and what the flag is allowed to do
+    preview-session.ts  who is asking, and so whether it is allowed
     logger.ts, seo.ts, structured-data.ts, site.ts, pages.ts, format.ts, cn.ts
   scripts/            seed.ts and seed-content.ts
   migrations/         generated. Never edit by hand.
@@ -190,6 +193,25 @@ Open Graph tags, or other client bundle URLs. A local `docker build` must pass
 `NEXT_PUBLIC_SITE_URL` in `.env.production`. Never build email links from a
 bare `process.env.NEXT_PUBLIC_SITE_URL` — that bakes `localhost` into
 production mail. A test in `tests/int/email.int.spec.ts` guards this.
+
+### Live preview
+
+The admin panel shows the website beside the editing form for Website pages,
+Services, Properties and the Home Page. Read
+[docs/live-preview.md](docs/live-preview.md) before touching it; two things
+there are easy to get wrong.
+
+Root-level `admin.livePreview` does nothing for a collection or global that is
+not named in its `collections` / `globals` arrays. Adding a `url` branch
+without adding the slug is silent.
+
+The previewed URL carries `?preview=true`, and a page only honours it for a
+signed-in member of staff. That is the one place a website query runs as a user
+rather than anonymously; keep the decision in `previewOptions` so it stays in
+one place, and never make the flag itself grant anything.
+
+Every previewable route must mount `<LivePreview enabled={preview} />`, or the
+pane loads the page and then never updates.
 
 ### Admin branding
 
