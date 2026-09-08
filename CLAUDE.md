@@ -119,14 +119,26 @@ src/
 Server components by default. Add `'use client'` only when the component needs
 browser state, an event handler or a browser API. The current client components
 are: `MobileNav`, `NavLinks`, `PropertyFilters`, `PropertyGallery`, the four
-enquiry forms, `FormShell`, `CookieConsent` and `Analytics`. Adding to that list
-should be a deliberate decision.
+enquiry forms, `FormShell`, `CookieConsent`, `Analytics`, and the three motion
+components mounted once in the frontend layout (`SmoothScroll`, `Motion`,
+`PointerEffects`). Adding to that list should be a deliberate decision.
+
+The motion components work off class names and data attributes in the markup
+rather than props, which is what keeps the rest of the site on the server: a
+section opts into a reveal by rendering `className="reveal"`. Do not reach for
+a hook to animate something. See [docs/motion.md](docs/motion.md).
 
 ### Styling
 
 Tailwind v4, configured through `@theme` in `src/styles/globals.css`. Use the
 scales defined there (`navy-*`, `accent-*`, `ink-*`) rather than arbitrary
 values.
+
+Motion, easing and everything scroll-linked is a system of its own; read
+[docs/motion.md](docs/motion.md) before adding an animation. In short: one
+easing curve (`--ease-smooth`), reveals through the single observer in
+`Motion.tsx`, anything scroll-linked in CSS scroll timelines, and nothing at
+all moves for a visitor who asked for reduced motion.
 
 **Do not pass a class to a component that conflicts with one it sets itself.**
 There is no `tailwind-merge`; utilities in the same CSS layer resolve by
