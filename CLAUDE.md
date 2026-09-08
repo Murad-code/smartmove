@@ -213,6 +213,23 @@ one place, and never make the flag itself grant anything.
 Every previewable route must mount `<LivePreview enabled={preview} />`, or the
 pane loads the page and then never updates.
 
+### Media folders
+
+Media opts in with `folders: true` and the options live in the root `folders`
+block in `payload.config.ts`. Folders are filing for the admin panel only:
+nothing on the website reads the `folder` field, so a change there needs no
+front-end work.
+
+Payload's folders are still a beta feature and the config types are marked
+`@experimental`, so re-read `node_modules/payload/dist/folders/types.d.ts`
+after an upgrade rather than trusting the published docs, which are behind.
+
+Two things are easy to get wrong. `folders: true` on a collection does nothing
+unless the root block is present, and the generated collection's slug appears
+in the URL of the folder view, so it is set to `folders` rather than the
+default that names the CMS vendor. The folder view lists folders only: uploads
+that have not been filed appear under All Media, not at the top of By Folder.
+
 ### Admin branding
 
 The admin panel is presented as Smart Move's own software. `admin.components.graphics`
