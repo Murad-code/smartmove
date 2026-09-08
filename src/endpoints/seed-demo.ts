@@ -27,7 +27,7 @@ export const seedDemoEndpoint: Endpoint = {
 
     logger.info('Demo seed started from the admin panel', { userId: req.user?.id })
 
-    await runSeed(req.payload, { includeDemoProperties: true })
+    await runSeed(req.payload, { demo: true })
 
     return Response.json({
       ok: true,

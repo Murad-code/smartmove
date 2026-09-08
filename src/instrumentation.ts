@@ -15,7 +15,13 @@ export async function register() {
   // Also invoked for the edge runtime, which has no database access.
   if (process.env.NEXT_RUNTIME !== 'nodejs') return
 
-  const mode = process.env.RUN_SEED_ON_BOOT
+  // A demonstration box should need one flag and nothing else, so SEED_DEMO
+  // supplies the boot behaviour when none was asked for: re-apply on every
+  // start, which is what keeps a demo at a known state. An explicit
+  // RUN_SEED_ON_BOOT still wins. Read straight from process.env rather than
+  // `@/lib/env` so nothing pulls the Payload config in before we know we need
+  // it.
+  const mode = process.env.RUN_SEED_ON_BOOT || (process.env.SEED_DEMO === 'true' ? 'force' : '')
   if (mode !== 'true' && mode !== 'force') return
 
   const { getPayloadClient } = await import('@/lib/payload')

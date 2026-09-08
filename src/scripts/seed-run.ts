@@ -3,6 +3,8 @@ import path from 'node:path'
 
 import type { Payload } from 'payload'
 
+import { env } from '@/lib/env'
+
 import { buildDemoProperties } from './demo-properties'
 import { businessDetails, homePage, pages, services, siteSettings } from './seed-content'
 
@@ -22,9 +24,12 @@ import { businessDetails, homePage, pages, services, siteSettings } from './seed
  * which is exactly what a first deployment needs. Everything in
  * `demo-assets/brand` comes from the live smartmove4u.co.uk site and is Smart
  * Move's own: the logo, and the photograph of the Frodingham Road shopfront.
- * The six demo properties, and the home page scene photographs taken from
- * them, are development scaffolding and are only written when
- * SEED_DEMO_PROPERTIES=true, so a real site never starts with fake stock.
+ *
+ * `SEED_DEMO=true` adds the rest of the demonstration site in one go: the six
+ * demo listings and the home page photography taken from them. One flag, and
+ * it works in production, because the demo is shown to prospective clients
+ * from a real deployment. Nothing it writes is Smart Move's, so a site running
+ * with it set should also have SITE_NOINDEX=true.
  */
 
 // The production image copies the assets to a fixed path rather than keeping
@@ -134,26 +139,16 @@ async function upsertHomeScenes(payload: Payload): Promise<Record<HomeScene, num
 
 export type RunSeedOptions = {
   /**
-   * Load the third-party demo listings. Used by the admin dashboard button on
-   * a noindex preview. Boot-time seeding still follows the environment flags.
+   * Load the demonstration site regardless of `SEED_DEMO`. Used by the admin
+   * dashboard button, which does its own permission check.
    */
-  includeDemoProperties?: boolean
+  demo?: boolean
 }
 
 export async function runSeed(payload: Payload, options: RunSeedOptions = {}): Promise<void> {
-  const demoRequested =
-    options.includeDemoProperties === true || process.env.SEED_DEMO_PROPERTIES === 'true'
-
-  // The demo particulars and photographs belong to the agency that published
-  // them, so a production build will not publish them by accident. A private,
-  // password-protected preview is a legitimate use, and the flag that allows
-  // it is named so it cannot be set without meaning to. Decided here because
-  // the home page imagery draws on the same photographs and has to obey the
-  // same answer.
-  const acknowledged = process.env.SEED_DEMO_PROPERTIES_THIRD_PARTY_ACKNOWLEDGED === 'true'
-  const blockedInProduction =
-    options.includeDemoProperties !== true && process.env.NODE_ENV === 'production' && !acknowledged
-  const useDemoContent = demoRequested && !blockedInProduction
+  // One decision, taken once. The home page photography comes out of the same
+  // listings as the demo properties, so both have to obey the same answer.
+  const useDemoContent = options.demo ?? env.seedDemo
 
   // --- Admin user ----------------------------------------------------------
   const email = process.env.SEED_ADMIN_EMAIL || 'admin@smartmove4u.co.uk'
@@ -290,19 +285,8 @@ export async function runSeed(payload: Payload, options: RunSeedOptions = {}): P
   payload.logger.info(`Seeded ${pages.length} pages`)
 
   // --- Demo properties -----------------------------------------------------
-  if (!demoRequested) {
-    payload.logger.info('Skipping demo properties (set SEED_DEMO_PROPERTIES=true to add them)')
-    payload.logger.info('Seed complete.')
-    return
-  }
-
-  if (blockedInProduction) {
-    payload.logger.warn(
-      'Skipping demo properties: this is a production build and they use ' +
-        'third-party photographs and particulars. For a private preview set ' +
-        'SEED_DEMO_PROPERTIES_THIRD_PARTY_ACKNOWLEDGED=true and keep the site ' +
-        'behind a password with SITE_NOINDEX=true.',
-    )
+  if (!useDemoContent) {
+    payload.logger.info('Skipping the demo listings (set SEED_DEMO=true to add them)')
     payload.logger.info('Seed complete.')
     return
   }
@@ -359,9 +343,13 @@ export async function runSeed(payload: Payload, options: RunSeedOptions = {}): P
   }
 
   payload.logger.info(`Seeded ${demoProperties.length} demo properties`)
+  // This can now fire in production, so it has to say everything that is not
+  // Smart Move's, not just the listings.
   payload.logger.warn(
-    'Demo properties use photographs and particulars from a third-party website. ' +
-      "Delete them and replace with Smart Move's own before this site goes live.",
+    'SEED_DEMO is on. The listings and the home page photography use images and ' +
+      'particulars belonging to a third-party agency, and the home page reviews ' +
+      'and figures are invented. Keep SITE_NOINDEX=true, and clear SEED_DEMO ' +
+      'before this becomes a real client site.',
   )
 
   payload.logger.info('Seed complete.')
