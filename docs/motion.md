@@ -130,7 +130,7 @@ site's curve in spirit), triggered at 50% visibility, with `data-prefix` /
     notice first and can least easily name.
 22. **Custom cursor ring.** 42px gold ring, following at `lerp 0.16`, growing to
     66px with a tinted fill over links, buttons and cards. `(pointer: fine)`
-    only.
+    only. Built here and then removed; see the verdict table.
 23. **3D card tilt.** `rotateX(±6deg) rotateY(±8deg)` from cursor position
     within the card, `perspective(900px)`, plus an 8px lift.
 24. **Button shimmer.** A skewed white gradient sweeping `left: -80% → 130%`
@@ -158,27 +158,27 @@ Stripping the effects away, five decisions do the work:
 
 ### What is worth taking, and what is not
 
-| Reference feature                        | Verdict                                                                                                                                             |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Single ease curve + duration tiers       | **Take.** Free, and the biggest single win.                                                                                                         |
-| Masked line reveal on the h1             | **Take.** Highest impact per line of code on the page.                                                                                              |
-| Ken Burns hero                           | **Take.** 24s, imperceptible, kills the dead-still feeling.                                                                                         |
-| Hero scrub-out                           | **Take.** Pure CSS with scroll timelines.                                                                                                           |
-| Image drift inside card frames           | **Take.** The quiet workhorse.                                                                                                                      |
-| Scrubbed section titles                  | **Take.**                                                                                                                                           |
-| Multi-property hover on cards            | **Take.**                                                                                                                                           |
-| Button shimmer sweep                     | **Take.**                                                                                                                                           |
-| Marquee                                  | **Take.** We have real accreditations to put in it.                                                                                                 |
-| Animated counters                        | **Take.** Our figures come from the CMS as strings, so parse.                                                                                       |
-| Progress bar, header shrink, back-to-top | **Take**, but CSS-driven, not on a scroll listener.                                                                                                 |
-| Smooth scrolling (Lenis)                 | **Take.** This is the "fluid" the brief is about.                                                                                                   |
-| Custom cursor ring                       | **Take**, gated hard and trivially removable.                                                                                                       |
-| 3D card tilt                             | **Adapt.** Kept, but ±3.5°/±5° instead of ±6°/±8°.                                                                                                  |
-| About-image clip-path curtain            | **Take.** Applied to the three split-section photos.                                                                                                |
-| Chapter numerals, CTA background settle  | **Skip.** Numerals are an editorial device that needs the rest of that system to mean anything, and our CTA band has no background photo to settle. |
-| Scroll cue under the hero                | **Skip.** Our hero is not full-height, so a cue would point at content already on screen.                                                           |
-| Pinned horizontal gallery                | **Skip.** See below.                                                                                                                                |
-| Preloader curtain                        | **Skip.** See below.                                                                                                                                |
+| Reference feature                        | Verdict                                                                                                                                                               |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Single ease curve + duration tiers       | **Take.** Free, and the biggest single win.                                                                                                                           |
+| Masked line reveal on the h1             | **Take.** Highest impact per line of code on the page.                                                                                                                |
+| Ken Burns hero                           | **Take.** 24s, imperceptible, kills the dead-still feeling.                                                                                                           |
+| Hero scrub-out                           | **Take.** Pure CSS with scroll timelines.                                                                                                                             |
+| Image drift inside card frames           | **Take.** The quiet workhorse.                                                                                                                                        |
+| Scrubbed section titles                  | **Take.**                                                                                                                                                             |
+| Multi-property hover on cards            | **Take.**                                                                                                                                                             |
+| Button shimmer sweep                     | **Take.**                                                                                                                                                             |
+| Marquee                                  | **Take.** We have real accreditations to put in it.                                                                                                                   |
+| Animated counters                        | **Take.** Our figures come from the CMS as strings, so parse.                                                                                                         |
+| Progress bar, header shrink, back-to-top | **Take**, but CSS-driven, not on a scroll listener.                                                                                                                   |
+| Smooth scrolling (Lenis)                 | **Take.** This is the "fluid" the brief is about.                                                                                                                     |
+| Custom cursor ring                       | **Skip.** Built, tried, and taken back out: the client did not want a second cursor, and it is the one effect that draws attention to itself rather than to the page. |
+| 3D card tilt                             | **Adapt.** Kept, but ±3.5°/±5° instead of ±6°/±8°.                                                                                                                    |
+| About-image clip-path curtain            | **Take.** Applied to the three split-section photos.                                                                                                                  |
+| Chapter numerals, CTA background settle  | **Skip.** Numerals are an editorial device that needs the rest of that system to mean anything, and our CTA band has no background photo to settle.                   |
+| Scroll cue under the hero                | **Skip.** Our hero is not full-height, so a cue would point at content already on screen.                                                                             |
+| Pinned horizontal gallery                | **Skip.** See below.                                                                                                                                                  |
+| Preloader curtain                        | **Skip.** See below.                                                                                                                                                  |
 
 **The pinned horizontal gallery is skipped** because our services list is
 CMS-driven and of unknown length, and pinning needs a known measurement. The
@@ -287,10 +287,10 @@ Four layers, because one is not enough:
    timeline takes its progress from scroll position rather than from a clock.
    So every scroll-timeline block is additionally wrapped in
    `@media (prefers-reduced-motion: no-preference)`.
-3. `Motion.tsx`, `PointerEffects.tsx` and `SmoothScroll.tsx` check for
-   themselves and do nothing at all when it is set — no observer, no Lenis, no
-   cursor ring, no counter animation (the figure renders at its final value
-   immediately, because the server rendered it that way).
+3. `Motion.tsx`, `CardTilt.tsx` and `SmoothScroll.tsx` check for themselves
+   and do nothing at all when it is set — no observer, no Lenis, no tilt, no
+   counter animation (the figure renders at its final value immediately,
+   because the server rendered it that way).
 4. A `prefers-reduced-motion: reduce` block forces every revealable element
    back to `opacity: 1`. The `data-motion` flag is read once before the first
    paint, so it cannot know about a preference that changes afterwards; this

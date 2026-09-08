@@ -763,52 +763,6 @@
   }
 }
 
-/* ---------------------------------------------------------------------------
-   Cursor ring
-
-   Desktop pointers only, and removed outright under reduced motion. Purely
-   decorative: it never replaces the real cursor, so nothing is lost if a
-   browser ignores it.
---------------------------------------------------------------------------- */
-
-@layer components {
-  .cursor-ring {
-    position: fixed;
-    top: -1.3125rem;
-    left: -1.3125rem;
-    width: 2.625rem;
-    height: 2.625rem;
-    border: 1.5px solid color-mix(in oklab, var(--color-accent-400) 75%, transparent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 60;
-    opacity: 0;
-    transition:
-      opacity 300ms ease,
-      width 300ms var(--ease-smooth),
-      height 300ms var(--ease-smooth),
-      margin 300ms var(--ease-smooth),
-      background-color 300ms ease;
-  }
-
-  .cursor-ring[data-on] {
-    opacity: 1;
-  }
-
-  .cursor-ring[data-grow] {
-    width: 4.125rem;
-    height: 4.125rem;
-    margin: -0.75rem 0 0 -0.75rem;
-    background-color: color-mix(in oklab, var(--color-accent-400) 10%, transparent);
-  }
-
-  @media (pointer: coarse) {
-    .cursor-ring {
-      display: none;
-    }
-  }
-}
-
 /* Counters change width as they climb, and a heading that jitters sideways
    while it counts undoes the effect. */
 @layer components {

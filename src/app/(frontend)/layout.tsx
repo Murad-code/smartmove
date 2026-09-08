@@ -4,11 +4,11 @@ import React from 'react'
 
 import { Analytics } from '@/components/layout/Analytics'
 import { BackToTop } from '@/components/layout/BackToTop'
+import { CardTilt } from '@/components/layout/CardTilt'
 import { CookieConsent } from '@/components/layout/CookieConsent'
 import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
 import { Motion } from '@/components/layout/Motion'
-import { PointerEffects } from '@/components/layout/PointerEffects'
 import { ScrollProgress } from '@/components/layout/ScrollProgress'
 import { SkipLink } from '@/components/layout/SkipLink'
 import { SmoothScroll } from '@/components/layout/SmoothScroll'
@@ -124,12 +124,11 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         <BackToTop />
 
         {/* The whole client-side motion layer: smoothed scrolling, one
-            IntersectionObserver for reveals and counters, and the decorative
-            pointer effects. Nothing else on the site needs `'use client'` for
-            any of it. */}
+            IntersectionObserver for reveals and counters, and the card tilt.
+            Nothing else on the site needs `'use client'` for any of it. */}
         <SmoothScroll />
         <Motion />
-        <PointerEffects />
+        <CardTilt />
 
         <JsonLd data={realEstateAgentSchema(business, settings)} />
 

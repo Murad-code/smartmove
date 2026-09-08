@@ -121,7 +121,7 @@ browser state, an event handler or a browser API. The current client components
 are: `MobileNav`, `NavLinks`, `PropertyFilters`, `PropertyGallery`, the four
 enquiry forms, `FormShell`, `CookieConsent`, `Analytics`, and the three motion
 components mounted once in the frontend layout (`SmoothScroll`, `Motion`,
-`PointerEffects`). Adding to that list should be a deliberate decision.
+`CardTilt`). Adding to that list should be a deliberate decision.
 
 The motion components work off class names and data attributes in the markup
 rather than props, which is what keeps the rest of the site on the server: a
