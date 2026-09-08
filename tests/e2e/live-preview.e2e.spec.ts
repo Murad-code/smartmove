@@ -154,7 +154,7 @@ test('the home page can be previewed', async ({ page }) => {
   await page.goto('/admin/globals/home-page')
 
   const preview = await openPreview(page)
-  const heading = await page.locator('#field-hero__heading').inputValue()
+  const heading = await page.locator('#field-hero__slides__0__heading').inputValue()
 
   await expect(preview.getByRole('heading', { level: 1, name: heading })).toBeVisible()
 })
