@@ -95,7 +95,11 @@ Smart Move's.** They are development scaffolding only:
 
 - They are only created when `SEED_DEMO_PROPERTIES=true`, which is off by
   default and documented as development-only.
-- The seed refuses to create them at all when `NODE_ENV=production`.
+- Boot-time seeding in production still skips them unless
+  `SEED_DEMO_PROPERTIES_THIRD_PARTY_ACKNOWLEDGED=true`.
+- On a `SITE_NOINDEX=true` preview, an admin can load them from the Dashboard
+  after an explicit confirmation. That path is not offered on a live indexed
+  site.
 - The seed prints a warning naming the restriction every time it runs.
 - One photograph still shows the other agency's "To Let" board.
 

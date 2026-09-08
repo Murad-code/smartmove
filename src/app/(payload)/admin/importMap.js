@@ -17,6 +17,7 @@ import { ContactDetailsNote as ContactDetailsNote_6618783976c7b4837d979b4c8dc1ce
 import { BrandIcon as BrandIcon_d9087a380941d12f95aff168665b00b4 } from '@/components/admin/BrandIcon'
 import { BrandLogo as BrandLogo_fd0a9bbb35693e340bbbfa9596236d37 } from '@/components/admin/BrandLogo'
 import { HeaderLogout as HeaderLogout_08331a78061c89098aff2e2a9d5d155f } from '@/components/admin/HeaderLogout'
+import { DashboardTools as DashboardTools_452e18dc31cc5f23865f44f53acfc706 } from '@/components/admin/DashboardTools'
 import { DashboardNavLink as DashboardNavLink_3987d42d9edba53cc710fb1f6cc541b5 } from '@/components/admin/DashboardNavLink'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -41,6 +42,7 @@ export const importMap = {
   "@/components/admin/BrandIcon#BrandIcon": BrandIcon_d9087a380941d12f95aff168665b00b4,
   "@/components/admin/BrandLogo#BrandLogo": BrandLogo_fd0a9bbb35693e340bbbfa9596236d37,
   "@/components/admin/HeaderLogout#HeaderLogout": HeaderLogout_08331a78061c89098aff2e2a9d5d155f,
+  "@/components/admin/DashboardTools#DashboardTools": DashboardTools_452e18dc31cc5f23865f44f53acfc706,
   "@/components/admin/DashboardNavLink#DashboardNavLink": DashboardNavLink_3987d42d9edba53cc710fb1f6cc541b5,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

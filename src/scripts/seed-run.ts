@@ -68,8 +68,17 @@ async function upsertBrandImage(
   return media.id
 }
 
-export async function runSeed(payload: Payload): Promise<void> {
-  const seedDemoProperties = process.env.SEED_DEMO_PROPERTIES === 'true'
+export type RunSeedOptions = {
+  /**
+   * Load the third-party demo listings. Used by the admin dashboard button on
+   * a noindex preview. Boot-time seeding still follows the environment flags.
+   */
+  includeDemoProperties?: boolean
+}
+
+export async function runSeed(payload: Payload, options: RunSeedOptions = {}): Promise<void> {
+  const seedDemoProperties =
+    options.includeDemoProperties === true || process.env.SEED_DEMO_PROPERTIES === 'true'
 
   // --- Admin user ----------------------------------------------------------
   const email = process.env.SEED_ADMIN_EMAIL || 'admin@smartmove4u.co.uk'
@@ -200,7 +209,11 @@ export async function runSeed(payload: Payload): Promise<void> {
   // it is named so it cannot be set without meaning to.
   const acknowledged = process.env.SEED_DEMO_PROPERTIES_THIRD_PARTY_ACKNOWLEDGED === 'true'
 
-  if (process.env.NODE_ENV === 'production' && !acknowledged) {
+  if (
+    options.includeDemoProperties !== true &&
+    process.env.NODE_ENV === 'production' &&
+    !acknowledged
+  ) {
     payload.logger.warn(
       'Skipping demo properties: this is a production build and they use ' +
         'third-party photographs and particulars. For a private preview set ' +

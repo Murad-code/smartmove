@@ -37,6 +37,7 @@ test('the sidebar shows business language, not developer language', async ({ pag
   await expect(nav.getByRole('link', { name: 'Properties', exact: true })).toBeVisible()
   await expect(nav.getByRole('link', { name: 'Website pages' })).toBeVisible()
   await expect(nav.getByRole('link', { name: 'Enquiries' })).toBeVisible()
+  await expect(nav.getByRole('link', { name: 'Users' })).toBeVisible()
   await expect(nav.getByRole('link', { name: 'Business Details' })).toBeVisible()
   await expect(nav.getByRole('link', { name: 'Media' })).toBeVisible()
 
@@ -138,6 +139,17 @@ test('enquiries sent through the website appear in the admin panel', async ({ pa
   await expect(page.getByRole('columnheader', { name: /Name/ })).toBeVisible()
   await expect(page.getByRole('columnheader', { name: /Type of enquiry/ })).toBeVisible()
   await expect(page.getByRole('columnheader', { name: /Dealt with/ })).toBeVisible()
+})
+
+test('an admin can open the form to add another user', async ({ page }) => {
+  await page.goto('/admin')
+  await expect(page.getByRole('heading', { name: 'Demo listings' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Load demo properties' })).toBeVisible()
+
+  await page.goto('/admin/collections/users/create')
+  await expect(page.locator('#field-name')).toBeVisible()
+  await expect(page.locator('#field-email')).toBeVisible()
+  await expect(page.locator('#field-role')).toBeVisible()
 })
 
 test('the sidebar and header make it obvious how to go home and log out', async ({ page }) => {

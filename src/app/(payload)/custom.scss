@@ -43,3 +43,49 @@ html[data-theme='light'] {
 .header-log-out:hover {
   background: var(--theme-elevation-50);
 }
+
+.dashboard-tools {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-tools__card {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 6px;
+  background: var(--theme-elevation-0);
+}
+
+.dashboard-tools__heading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.dashboard-tools__card p {
+  margin: 0 0 0.75rem;
+  max-width: 42rem;
+}
+
+.dashboard-tools__button {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+  background: var(--theme-elevation-1000);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dashboard-tools__button--quiet {
+  background: transparent;
+  color: var(--theme-text);
+}
+
+.dashboard-tools__error {
+  color: var(--theme-error-500);
+}

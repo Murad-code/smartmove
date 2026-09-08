@@ -232,7 +232,7 @@ first.
 
 ## Adding someone to the website admin
 
-1. Click **Settings**, then **People**
+1. Click **Settings**, then **Users**
 2. Click **Create new**
 3. Enter their name, email address and a password
 4. Choose what they can do:
@@ -240,6 +240,14 @@ first.
    - **Manage everything, including staff accounts** — only for people you
      fully trust
 5. Click **Save**
+
+The first account created when the site was set up cannot be deleted. That is
+deliberate, so you cannot lock yourself out.
+
+On a private preview, the Dashboard also has a **Load demo properties** button.
+It copies example listings from another agency so the site can be demonstrated.
+Do not use it on the live Smart Move website, and delete those listings before
+launch.
 
 ---
 

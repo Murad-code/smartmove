@@ -21,7 +21,9 @@ import { Pages } from './collections/Pages'
 import { Properties } from './collections/Properties'
 import { Services } from './collections/Services'
 import { Users } from './collections/Users'
+import { seedDemoEndpoint } from './endpoints/seed-demo'
 import { payloadEmailAdapter } from './lib/email/payload-adapter'
+import { env } from './lib/env'
 import { migrations } from './migrations'
 import { BusinessDetails } from './globals/BusinessDetails'
 import { HomePage } from './globals/HomePage'
@@ -30,10 +32,8 @@ import { SiteSettings } from './globals/SiteSettings'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/+$/, '')
-
 export default buildConfig({
-  serverURL: siteUrl,
+  serverURL: env.siteUrl,
 
   admin: {
     user: Users.slug,
@@ -49,6 +49,7 @@ export default buildConfig({
         Icon: '@/components/admin/BrandIcon#BrandIcon',
       },
       beforeNavLinks: ['@/components/admin/DashboardNavLink#DashboardNavLink'],
+      beforeDashboard: ['@/components/admin/DashboardTools#DashboardTools'],
       actions: ['@/components/admin/HeaderLogout#HeaderLogout'],
     },
     meta: {
@@ -72,10 +73,11 @@ export default buildConfig({
         { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
       ],
       url: ({ data, collectionConfig }) => {
+        const origin = env.siteUrl
         const slug = typeof data?.slug === 'string' ? data.slug : ''
-        if (collectionConfig?.slug === 'properties') return `${siteUrl}/properties/${slug}`
-        if (collectionConfig?.slug === 'services') return `${siteUrl}/services/${slug}`
-        return `${siteUrl}/${slug}`
+        if (collectionConfig?.slug === 'properties') return `${origin}/properties/${slug}`
+        if (collectionConfig?.slug === 'services') return `${origin}/services/${slug}`
+        return `${origin}/${slug}`
       },
     },
   },
@@ -91,6 +93,7 @@ export default buildConfig({
 
   collections: [Properties, Pages, Services, Enquiries, Media, Users],
   globals: [HomePage, BusinessDetails, SiteSettings],
+  endpoints: [seedDemoEndpoint],
 
   // A restricted toolbar. The owner writes property descriptions, not
   // documents, so anything that could break the page design is left out.
@@ -126,10 +129,11 @@ export default buildConfig({
       generateDescription: ({ doc }) =>
         (doc?.shortDescription as string) || (doc?.summary as string) || '',
       generateURL: ({ doc, collectionSlug }) => {
+        const origin = env.siteUrl
         const slug = (doc?.slug as string) || ''
-        if (collectionSlug === 'properties') return `${siteUrl}/properties/${slug}`
-        if (collectionSlug === 'services') return `${siteUrl}/services/${slug}`
-        return `${siteUrl}/${slug}`
+        if (collectionSlug === 'properties') return `${origin}/properties/${slug}`
+        if (collectionSlug === 'services') return `${origin}/services/${slug}`
+        return `${origin}/${slug}`
       },
     }),
   ],
