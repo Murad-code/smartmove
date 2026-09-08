@@ -116,7 +116,20 @@ test('a property can be added, published, marked as let and removed', async ({ p
   await page.goto(editUrl)
   await page.locator('#field-status').click()
   await page.getByRole('option', { name: 'Let — hide from the website' }).click()
+  // Wait for the save itself, not for the form. The select shows the new label
+  // the moment it is picked, so reading it straight back passes while the save
+  // is still in flight, and navigating away then cancels the request before it
+  // lands. Under a full parallel run that is enough to lose the change.
+  const saved = page.waitForResponse(
+    (response) =>
+      response.url().includes('/api/properties') &&
+      response.request().method() === 'PATCH' &&
+      response.ok(),
+  )
   await page.getByRole('button', { name: 'Save', exact: true }).click()
+  await saved
+
+  await page.reload()
   await expect(page.locator('#field-status')).toContainText('Let — hide from the website')
 
   const hidden = await page.goto(`/properties/${slug}`)
