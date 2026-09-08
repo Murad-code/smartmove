@@ -31,6 +31,9 @@ export type IconName =
   | 'car'
   | 'sofa'
   | 'leaf'
+  | 'pause'
+  | 'play'
+  | 'quote'
 
 const PATHS: Record<IconName, React.ReactNode> = {
   bed: (
@@ -118,6 +121,16 @@ const PATHS: Record<IconName, React.ReactNode> = {
     </>
   ),
   leaf: <path d="M20 4C9 4 4 9 4 16v4M4 16C4 9 11 6 20 4c0 9-4 14-11 14a7 7 0 0 1-5-2" />,
+  pause: (
+    <>
+      <rect x="7.5" y="5" width="3.5" height="14" rx="1.2" />
+      <rect x="13" y="5" width="3.5" height="14" rx="1.2" />
+    </>
+  ),
+  play: <path d="M8 5.6v12.8L19 12z" />,
+  quote: (
+    <path d="M10 11H5.5V8A2.5 2.5 0 0 1 8 5.5M10 11v2.5A4.5 4.5 0 0 1 5.5 18M20 11h-4.5V8A2.5 2.5 0 0 1 18 5.5M20 11v2.5A4.5 4.5 0 0 1 15.5 18" />
+  ),
 }
 
 export function Icon({
