@@ -4,7 +4,7 @@ import React from 'react'
 
 import { HeroCarousel, type HeroSlide } from '@/components/layout/HeroCarousel'
 import { LivePreview } from '@/components/layout/LivePreview'
-import { PropertyGrid } from '@/components/property/PropertyCard'
+import { PropertyRail } from '@/components/property/PropertyCard'
 import { ButtonLink } from '@/components/ui/Button'
 import { Icon } from '@/components/ui/Icon'
 import { RichText } from '@/components/ui/RichText'
@@ -144,7 +144,7 @@ export default async function HomePage({
 
         <div className="mt-10">
           {properties.length ? (
-            <PropertyGrid properties={properties} />
+            <PropertyRail properties={properties} />
           ) : (
             <div className="rounded-card border border-dashed border-ink-300 bg-white p-10 text-center">
               <Icon name="house" className="mx-auto size-10 text-ink-400" />

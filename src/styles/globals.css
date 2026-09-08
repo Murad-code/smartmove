@@ -772,6 +772,44 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Horizontal rails
+--------------------------------------------------------------------------- */
+
+@layer components {
+  /* The peek of the next card is the affordance, so the bar itself is only
+     noise: it sits over the cards on the platforms that show one permanently,
+     and every card in the rail is a link, so the whole thing stays reachable
+     with a keyboard whether the bar is there or not. */
+  .rail {
+    scrollbar-width: none;
+  }
+
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* No drifting photographs inside a rail, for a reason that is easy to miss:
+     `overflow-x: auto` makes the rail a scroll container in *both* axes, so
+     the `view()` timeline on a card image resolves against the rail, which
+     never scrolls vertically, instead of against the page. The drift would
+     stick at whatever progress it happened to start on. The hover zoom is
+     restored underneath, since that part never depended on scrolling. */
+  .rail .drift-media {
+    --drift-zoom: 1;
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @layer components {
+    .rail .group:hover .drift-media,
+    .rail .group:focus-within .drift-media {
+      --drift-zoom: 1.08;
+    }
+  }
+}
+
 /* Counters change width as they climb, and a heading that jitters sideways
    while it counts undoes the effect. */
 @layer components {

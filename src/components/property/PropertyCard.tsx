@@ -111,6 +111,56 @@ export function PropertyCard({
   )
 }
 
+/**
+ * The home page's featured properties.
+ *
+ * A horizontal rail rather than a grid. On a phone each card is just under a
+ * screen wide and the track snaps, so a swipe settles on one card at a time
+ * with the edge of the next one showing to say there is more. From `sm` up the
+ * snap loosens to `proximity`, because on a wide screen a scroll that insists
+ * on landing exactly on a card fights the trackpad.
+ *
+ * Card widths are worked out from the visible width of the rail, so the three
+ * featured properties fill a desktop row exactly and there is no scroll and no
+ * dead space. Raise the limit in the CMS and it starts scrolling on its own.
+ *
+ * `scroll-p*` matches the track's own padding, so a snapped card lines up with
+ * the heading above it rather than with the bare edge of the window.
+ */
+export function PropertyRail({
+  properties,
+  priorityCount = 2,
+}: {
+  properties: PropertySummary[]
+  priorityCount?: number
+}) {
+  return (
+    // Pulled out to the window edges so the rail runs off the side of the
+    // screen, which is what makes it read as scrollable, then padded back in
+    // so the first card still aligns with the text above it.
+    <div className="-mx-5 sm:-mx-6 lg:-mx-8">
+      <ul
+        className={[
+          'rail reveal-group flex snap-x snap-mandatory overflow-x-auto sm:snap-proximity',
+          // Vertical room for the hover lift and its shadow, which the
+          // horizontal overflow would otherwise clip.
+          'gap-5 px-5 py-4 sm:gap-6 sm:px-6 lg:px-8',
+          'scroll-px-5 sm:scroll-px-6 lg:scroll-px-8',
+        ].join(' ')}
+      >
+        {properties.map((property, index) => (
+          <li
+            key={property.id}
+            className="flex w-[86%] shrink-0 snap-start sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
+          >
+            <PropertyCard property={property} priority={index < priorityCount} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export function PropertyGrid({
   properties,
   priorityCount = 3,
