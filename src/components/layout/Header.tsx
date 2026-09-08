@@ -35,10 +35,10 @@ export async function Header() {
   const phoneHref = phone ? telHref(phone) : undefined
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink-200 bg-white/95 backdrop-blur-sm">
+    <header className="header-shell sticky top-0 z-40 border-b border-ink-200 backdrop-blur-sm">
       {/* Utility strip. Hidden on small screens, where the call button in the
           mobile menu does the same job with less clutter. */}
-      <div className="hidden border-b border-ink-100 bg-navy-900 text-navy-100 lg:block">
+      <div className="header-strip hidden border-b border-ink-100 bg-navy-900 text-navy-100 lg:grid">
         <Container>
           <div className="flex items-center justify-between py-2 text-sm">
             <p>{business.tagline || 'Independent letting agents in Scunthorpe'}</p>
@@ -64,8 +64,8 @@ export async function Header() {
       </div>
 
       <Container>
-        <div className="flex h-18 items-center justify-between gap-2 py-3 sm:gap-4">
-          <div className="min-w-0">
+        <div className="header-bar flex items-center justify-between gap-2 sm:gap-4">
+          <div className="header-logo min-w-0">
             <Logo logo={settings.logo} companyName={business.companyName} priority />
           </div>
 
