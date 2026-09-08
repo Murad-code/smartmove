@@ -75,9 +75,12 @@ export async function Header() {
 
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             {phone && phoneHref ? (
+              // Square and the same size as the menu button beside it. Two
+              // controls of matching weight read as a pair; the old padded
+              // link was a different shape and looked accidental next to it.
               <a
                 href={phoneHref}
-                className="inline-flex items-center gap-2 rounded-lg px-3 py-2 font-semibold text-navy-800 hover:bg-navy-50 lg:hidden"
+                className="grid size-11 place-items-center rounded-lg text-navy-800 transition-colors hover:bg-navy-50 active:bg-navy-100 lg:hidden"
               >
                 <Icon name="phone" className="size-5" />
                 <span className="sr-only">Call {phone}</span>

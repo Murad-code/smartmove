@@ -114,7 +114,7 @@ export function MobileNav({
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls="mobile-navigation"
-        className="group inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-navy-800 transition-colors hover:bg-navy-50 active:bg-navy-100 lg:hidden"
+        className="group grid size-11 place-items-center rounded-lg text-navy-800 transition-colors hover:bg-navy-50 active:bg-navy-100 lg:hidden"
       >
         {/* Three bars rather than the menu glyph, so they can react to a
             press. There is no hover on a phone, so `active` is the state that
@@ -155,7 +155,12 @@ export function MobileNav({
                 // dragging the page behind it.
                 data-lenis-prevent
                 className={cn(
-                  'absolute inset-y-0 right-0 flex w-full max-w-sm flex-col overflow-y-auto bg-white shadow-raised',
+                  // Not full width. A drawer that leaves a strip of the page
+                  // showing says what it is and gives somewhere to tap to
+                  // dismiss it; `max-w-sm` on a 390px phone left a six-pixel
+                  // sliver, which is neither. The cap keeps that strip on the
+                  // narrowest phones too.
+                  'absolute inset-y-0 right-0 flex w-80 max-w-[calc(100%-3rem)] flex-col overflow-y-auto bg-white shadow-raised',
                   closing ? 'animate-panel-out' : 'animate-panel-in',
                 )}
               >
@@ -164,7 +169,7 @@ export function MobileNav({
                   <button
                     type="button"
                     onClick={() => requestClose({ returnFocus: true })}
-                    className="rounded-lg p-2 text-navy-800 transition-colors hover:bg-navy-50 active:bg-navy-100"
+                    className="grid size-11 place-items-center rounded-lg text-navy-800 transition-colors hover:bg-navy-50 active:bg-navy-100"
                   >
                     <Icon name="close" className="size-6" />
                     <span className="sr-only">Close the menu</span>
@@ -181,11 +186,21 @@ export function MobileNav({
                             href={link.href}
                             aria-current={current ? 'page' : undefined}
                             className={cn(
-                              'block rounded-lg px-3 py-3 text-lg font-medium',
+                              'flex items-center justify-between gap-3 rounded-lg px-3 py-3 text-lg font-medium',
                               current ? 'bg-navy-50 text-navy-900' : 'text-ink-800 hover:bg-ink-50',
                             )}
                           >
                             {link.label}
+                            {/* Decorative: the row is already a link, and
+                                announcing an arrow after every item is noise. */}
+                            <Icon
+                              name="chevron-right"
+                              aria-hidden="true"
+                              className={cn(
+                                'size-4 shrink-0',
+                                current ? 'text-navy-500' : 'text-ink-400',
+                              )}
+                            />
                           </Link>
                         </li>
                       )

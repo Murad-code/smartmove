@@ -36,7 +36,11 @@ export function Logo({
           width={image.width ?? 200}
           height={image.height ?? 56}
           priority={priority}
-          className="h-10 w-auto sm:h-11"
+          // The wordmark is about five times wider than it is tall, so a
+          // height that looks right on a desktop bar eats over half a phone's
+          // width and leaves the controls beside it looking like an
+          // afterthought.
+          className="h-9 w-auto sm:h-11"
         />
       ) : (
         <>

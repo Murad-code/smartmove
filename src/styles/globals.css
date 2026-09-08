@@ -523,13 +523,22 @@
     box-shadow: 0 0.75rem 2.5rem rgb(0 33 74 / 0.12);
   }
 
+  /* Shorter on a phone, and it shrinks by less there: the logo is a wide
+     wordmark with a tagline under it, so there is not much height to give up
+     before it starts to look squeezed against the edges of the bar. */
   .header-bar {
-    height: 4.5rem;
+    height: 4rem;
     transition: height 350ms var(--ease-smooth);
   }
 
   [data-scrolled] .header-bar {
     height: 3.5rem;
+  }
+
+  @media (width >= 40rem) {
+    .header-bar {
+      height: 4.5rem;
+    }
   }
 
   /* The contact strip collapses once you are reading rather than arriving.
