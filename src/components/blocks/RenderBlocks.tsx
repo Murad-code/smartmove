@@ -11,6 +11,7 @@ import { Container } from '@/components/ui/Container'
 import { Icon } from '@/components/ui/Icon'
 import { RichText } from '@/components/ui/RichText'
 import { Section, SectionHeading } from '@/components/ui/Section'
+import { TestimonialGrid } from '@/components/ui/Testimonial'
 import { cn } from '@/lib/cn'
 import { env } from '@/lib/env'
 import { findFeaturedProperties } from '@/lib/properties'
@@ -225,6 +226,18 @@ async function BlockRenderer({ block }: { block: Block }): Promise<React.ReactNo
                 <RichText data={item.answer} className="mt-3" />
               </details>
             ))}
+          </div>
+        </Section>
+      )
+
+    case 'testimonials':
+      return (
+        <Section background={block.background === 'white' ? 'white' : 'grey'}>
+          {block.heading ? (
+            <SectionHeading heading={block.heading} intro={block.intro} align="center" />
+          ) : null}
+          <div className={cn(block.heading && 'mt-12')}>
+            <TestimonialGrid items={block.items ?? []} />
           </div>
         </Section>
       )

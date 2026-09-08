@@ -270,6 +270,49 @@ export const FaqBlock: Block = {
   ],
 }
 
+export const TestimonialsBlock: Block = {
+  slug: 'testimonials',
+  labels: { singular: 'What people say', plural: 'What people say' },
+  interfaceName: 'TestimonialsBlock',
+  fields: [
+    ...headingFields,
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      maxRows: 6,
+      label: 'Reviews',
+      labels: { singular: 'Review', plural: 'Reviews' },
+      fields: [
+        { name: 'quote', type: 'textarea', required: true, label: 'What they said' },
+        { name: 'name', type: 'text', required: true, label: 'Their name' },
+        {
+          name: 'role',
+          type: 'select',
+          label: 'They are a',
+          defaultValue: 'tenant',
+          options: [
+            { label: 'Tenant', value: 'tenant' },
+            { label: 'Landlord', value: 'landlord' },
+            { label: 'Seller', value: 'seller' },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'background',
+      type: 'select',
+      label: 'Background',
+      defaultValue: 'grey',
+      options: [
+        { label: 'White', value: 'white' },
+        { label: 'Light grey', value: 'grey' },
+      ],
+    },
+  ],
+}
+
 export const pageBlocks = [
   TextBlock,
   FeatureListBlock,
@@ -278,6 +321,7 @@ export const pageBlocks = [
   CallToActionBlock,
   PropertyShowcaseBlock,
   FaqBlock,
+  TestimonialsBlock,
   ContactDetailsBlock,
   FormBlock,
 ]
