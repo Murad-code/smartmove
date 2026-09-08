@@ -355,6 +355,7 @@ export interface Page {
         | CallToActionBlock
         | PropertyShowcaseBlock
         | FaqBlock
+        | TestimonialsBlock
         | ContactDetailsBlock
         | FormBlock
       )[]
@@ -529,6 +530,24 @@ export interface FaqBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock".
+ */
+export interface TestimonialsBlock {
+  heading?: string | null;
+  intro?: string | null;
+  items: {
+    quote: string;
+    name: string;
+    role?: ('tenant' | 'landlord' | 'seller') | null;
+    id?: string | null;
+  }[];
+  background?: ('white' | 'grey') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'testimonials';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ContactDetailsBlock".
  */
 export interface ContactDetailsBlock {
@@ -574,6 +593,7 @@ export interface Service {
         | CallToActionBlock
         | PropertyShowcaseBlock
         | FaqBlock
+        | TestimonialsBlock
         | ContactDetailsBlock
         | FormBlock
       )[]
@@ -832,6 +852,7 @@ export interface PagesSelect<T extends boolean = true> {
         callToAction?: T | CallToActionBlockSelect<T>;
         propertyShowcase?: T | PropertyShowcaseBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
+        testimonials?: T | TestimonialsBlockSelect<T>;
         contactDetails?: T | ContactDetailsBlockSelect<T>;
         form?: T | FormBlockSelect<T>;
       };
@@ -960,6 +981,25 @@ export interface FaqBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock_select".
+ */
+export interface TestimonialsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  items?:
+    | T
+    | {
+        quote?: T;
+        name?: T;
+        role?: T;
+        id?: T;
+      };
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ContactDetailsBlock_select".
  */
 export interface ContactDetailsBlockSelect<T extends boolean = true> {
@@ -998,6 +1038,7 @@ export interface ServicesSelect<T extends boolean = true> {
         callToAction?: T | CallToActionBlockSelect<T>;
         propertyShowcase?: T | PropertyShowcaseBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
+        testimonials?: T | TestimonialsBlockSelect<T>;
         contactDetails?: T | ContactDetailsBlockSelect<T>;
         form?: T | FormBlockSelect<T>;
       };
@@ -1196,18 +1237,30 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface HomePage {
   id: number;
-  hero: {
-    heading: string;
-    subheading?: string | null;
-    image?: (number | null) | Media;
-    primaryCta?: {
-      label?: string | null;
-      href?: string | null;
-    };
-    secondaryCta?: {
-      label?: string | null;
-      href?: string | null;
-    };
+  hero?: {
+    /**
+     * One slide shows as a still banner. Add a second and they rotate.
+     */
+    slides?:
+      | {
+          heading: string;
+          subheading?: string | null;
+          image?: (number | null) | Media;
+          primaryCta?: {
+            label?: string | null;
+            href?: string | null;
+          };
+          secondaryCta?: {
+            label?: string | null;
+            href?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Visitors can always use the arrows. Anyone who has asked their device to reduce motion sees a still banner either way.
+     */
+    autoplay?: boolean | null;
   };
   highlights?:
     | {
@@ -1235,6 +1288,16 @@ export interface HomePage {
     } | null;
     image?: (number | null) | Media;
   };
+  /**
+   * Shown as a band across the page. Leave empty to hide it. Four reads best.
+   */
+  stats?:
+    | {
+        value: string;
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
   featuredProperties?: {
     heading?: string | null;
     intro?: string | null;
@@ -1280,6 +1343,7 @@ export interface HomePage {
       | {
           title: string;
           description?: string | null;
+          icon?: ('key' | 'house' | 'shield' | 'spanner' | 'chart' | 'document' | 'people' | 'pound') | null;
           id?: string | null;
         }[]
       | null;
@@ -1291,6 +1355,21 @@ export interface HomePage {
       | {
           label: string;
           href: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  testimonials?: {
+    heading?: string | null;
+    intro?: string | null;
+    /**
+     * Leave empty to hide this section. Three reads best.
+     */
+    items?:
+      | {
+          quote: string;
+          name: string;
+          role?: ('tenant' | 'landlord' | 'seller') | null;
           id?: string | null;
         }[]
       | null;
@@ -1431,21 +1510,27 @@ export interface HomePageSelect<T extends boolean = true> {
   hero?:
     | T
     | {
-        heading?: T;
-        subheading?: T;
-        image?: T;
-        primaryCta?:
+        slides?:
           | T
           | {
-              label?: T;
-              href?: T;
+              heading?: T;
+              subheading?: T;
+              image?: T;
+              primaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              id?: T;
             };
-        secondaryCta?:
-          | T
-          | {
-              label?: T;
-              href?: T;
-            };
+        autoplay?: T;
       };
   highlights?:
     | T
@@ -1460,6 +1545,13 @@ export interface HomePageSelect<T extends boolean = true> {
         heading?: T;
         body?: T;
         image?: T;
+      };
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
       };
   featuredProperties?:
     | T
@@ -1516,6 +1608,7 @@ export interface HomePageSelect<T extends boolean = true> {
           | {
               title?: T;
               description?: T;
+              icon?: T;
               id?: T;
             };
       };
@@ -1529,6 +1622,20 @@ export interface HomePageSelect<T extends boolean = true> {
           | {
               label?: T;
               href?: T;
+              id?: T;
+            };
+      };
+  testimonials?:
+    | T
+    | {
+        heading?: T;
+        intro?: T;
+        items?:
+          | T
+          | {
+              quote?: T;
+              name?: T;
+              role?: T;
               id?: T;
             };
       };
