@@ -85,6 +85,36 @@ On the Photos tab, drag a picture using the handle on its left-hand side and
 drop it where you want it. Drag the one you want as the main photo to the top.
 Then **Save**.
 
+### Keeping photos in folders
+
+Every picture you upload also goes into **Media**, which is one long list. You
+can make a folder per property so each one's photographs stay together.
+
+**Make the folder first, then upload into it.** That is much less work than
+filing pictures afterwards.
+
+1. Click **Media** in the menu on the left
+2. Click the **By Folder** tab at the top
+3. Click **Create folder**, type a name (the address works well, for example
+   "14 Marsden Drive"), and click **Save**
+4. Double-click the folder to open it
+5. Click **Bulk Upload** and pick that property's photographs. They go straight
+   into the folder.
+
+To move a picture that is already in Media, open it from the Media list and
+click the **No Folder** button near the top of the page to pick a folder. There
+is no way to move a batch of pictures at once, so folders are worth setting up
+before a new property's photographs go in rather than tidying up later.
+
+Folders are only for keeping the Media list tidy. Moving a picture into a
+folder never changes anything on the website, and a picture already used on a
+property stays on that property.
+
+The **All Media** tab always shows every picture whichever folder it is in, so
+nothing is ever hidden from you. Note that the **By Folder** tab lists folders
+only, so pictures you have not filed appear under **All Media** rather than at
+the top level of **By Folder**.
+
 ---
 
 ## Changing the rent

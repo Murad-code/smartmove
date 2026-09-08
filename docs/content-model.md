@@ -116,6 +116,14 @@ Four generated sizes, all converted to WebP: `thumbnail` (400×300),
 
 `alt` is required. `caption` is optional.
 
+Folders are on. Payload adds a `folder` relationship to each upload and a
+generated collection to hold the folders, given the slug `folders` so the
+folder view sits at `/admin/collections/media/folders`. Media is the only
+collection that opts in, so `browseByFolder` is off (there is no second folder
+tree to browse) and `collectionSpecific` is off (creating a folder asks for a
+name and nothing else). Folders are filing only: nothing on the website reads
+them.
+
 ### Users (`users`)
 
 | Field  | Notes                                                                                          |
