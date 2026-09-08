@@ -11,6 +11,8 @@ import { RichText } from '@/components/ui/RichText'
 import { Section, SectionHeading } from '@/components/ui/Section'
 import { StatGrid } from '@/components/ui/StatGrid'
 import { TestimonialGrid } from '@/components/ui/Testimonial'
+import { Marquee } from '@/components/ui/Marquee'
+import { findServices } from '@/lib/pages'
 import { findFeaturedProperties } from '@/lib/properties'
 import { toImage } from '@/lib/properties/mappers'
 import { previewRequested } from '@/lib/preview'
@@ -38,6 +40,10 @@ export default async function HomePage({
   const preview = previewRequested(await searchParams)
   const [home, business] = await Promise.all([getHomePage(), getBusinessDetails()])
   const properties = await findFeaturedProperties(home.featuredProperties?.limit ?? 3)
+  // The strip under the hero says what the business does, in the client's own
+  // words. Nothing about accreditations or fees goes in here: it is a claims
+  // strip in a prominent place and none of that has been confirmed.
+  const services = await findServices()
 
   const slides: HeroSlide[] = (home.hero?.slides ?? []).map((slide, position) => {
     const image = toImage(slide.image)
@@ -90,6 +96,8 @@ export default async function HomePage({
         }
       />
 
+      <Marquee items={services.map((service) => service.title)} />
+
       {/* Introduction ------------------------------------------------------ */}
       {home.intro?.heading || home.intro?.body ? (
         <Section>
@@ -101,13 +109,13 @@ export default async function HomePage({
               <RichText data={home.intro.body} className="mt-5" />
             </div>
             {introImage ? (
-              <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
+              <div className="curtain-in relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                 <Image
                   src={introImage.wideUrl ?? introImage.url}
                   alt={introImage.alt}
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="object-cover"
+                  className="drift-media object-cover"
                 />
               </div>
             ) : null}
@@ -160,13 +168,13 @@ export default async function HomePage({
         <Section>
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
             {landlordImage ? (
-              <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
+              <div className="curtain-in relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                 <Image
                   src={landlordImage.wideUrl ?? landlordImage.url}
                   alt={landlordImage.alt}
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="object-cover"
+                  className="drift-media object-cover"
                 />
               </div>
             ) : null}
@@ -204,13 +212,13 @@ export default async function HomePage({
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
             <div className="lg:order-2">
               {tenantImage ? (
-                <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
+                <div className="curtain-in relative aspect-[4/3] overflow-hidden rounded-card bg-ink-100 shadow-raised">
                   <Image
                     src={tenantImage.wideUrl ?? tenantImage.url}
                     alt={tenantImage.alt}
                     fill
                     sizes="(min-width: 1024px) 50vw, 100vw"
-                    className="object-cover"
+                    className="drift-media object-cover"
                   />
                 </div>
               ) : null}
@@ -257,7 +265,7 @@ export default async function HomePage({
             {home.whyUs.reasons.map((reason) => (
               <li
                 key={reason.id ?? reason.title}
-                className="rounded-card border border-ink-200 bg-white p-6 shadow-card transition-shadow hover:shadow-raised"
+                className="lift-card rounded-card border border-ink-200 bg-white p-6 shadow-card hover:border-transparent hover:shadow-raised"
               >
                 <span className="grid size-11 place-items-center rounded-lg bg-navy-50 text-navy-700">
                   <Icon name={reason.icon ?? 'shield'} />
