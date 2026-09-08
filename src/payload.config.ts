@@ -15,6 +15,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
+import { isStaff } from './access'
 import { Enquiries } from './collections/Enquiries'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
@@ -102,6 +103,35 @@ export default buildConfig({
   collections: [Properties, Pages, Services, Enquiries, Media, Users],
   globals: [HomePage, BusinessDetails, SiteSettings],
   endpoints: [seedDemoEndpoint],
+
+  // Folders for the collections that opt in with `folders: true`, which is
+  // Media alone. Payload generates a hidden collection to hold them; these
+  // options are the difference between that and something the owner can use.
+  folders: {
+    // The generated collection's slug shows up in the URL of the folder view.
+    // The default names the CMS vendor, which nothing in this panel does.
+    slug: 'folders',
+    // A top-level "browse by folder" screen would be a second route to the
+    // only folder tree there is. The owner reaches folders from Media.
+    browseByFolder: false,
+    // Restricting a folder to one collection is only meaningful with more
+    // than one folder-enabled collection. Off, so creating a folder asks for
+    // a name and nothing else.
+    collectionSpecific: false,
+    collectionOverrides: [
+      ({ collection }) => ({
+        ...collection,
+        // Payload defaults this collection to "any signed-in user". Filing
+        // media is staff work, stated with the same helper as Media itself.
+        access: {
+          read: isStaff,
+          create: isStaff,
+          update: isStaff,
+          delete: isStaff,
+        },
+      }),
+    ],
+  },
 
   // A restricted toolbar. The owner writes property descriptions, not
   // documents, so anything that could break the page design is left out.

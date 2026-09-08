@@ -18,9 +18,16 @@ export const Media: CollectionConfig = {
   labels: { singular: 'Image or file', plural: 'Media' },
   admin: {
     group: 'Website content',
-    description: 'Every photo and file used across the website.',
+    description:
+      'Every photo and file used across the website. Use the "By folder" tab to keep each property\u2019s photographs together.',
     defaultColumns: ['filename', 'alt', 'updatedAt'],
   },
+  // A letting agent accumulates a dozen or more photographs per property, so a
+  // flat list stops being usable after the first handful of listings. Folders
+  // add a "By folder" tab to the Media list where the owner can make a folder
+  // per property and drag uploads into it. Nothing on the website reads the
+  // folder: it is filing, not content. See `folders` in payload.config.ts.
+  folders: true,
   access: {
     read: anyone,
     create: isStaff,

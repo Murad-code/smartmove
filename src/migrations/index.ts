@@ -1,6 +1,7 @@
 import * as migration_20260906_111931_initial from './20260906_111931_initial';
 import * as migration_20260907_211528_key_features_as_text_list from './20260907_211528_key_features_as_text_list';
 import * as migration_20260908_003007_add_services_autosave from './20260908_003007_add_services_autosave';
+import * as migration_20260908_003158_add_media_folders from './20260908_003158_add_media_folders';
 
 export const migrations = [
   {
@@ -16,6 +17,11 @@ export const migrations = [
   {
     up: migration_20260908_003007_add_services_autosave.up,
     down: migration_20260908_003007_add_services_autosave.down,
-    name: '20260908_003007_add_services_autosave'
+    name: '20260908_003007_add_services_autosave',
+  },
+  {
+    up: migration_20260908_003158_add_media_folders.up,
+    down: migration_20260908_003158_add_media_folders.down,
+    name: '20260908_003158_add_media_folders'
   },
 ];
