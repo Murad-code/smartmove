@@ -7,7 +7,7 @@ pnpm test:e2e    # Playwright
 ```
 
 Both suites need a database. Run `pnpm migrate` and `pnpm seed` first, with
-`SEED_DEMO_PROPERTIES=true` so there is stock to browse and filter. The demo
+`SEED_DEMO=true` so there is stock to browse and filter. The demo
 stock comes from committed fixtures, so the tests never need network access.
 
 ## What is covered

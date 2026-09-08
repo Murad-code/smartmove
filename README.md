@@ -38,7 +38,7 @@ Then set up the database and start the app:
 
 ```bash
 pnpm migrate
-SEED_DEMO_PROPERTIES=true pnpm seed
+SEED_DEMO=true pnpm seed
 pnpm dev
 ```
 
@@ -46,7 +46,7 @@ pnpm dev
 - Admin: http://localhost:3000/admin, signing in with `SEED_ADMIN_EMAIL`
 
 The seed writes the starter pages, services and business details. With
-`SEED_DEMO_PROPERTIES=true` it also adds six demo properties from the fixtures
+`SEED_DEMO=true` it also adds six demo properties from the fixtures
 in `src/scripts/`. It is safe to re-run.
 
 > The demo photographs and particulars were taken from another agency's live

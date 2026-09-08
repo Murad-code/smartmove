@@ -323,7 +323,7 @@ add a route file when the page needs bespoke layout or query logic, as
 
 ## Testing
 
-Tests need a database: `pnpm migrate && SEED_DEMO_PROPERTIES=true pnpm seed`.
+Tests need a database: `pnpm migrate && SEED_DEMO=true pnpm seed`.
 
 Two gotchas that will otherwise look like bugs:
 
@@ -354,8 +354,19 @@ describes what is needed; never present invented legal wording as final.
 `src/scripts/demo-properties.json` and `src/scripts/demo-assets/` were scraped
 from another Scunthorpe agency's live listings so the site demonstrates with
 real photographs rather than placeholders. That content is not Smart Move's to
-publish. Do not weaken any of the guards: the `SEED_DEMO_PROPERTIES` flag, the
-`NODE_ENV === 'production'` refusal in the seed, or the warning it prints.
+publish.
+
+One flag controls all of it: `SEED_DEMO=true` loads the demo listings and the
+home page photography taken from them. It is off by default, and the seed logs
+a warning naming everything on the page that is not Smart Move's.
+
+It deliberately has **no** `NODE_ENV` refusal. The owner runs this deployment
+as a demonstration for prospective clients, so the demo has to work in
+production; that decision was taken on 2026-09-08 and the earlier
+production refusal, along with the second
+`SEED_DEMO_PROPERTIES_THIRD_PARTY_ACKNOWLEDGED` flag, was removed for it. Do
+not add either back. What still protects the client is `SITE_NOINDEX=true` on
+the demo box and the flag being off by default, so leave those alone.
 
 `pnpm scrape:demo` rebuilds the fixtures. It records what the source says;
 `src/scripts/demo-properties.ts` decides how that is presented, including the

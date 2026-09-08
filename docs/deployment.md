@@ -178,6 +178,13 @@ Seed complete.
 safe to leave set: every later restart logs `Seed skipped: this site is already
 set up` and changes nothing.
 
+On the demonstration box, set `SEED_DEMO=true` and leave `RUN_SEED_ON_BOOT`
+unset. That one flag loads the demo listings, the home page photography, the
+figures and the reviews, and re-applies them on every boot, so a restart always
+brings the demo back to a known state. Any edit made in the admin panel while
+demonstrating is lost on the next restart, which is the trade for not having to
+think about it.
+
 ---
 
 ## Part 6 — Protect the preview
@@ -275,6 +282,9 @@ editing, because it overwrites their changes:
 $C up -d && $C logs -f app
 # then set it back to true
 ```
+
+A box running `SEED_DEMO=true` already behaves this way and needs none of the
+above.
 
 ### Update Postgres and the base image
 

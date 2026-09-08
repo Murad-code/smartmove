@@ -133,7 +133,7 @@ pnpm install
 cp .env.example .env          # fill in DATABASE_URL, PAYLOAD_SECRET, SEED_ADMIN_PASSWORD
 docker compose up -d          # Postgres, or use your own
 pnpm migrate
-SEED_DEMO_PROPERTIES=true pnpm seed
+SEED_DEMO=true pnpm seed
 pnpm dev
 ```
 
@@ -272,11 +272,15 @@ control. A mis-typed rent has to be re-typed.
 **The seeded demo properties must be deleted before launch.** The six demo
 listings use photographs and particulars taken from another Scunthorpe
 agency's live site, so the demo looks like a real letting agency rather than
-lorem ipsum. That content is not Smart Move's to publish. Four guards are in
-place: the seed only creates them when `SEED_DEMO_PROPERTIES=true`, it refuses
-outright when `NODE_ENV=production`, it prints a warning every run, and the
-restriction is the first blocking item in
+lorem ipsum. That content is not Smart Move's to publish. Three guards are in
+place: the seed only creates them when `SEED_DEMO=true`, which is off by
+default; it prints a warning every run naming everything on the page that is
+not Smart Move's; and the restriction is the first blocking item in
 [client-content-required.md](client-content-required.md).
+
+`SEED_DEMO` is not blocked in production, because the demonstration site is a
+real deployment shown to prospective clients. `SITE_NOINDEX=true` on that box
+is what keeps the content out of search results.
 
 **Lettings only.** No `listingType` split for sales, pending confirmation that
 sales are still offered. Adding one is a select field and a migration.

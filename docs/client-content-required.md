@@ -87,7 +87,7 @@ is written in `src/scripts/seed-content.ts` and marked `DEMO CONTENT` there.
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Home page reviews**     | Three invented reviews attributed to "Rachel Bennett", "Dave Thornhill" and "Priya Sharma". These people do not exist and none of these things were said. Replace or delete before launch. |
 | **Home page figures**     | "20+ years letting in Scunthorpe" and "350+ local tenancies arranged" are illustrative and unverified. "Full management from 8%" came from the old website and still needs confirming.     |
-| **Home page photographs** | The banner, landlord and tenant photographs are pulled from the demo listings and belong to another agency. They only appear when `SEED_DEMO_PROPERTIES=true`.                             |
+| **Home page photographs** | The banner, landlord and tenant photographs are pulled from the demo listings and belong to another agency. They only appear when `SEED_DEMO=true`.                                        |
 
 The shopfront photograph on the home page is the exception: that one is Smart
 Move's own, taken from the existing website, and can stay.
@@ -112,10 +112,11 @@ realistic photographs and particulars rather than placeholders.
 **Those photographs and written particulars are that agency's property, not
 Smart Move's.** They are development scaffolding only:
 
-- They are only created when `SEED_DEMO_PROPERTIES=true`, which is off by
-  default and documented as development-only.
-- Boot-time seeding in production still skips them unless
-  `SEED_DEMO_PROPERTIES_THIRD_PARTY_ACKNOWLEDGED=true`.
+- They are only created when `SEED_DEMO=true`, which is off by default.
+- That flag works in production, deliberately: this deployment is shown to
+  prospective clients as a demonstration. What keeps it safe is that the demo
+  box also runs `SITE_NOINDEX=true`, so nothing is indexed. Clear `SEED_DEMO`
+  before the site becomes a real one.
 - On a `SITE_NOINDEX=true` preview, an admin can load them from the Dashboard
   after an explicit confirmation. That path is not offered on a live indexed
   site.
