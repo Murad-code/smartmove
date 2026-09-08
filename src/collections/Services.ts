@@ -19,7 +19,12 @@ export const Services: CollectionConfig = {
     update: isStaff,
     delete: isStaff,
   },
-  versions: { drafts: true },
+  // Autosaved drafts, matching Pages: live preview refreshes on every save, so
+  // autosave is what makes the preview keep up as the owner types.
+  versions: {
+    drafts: { autosave: { interval: 800 } },
+    maxPerDoc: 20,
+  },
   defaultSort: 'order',
   fields: [
     {
