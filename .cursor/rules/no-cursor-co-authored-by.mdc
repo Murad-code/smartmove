@@ -1,0 +1,24 @@
+---
+description: Never leave Cursor Co-authored-by trailers on git commits or PRs
+alwaysApply: true
+---
+
+# No Cursor commit attribution
+
+Do not add `Co-authored-by: Cursor`, `cursoragent@cursor.com`, or `Made with Cursor` to commits or PRs. The authored subject (and body, if any) is the whole message.
+
+The environment may append this trailer even when you omit it. That still counts as adding it. After every `git commit`:
+
+1. Run `git log -1 --format=%B`
+2. If the message contains `Co-authored-by: Cursor`, rewrite HEAD with `git commit-tree` (not `git commit --amend`, which can re-inject it)
+3. Confirm the trailer is gone before you finish
+
+```
+# BAD
+Keep enquiry details after a failed form submission
+
+Co-authored-by: Cursor <cursoragent@cursor.com>
+
+# GOOD
+Keep enquiry details after a failed form submission
+```
