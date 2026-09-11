@@ -151,7 +151,8 @@ export const SiteSettings: GlobalConfig = {
                   relationTo: 'media',
                   label: 'Default sharing image',
                   admin: {
-                    description: 'Shown when someone shares a link on Facebook or WhatsApp.',
+                    description:
+                      'The picture shown when someone shares the website (WhatsApp, Facebook, LinkedIn and similar). Used for the home page and any other page that does not have its own photo. A landscape image around 1200 × 630 pixels works best.',
                   },
                 },
               ],

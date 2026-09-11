@@ -17,18 +17,23 @@ import { findFeaturedProperties } from '@/lib/properties'
 import { toImage } from '@/lib/properties/mappers'
 import { previewRequested } from '@/lib/preview'
 import { buildMetadata } from '@/lib/seo'
-import { getBusinessDetails, getHomePage } from '@/lib/site'
+import { getBusinessDetails, getHomePage, getSiteSettings } from '@/lib/site'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [home, business] = await Promise.all([getHomePage(), getBusinessDetails()])
-  // The first slide is what a visitor and a link preview both land on.
+  const [home, business, settings] = await Promise.all([
+    getHomePage(),
+    getBusinessDetails(),
+    getSiteSettings(),
+  ])
   const lead = home.hero?.slides?.[0]
 
   return buildMetadata({
     title: business.tagline || lead?.heading,
     description: lead?.subheading,
     path: '/',
-    image: lead?.image,
+    // Website Settings → Search engines is the source of truth for link
+    // previews. The first banner slide is only used if nothing is uploaded.
+    image: settings.defaultSeo?.shareImage ?? lead?.image,
   })
 }
 

@@ -30,6 +30,12 @@ export async function buildMetadata({
 
   const shareImage = toImage(image) ?? toImage(settings.defaultSeo?.shareImage)
   const url = new URL(path, env.siteUrl).toString()
+  const shareImageMeta = shareImage
+    ? {
+        url: new URL(shareImage.wideUrl ?? shareImage.url, env.siteUrl).toString(),
+        alt: shareImage.alt,
+      }
+    : undefined
 
   return {
     // Absolute, because the suffix is already applied above. Leaving it
@@ -45,21 +51,13 @@ export async function buildMetadata({
       title: resolvedTitle,
       description: resolvedDescription,
       url,
-      ...(shareImage
-        ? {
-            images: [
-              {
-                url: new URL(shareImage.wideUrl ?? shareImage.url, env.siteUrl).toString(),
-                alt: shareImage.alt,
-              },
-            ],
-          }
-        : {}),
+      ...(shareImageMeta ? { images: [shareImageMeta] } : {}),
     },
     twitter: {
-      card: shareImage ? 'summary_large_image' : 'summary',
+      card: shareImageMeta ? 'summary_large_image' : 'summary',
       title: resolvedTitle,
       description: resolvedDescription,
+      ...(shareImageMeta ? { images: [shareImageMeta.url] } : {}),
     },
   }
 }

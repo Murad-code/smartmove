@@ -156,7 +156,9 @@ their redress and Client Money Protection membership.
 
 Tabs: Branding (logo, footer logo, favicon), Main menu (items plus the header
 button), Footer (three link columns plus the small-print row), Search engines
-(title suffix, default description, default sharing image).
+(title suffix, default description, default sharing image). The sharing image
+is what link previews use for the home page and any page without its own
+photo; the first home-page banner slide is only a fallback.
 
 ### Home Page (`home-page`)
 
@@ -169,7 +171,8 @@ action.
 The hero is an array of slides rather than a single set of fields. One slide
 renders as a still banner; add a second and they cross-fade, with a checkbox
 to stop them moving on their own. Only the first slide's heading is the page
-`h1`, so the document keeps exactly one whichever slide is showing.
+`h1`, so the document keeps exactly one whichever slide is showing. Link
+previews do not use the banner: they use Website Settings' sharing image.
 
 ## Blocks
 
