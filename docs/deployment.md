@@ -22,11 +22,17 @@ Internet
 
 ## Part 1 — Publish the image
 
-Once per release, from your machine.
+Once per release, from your machine:
 
 ```bash
-git tag v1.0.0 && git push origin v1.0.0
+./deploy/release.sh patch    # bugfix: 1.2.0 -> 1.2.1
+./deploy/release.sh minor    # feature: 1.2.0 -> 1.3.0
+./deploy/release.sh          # asks which
 ```
+
+That bumps `package.json`, commits, tags `vX.Y.Z`, and pushes. GitHub Actions
+then builds `linux/amd64`. You can still tag by hand (`git tag v1.2.1 && git
+push origin v1.2.1`) if you need to.
 
 That runs [`.github/workflows/release.yml`](../.github/workflows/release.yml),
 which builds `linux/amd64` and pushes these tags to
@@ -233,8 +239,8 @@ Then in a browser:
 ### Deploy a new version
 
 ```bash
-git tag v1.0.1 && git push origin v1.0.1     # from your machine
-ssh you@vps 'cd /opt/smartmove && ./update.sh v1.0.1'
+./deploy/release.sh patch                    # from your machine
+ssh you@vps 'cd /opt/smartmove && ./update.sh 1.2.1'
 ```
 
 `update.sh` pins the tag in `.env.production`, pulls, restarts and waits for the
