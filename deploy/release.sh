@@ -3,9 +3,9 @@
 # Build the production image for the VPS and push it to Docker Hub.
 #
 # The version you pass (patch / minor / major) is the Docker tag, e.g.
-# muradkamali/smartmove:1.3.1. package.json is kept in step so the next
-# bump starts from whatever is on Hub. This does not create a git tag, so
-# it will not publish to GHCR.
+# muradkamali/smartmove:1.3.1. The same image is also tagged latest.
+# package.json is kept in step so the next bump starts from whatever is
+# on Hub. This does not create a git tag, so it will not publish to GHCR.
 #
 #   ./deploy/release.sh              # asks patch / minor / major
 #   ./deploy/release.sh patch        # 1.3.0 -> 1.3.1
@@ -119,9 +119,13 @@ docker buildx build \
   --build-arg "NEXT_PUBLIC_PLAUSIBLE_HOST=${NEXT_PUBLIC_PLAUSIBLE_HOST:-}" \
   --build-arg "NEXT_PUBLIC_TURNSTILE_SITE_KEY=${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-}" \
   --tag "$IMAGE_REPO:$version" \
-  --tag "$IMAGE_REPO:latest" \
   --push \
   .
+
+# A second --tag on the build does not always land on Hub (it depends on the
+# buildx driver). imagetools writes latest as a pointer at the same digest.
+echo "Tagging $IMAGE_REPO:latest -> $version"
+docker buildx imagetools create --tag "$IMAGE_REPO:latest" "$IMAGE_REPO:$version"
 
 trap - ERR
 
