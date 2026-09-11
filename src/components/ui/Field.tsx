@@ -90,7 +90,7 @@ export function TextField(
           type={type}
           placeholder={placeholder}
           autoComplete={autoComplete}
-          defaultValue={defaultValue}
+          defaultValue={defaultValue ?? ''}
           min={min}
         />
       )}
@@ -146,10 +146,12 @@ export function SelectField(
 export function CheckboxField({
   name,
   error,
+  defaultChecked,
   children,
 }: {
   name: string
   error?: string
+  defaultChecked?: boolean
   children: React.ReactNode
 }) {
   const reactId = useId()
@@ -164,6 +166,7 @@ export function CheckboxField({
           name={name}
           type="checkbox"
           value="yes"
+          defaultChecked={defaultChecked}
           aria-describedby={errorId}
           aria-invalid={error ? true : undefined}
           className={cn(

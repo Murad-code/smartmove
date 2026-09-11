@@ -4,7 +4,7 @@ import React, { useActionState } from 'react'
 
 import { CheckboxField, SelectField, TextAreaField, TextField } from '@/components/ui/Field'
 import { submitLandlordEnquiry } from '@/lib/forms/actions'
-import { IDLE_STATE } from '@/lib/forms/state'
+import { IDLE_STATE, formValues } from '@/lib/forms/state'
 
 import { FormShell, consentLabel } from './FormShell'
 
@@ -19,6 +19,7 @@ const SERVICES = [
 export function LandlordEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) {
   const [state, action, pending] = useActionState(submitLandlordEnquiry, IDLE_STATE)
   const errors = state.status === 'error' ? (state.errors ?? {}) : {}
+  const values = formValues(state)
 
   return (
     <FormShell
@@ -28,7 +29,14 @@ export function LandlordEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: s
       submitLabel="Request a callback"
       turnstileSiteKey={turnstileSiteKey}
     >
-      <TextField label="Your name" name="name" required autoComplete="name" error={errors.name} />
+      <TextField
+        label="Your name"
+        name="name"
+        required
+        autoComplete="name"
+        error={errors.name}
+        defaultValue={values.name}
+      />
       <div className="grid gap-5 sm:grid-cols-2">
         <TextField
           label="Email address"
@@ -37,6 +45,7 @@ export function LandlordEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: s
           required
           autoComplete="email"
           error={errors.email}
+          defaultValue={values.email}
         />
         <TextField
           label="Telephone"
@@ -45,6 +54,7 @@ export function LandlordEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: s
           required
           autoComplete="tel"
           error={errors.telephone}
+          defaultValue={values.telephone}
         />
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
@@ -54,6 +64,7 @@ export function LandlordEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: s
           autoComplete="postal-code"
           placeholder="DN15"
           error={errors.postcode}
+          defaultValue={values.postcode}
         />
         <SelectField
           label="What are you interested in?"
@@ -61,6 +72,7 @@ export function LandlordEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: s
           options={SERVICES}
           placeholder="Please choose"
           error={errors.serviceInterest}
+          defaultValue={values.serviceInterest}
         />
       </div>
       <TextAreaField
@@ -70,8 +82,13 @@ export function LandlordEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: s
         required
         hint="Number of bedrooms, current condition, and when it will be available."
         error={errors.message}
+        defaultValue={values.message}
       />
-      <CheckboxField name="consent" error={errors.consent}>
+      <CheckboxField
+        name="consent"
+        error={errors.consent}
+        defaultChecked={values.consent === 'yes'}
+      >
         {consentLabel()}
       </CheckboxField>
     </FormShell>

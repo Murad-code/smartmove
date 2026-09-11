@@ -17,8 +17,9 @@ import {
   propertyEnquirySchema,
   requirementsSchema,
   toFieldErrors,
+  type FieldErrors,
 } from './schemas'
-import { GENERIC_ERROR, type FormState } from './state'
+import { GENERIC_ERROR, errorState, type FormState } from './state'
 import { checkRateLimit, isHoneypotTripped, isTooFast, verifyTurnstile } from './spam'
 
 /**
@@ -48,6 +49,7 @@ async function sourcePage(): Promise<string | undefined> {
 interface HandleArgs<T> {
   kind: EnquiryKind
   schema: ZodType<T>
+  previous: FormState
   formData: FormData
   /** Maps validated input onto the Enquiries collection. */
   toDocument: (input: T) => Record<string, unknown>
@@ -61,37 +63,33 @@ async function handleSubmission<
 >({
   kind,
   schema,
+  previous,
   formData,
   toDocument,
   toNotification,
   successMessage,
 }: HandleArgs<T>): Promise<FormState> {
   const raw = Object.fromEntries(formData.entries())
+  const fail = (message: string, errors?: FieldErrors) =>
+    errorState(previous, formData, message, errors)
 
   // Silent rejections. A bot gets the same message as a genuine failure.
   if (isHoneypotTripped(raw.companyWebsite) || isTooFast(raw.renderedAt)) {
     logger.info('Enquiry rejected by spam checks', { kind })
-    return { status: 'error', message: GENERIC_ERROR }
+    return fail(GENERIC_ERROR)
   }
 
   if (!checkRateLimit(await clientKey(kind))) {
-    return {
-      status: 'error',
-      message: 'You have sent several messages already. Please call us on the number above.',
-    }
+    return fail('You have sent several messages already. Please call us on the number above.')
   }
 
   const parsed = schema.safeParse(raw)
   if (!parsed.success) {
-    return {
-      status: 'error',
-      message: 'Please check the highlighted fields and try again.',
-      errors: toFieldErrors(parsed.error),
-    }
+    return fail('Please check the highlighted fields and try again.', toFieldErrors(parsed.error))
   }
 
   if (!(await verifyTurnstile(raw['cf-turnstile-response']))) {
-    return { status: 'error', message: GENERIC_ERROR }
+    return fail(GENERIC_ERROR)
   }
 
   const input = parsed.data
@@ -134,19 +132,20 @@ async function handleSubmission<
     return { status: 'success', message: successMessage }
   } catch (error) {
     logger.error('Failed to store enquiry', error, { kind })
-    return { status: 'error', message: GENERIC_ERROR }
+    return fail(GENERIC_ERROR)
   }
 }
 
 const THANK_YOU = 'Thank you. We have received your message and will be in touch shortly.'
 
 export async function submitGeneralEnquiry(
-  _previous: FormState,
+  previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
   return handleSubmission({
     kind: 'general',
     schema: generalEnquirySchema,
+    previous,
     formData,
     toDocument: (input) => ({
       name: input.name,
@@ -170,12 +169,13 @@ export async function submitGeneralEnquiry(
 }
 
 export async function submitPropertyEnquiry(
-  _previous: FormState,
+  previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
   return handleSubmission({
     kind: 'property',
     schema: propertyEnquirySchema,
+    previous,
     formData,
     toDocument: (input) => ({
       name: input.name,
@@ -202,12 +202,13 @@ export async function submitPropertyEnquiry(
 }
 
 export async function submitLandlordEnquiry(
-  _previous: FormState,
+  previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
   return handleSubmission({
     kind: 'landlord',
     schema: landlordEnquirySchema,
+    previous,
     formData,
     toDocument: (input) => ({
       name: input.name,
@@ -236,12 +237,13 @@ export async function submitLandlordEnquiry(
 }
 
 export async function submitRequirements(
-  _previous: FormState,
+  previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
   return handleSubmission({
     kind: 'requirements',
     schema: requirementsSchema,
+    previous,
     formData,
     toDocument: (input) => ({
       name: input.name,

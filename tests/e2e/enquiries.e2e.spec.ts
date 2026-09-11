@@ -46,4 +46,35 @@ test('validation errors are shown against the fields they belong to', async ({ p
 
   // The invalid control is marked up so a screen reader announces the problem.
   await expect(page.getByLabel('Email address')).toHaveAttribute('aria-invalid', 'true')
+
+  // React resets the form after the action; the fields must come back with
+  // what was typed so a missing consent box does not wipe the whole enquiry.
+  await expect(page.getByLabel('Your name')).toHaveValue('T')
+  await expect(page.getByLabel('Email address')).toHaveValue('not-an-email')
+  await expect(page.getByLabel('Your message')).toHaveValue('short')
+})
+
+test('an enquiry missing only consent keeps the rest of the details', async ({ page }) => {
+  await page.goto('/contact')
+
+  await page.getByLabel('Your name').fill('Jane Fletcher')
+  await page.getByLabel('Email address').fill('jane@example.com')
+  await page.getByLabel('Telephone').fill('01724 856260')
+  await page.getByLabel('What is your enquiry about?').selectOption('Renting a property')
+  await page
+    .getByLabel('Your message')
+    .fill('I would like to arrange a viewing next week if possible.')
+
+  await page.waitForTimeout(2500)
+  await page.getByRole('button', { name: 'Send enquiry' }).click()
+
+  await expect(page.getByText('Please confirm you are happy for us to contact you')).toBeVisible()
+  await expect(page.getByLabel('Your name')).toHaveValue('Jane Fletcher')
+  await expect(page.getByLabel('Email address')).toHaveValue('jane@example.com')
+  await expect(page.getByLabel('Telephone')).toHaveValue('01724 856260')
+  await expect(page.getByLabel('What is your enquiry about?')).toHaveValue('Renting a property')
+  await expect(page.getByLabel('Your message')).toHaveValue(
+    'I would like to arrange a viewing next week if possible.',
+  )
+  await expect(page.getByLabel(/happy for Smart Move/)).not.toBeChecked()
 })

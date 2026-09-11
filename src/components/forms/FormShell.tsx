@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Script from 'next/script'
-import React, { useEffect, useRef } from 'react'
+import React, { Fragment, useEffect, useRef } from 'react'
 
 import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
@@ -57,7 +57,7 @@ export function FormShell({
         </Alert>
       ) : null}
 
-      {children}
+      <Fragment key={state.status === 'error' ? state.attempt : 'idle'}>{children}</Fragment>
 
       {turnstileSiteKey ? (
         <>

@@ -4,7 +4,7 @@ import React, { useActionState } from 'react'
 
 import { CheckboxField, SelectField, TextAreaField, TextField } from '@/components/ui/Field'
 import { submitRequirements } from '@/lib/forms/actions'
-import { IDLE_STATE } from '@/lib/forms/state'
+import { IDLE_STATE, formValues } from '@/lib/forms/state'
 import { PROPERTY_TYPE_LABELS } from '@/lib/properties/labels'
 
 import { FormShell, consentLabel } from './FormShell'
@@ -22,6 +22,7 @@ const TYPE_OPTIONS = Object.values(PROPERTY_TYPE_LABELS).map((label) => ({
 export function RequirementsForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) {
   const [state, action, pending] = useActionState(submitRequirements, IDLE_STATE)
   const errors = state.status === 'error' ? (state.errors ?? {}) : {}
+  const values = formValues(state)
 
   return (
     <FormShell
@@ -31,7 +32,14 @@ export function RequirementsForm({ turnstileSiteKey }: { turnstileSiteKey?: stri
       submitLabel="Register my requirements"
       turnstileSiteKey={turnstileSiteKey}
     >
-      <TextField label="Your name" name="name" required autoComplete="name" error={errors.name} />
+      <TextField
+        label="Your name"
+        name="name"
+        required
+        autoComplete="name"
+        error={errors.name}
+        defaultValue={values.name}
+      />
       <div className="grid gap-5 sm:grid-cols-2">
         <TextField
           label="Email address"
@@ -40,6 +48,7 @@ export function RequirementsForm({ turnstileSiteKey }: { turnstileSiteKey?: stri
           required
           autoComplete="email"
           error={errors.email}
+          defaultValue={values.email}
         />
         <TextField
           label="Telephone"
@@ -47,6 +56,7 @@ export function RequirementsForm({ turnstileSiteKey }: { turnstileSiteKey?: stri
           type="tel"
           autoComplete="tel"
           error={errors.telephone}
+          defaultValue={values.telephone}
         />
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
@@ -55,6 +65,7 @@ export function RequirementsForm({ turnstileSiteKey }: { turnstileSiteKey?: stri
           name="preferredArea"
           placeholder="Ashby, Brumby, anywhere in Scunthorpe"
           error={errors.preferredArea}
+          defaultValue={values.preferredArea}
         />
         <SelectField
           label="Type of property"
@@ -62,6 +73,7 @@ export function RequirementsForm({ turnstileSiteKey }: { turnstileSiteKey?: stri
           options={TYPE_OPTIONS}
           placeholder="Any type"
           error={errors.propertyType}
+          defaultValue={values.propertyType}
         />
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
@@ -71,6 +83,7 @@ export function RequirementsForm({ turnstileSiteKey }: { turnstileSiteKey?: stri
           type="number"
           min={0}
           error={errors.minBedrooms}
+          defaultValue={values.minBedrooms}
         />
         <TextField
           label="Maximum monthly rent"
@@ -79,6 +92,7 @@ export function RequirementsForm({ turnstileSiteKey }: { turnstileSiteKey?: stri
           min={0}
           hint="In pounds per month."
           error={errors.maxRent}
+          defaultValue={values.maxRent}
         />
       </div>
       <TextField
@@ -86,14 +100,20 @@ export function RequirementsForm({ turnstileSiteKey }: { turnstileSiteKey?: stri
         name="moveDate"
         placeholder="Within the next two months"
         error={errors.moveDate}
+        defaultValue={values.moveDate}
       />
       <TextAreaField
         label="Anything else we should know?"
         name="message"
         rows={3}
         error={errors.message}
+        defaultValue={values.message}
       />
-      <CheckboxField name="consent" error={errors.consent}>
+      <CheckboxField
+        name="consent"
+        error={errors.consent}
+        defaultChecked={values.consent === 'yes'}
+      >
         {consentLabel()}
       </CheckboxField>
     </FormShell>

@@ -4,7 +4,7 @@ import React, { useActionState } from 'react'
 
 import { CheckboxField, SelectField, TextAreaField, TextField } from '@/components/ui/Field'
 import { submitGeneralEnquiry } from '@/lib/forms/actions'
-import { IDLE_STATE } from '@/lib/forms/state'
+import { IDLE_STATE, formValues } from '@/lib/forms/state'
 
 import { FormShell, consentLabel } from './FormShell'
 
@@ -19,6 +19,7 @@ const TOPICS = [
 export function GeneralEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) {
   const [state, action, pending] = useActionState(submitGeneralEnquiry, IDLE_STATE)
   const errors = state.status === 'error' ? (state.errors ?? {}) : {}
+  const values = formValues(state)
 
   return (
     <FormShell
@@ -28,7 +29,14 @@ export function GeneralEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: st
       submitLabel="Send enquiry"
       turnstileSiteKey={turnstileSiteKey}
     >
-      <TextField label="Your name" name="name" required autoComplete="name" error={errors.name} />
+      <TextField
+        label="Your name"
+        name="name"
+        required
+        autoComplete="name"
+        error={errors.name}
+        defaultValue={values.name}
+      />
       <div className="grid gap-5 sm:grid-cols-2">
         <TextField
           label="Email address"
@@ -37,6 +45,7 @@ export function GeneralEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: st
           required
           autoComplete="email"
           error={errors.email}
+          defaultValue={values.email}
         />
         <TextField
           label="Telephone"
@@ -44,6 +53,7 @@ export function GeneralEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: st
           type="tel"
           autoComplete="tel"
           error={errors.telephone}
+          defaultValue={values.telephone}
         />
       </div>
       <SelectField
@@ -52,9 +62,20 @@ export function GeneralEnquiryForm({ turnstileSiteKey }: { turnstileSiteKey?: st
         options={TOPICS}
         placeholder="Please choose"
         error={errors.enquiryTopic}
+        defaultValue={values.enquiryTopic}
       />
-      <TextAreaField label="Your message" name="message" required error={errors.message} />
-      <CheckboxField name="consent" error={errors.consent}>
+      <TextAreaField
+        label="Your message"
+        name="message"
+        required
+        error={errors.message}
+        defaultValue={values.message}
+      />
+      <CheckboxField
+        name="consent"
+        error={errors.consent}
+        defaultChecked={values.consent === 'yes'}
+      >
         {consentLabel()}
       </CheckboxField>
     </FormShell>
