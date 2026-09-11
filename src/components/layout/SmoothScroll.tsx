@@ -4,6 +4,8 @@ import Lenis from 'lenis'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 
+import { setProgrammaticScroll } from '@/lib/programmatic-scroll'
+
 import 'lenis/dist/lenis.css'
 
 /**
@@ -56,6 +58,9 @@ export function SmoothScroll() {
       anchors: { offset: ANCHOR_OFFSET },
     })
     lenis.current = instance
+    setProgrammaticScroll((node) => {
+      instance.scrollTo(node, { offset: ANCHOR_OFFSET, immediate: true, force: true })
+    })
 
     // Anything that opens a full-screen overlay locks the page by setting
     // `overflow` on the body. Watching for that keeps Lenis out of the
@@ -72,6 +77,7 @@ export function SmoothScroll() {
       lock.disconnect()
       instance.destroy()
       lenis.current = null
+      setProgrammaticScroll(null)
       root.style.scrollBehavior = previousBehaviour
     }
   }, [])

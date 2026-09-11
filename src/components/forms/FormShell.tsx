@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import Script from 'next/script'
-import React, { Fragment, useEffect, useRef } from 'react'
+import React, { Fragment, useEffect, useLayoutEffect, useRef } from 'react'
 
 import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { HoneypotField } from '@/components/ui/Field'
 import type { FormState } from '@/lib/forms/state'
+import { scrollNodeIntoView } from '@/lib/programmatic-scroll'
 
 /**
  * Shared chrome for every enquiry form: the anti-spam fields, the status
@@ -40,9 +41,9 @@ export function FormShell({
 
   if (state.status === 'success') {
     return (
-      <Alert tone="success" title="Message sent">
+      <StatusAlert tone="success" title="Message sent" scrollKey="success">
         {state.message}
-      </Alert>
+      </StatusAlert>
     )
   }
 
@@ -52,9 +53,9 @@ export function FormShell({
       <input ref={renderedAt} type="hidden" name="renderedAt" defaultValue="" />
 
       {state.status === 'error' ? (
-        <Alert tone="error" title="We could not send your message">
+        <StatusAlert tone="error" title="We could not send your message" scrollKey={state.attempt}>
           {state.message}
-        </Alert>
+        </StatusAlert>
       ) : null}
 
       <Fragment key={state.status === 'error' ? state.attempt : 'idle'}>{children}</Fragment>
@@ -73,6 +74,40 @@ export function FormShell({
         {pending ? 'Sending…' : submitLabel}
       </Button>
     </form>
+  )
+}
+
+/**
+ * After submit the visitor is still looking at where the button was. The form
+ * then shrinks to this notice, so without an explicit scroll the confirmation
+ * sits above the viewport — especially on a phone, under a long listing.
+ */
+function StatusAlert({
+  tone,
+  title,
+  scrollKey,
+  children,
+}: {
+  tone: 'success' | 'error'
+  title: string
+  scrollKey: string | number
+  children: React.ReactNode
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const node = ref.current
+    if (!node) return
+    node.focus({ preventScroll: true })
+    scrollNodeIntoView(node)
+  }, [scrollKey])
+
+  return (
+    <div ref={ref} tabIndex={-1} className="outline-none">
+      <Alert tone={tone} title={title}>
+        {children}
+      </Alert>
+    </div>
   )
 }
 

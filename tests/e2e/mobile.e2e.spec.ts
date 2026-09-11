@@ -88,6 +88,25 @@ test('a visitor can swipe the property gallery', async ({ page }) => {
   await expect(page.getByText(/Photo 2 of/)).toBeVisible()
 })
 
+test('a sent viewing request keeps the confirmation on screen', async ({ page }) => {
+  // Submits a real enquiry so we can prove the confirmation is scrolled
+  // into view once the long mobile form collapses.
+  await page.goto('/properties')
+  await page.getByRole('article').first().getByRole('link').first().click()
+
+  await page.getByLabel('Your name').fill('Test Visitor')
+  await page.getByLabel('Email address').fill(`e2e-${Date.now()}@smartmove.test`)
+  await page.getByLabel('Telephone').fill('01724 856260')
+  await page.getByLabel(/happy for Smart Move/).check()
+
+  await page.waitForTimeout(2500)
+  await page.getByRole('button', { name: 'Send enquiry' }).click()
+
+  const confirmation = page.getByRole('status').filter({ hasText: 'Message sent' })
+  await expect(confirmation).toBeVisible()
+  await expect(confirmation).toBeInViewport()
+})
+
 test('property cards stack into a single column on a phone', async ({ page }) => {
   await page.goto('/properties')
 

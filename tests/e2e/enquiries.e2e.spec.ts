@@ -28,7 +28,9 @@ test('a visitor can send a general enquiry', async ({ page }) => {
   await page.waitForTimeout(2500)
   await page.getByRole('button', { name: 'Send enquiry' }).click()
 
-  await expect(page.getByText('Message sent')).toBeVisible()
+  const confirmation = page.getByRole('status').filter({ hasText: 'Message sent' })
+  await expect(confirmation).toBeVisible()
+  await expect(confirmation).toBeInViewport()
 })
 
 test('validation errors are shown against the fields they belong to', async ({ page }) => {
