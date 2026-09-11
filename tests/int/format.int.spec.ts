@@ -36,7 +36,7 @@ describe('availability wording', () => {
 
   it('names a future date', () => {
     const future = new Date(Date.now() + 30 * 86_400_000).toISOString()
-    expect(formatAvailability(future)).toMatch(/^Available from /)
+    expect(formatAvailability(future)).toMatch(/^From /)
   })
 })
 

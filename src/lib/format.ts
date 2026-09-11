@@ -28,7 +28,7 @@ export function formatDate(value: string | Date | null | undefined): string | un
 }
 
 /**
- * "Available from 1 March 2026", or "Available now" for a date in the past.
+ * "From 1 March 2026", or "Available now" for a date in the past.
  * A blank date also means now, which is what the CMS help text promises.
  */
 export function formatAvailability(value: string | null | undefined): string {
@@ -36,7 +36,7 @@ export function formatAvailability(value: string | null | undefined): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return 'Available now'
   if (date.getTime() <= Date.now()) return 'Available now'
-  return `Available from ${formatDate(date)}`
+  return `From ${formatDate(date)}`
 }
 
 export function pluralise(count: number, singular: string, plural = `${singular}s`): string {
