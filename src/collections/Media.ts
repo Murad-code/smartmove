@@ -54,11 +54,10 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      required: true,
-      label: 'Describe this image',
+      label: 'Describe this image (optional)',
       admin: {
         description:
-          'A short description for people using a screen reader, for example "Front of a red-brick terraced house".',
+          'A short description for people using a screen reader, for example "Front of a red-brick terraced house". Helpful if you have one, but you can save without it.',
       },
     },
     {

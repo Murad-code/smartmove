@@ -202,7 +202,7 @@ export interface Property {
     [k: string]: unknown;
   } | null;
   /**
-   * You can select several at once. Drag them into the order you want them shown.
+   * You can select several at once. The first photo is the main picture. Drag them into the order you want them shown.
    */
   images?: (number | Media)[] | null;
   addressLine1?: string | null;
@@ -250,9 +250,9 @@ export interface Property {
 export interface Media {
   id: number;
   /**
-   * A short description for people using a screen reader, for example "Front of a red-brick terraced house".
+   * A short description for people using a screen reader, for example "Front of a red-brick terraced house". Helpful if you have one, but you can save without it.
    */
-  alt: string;
+  alt?: string | null;
   caption?: string | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
