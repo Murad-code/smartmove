@@ -89,3 +89,37 @@ html[data-theme='light'] {
 .dashboard-tools__error {
   color: var(--theme-error-500);
 }
+
+/* First photograph in the Properties list. */
+.property-photo-cell {
+  display: flex;
+}
+
+.property-photo-cell img {
+  display: block;
+  width: 7.5rem;
+  height: 5.625rem;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--theme-elevation-100);
+}
+
+.property-photo-cell--empty {
+  color: var(--theme-elevation-500);
+  font-size: 0.8125rem;
+}
+
+/* Payload's hasMany upload cards are 25px, too small to judge a listing
+   photograph. !important beats the CMS thumbnail size in @layer. */
+#field-images .upload-field-card--size-small {
+  padding: 0.5rem 0.75rem;
+  min-height: 8.5rem;
+}
+
+#field-images .upload-field-card .thumbnail {
+  width: 10rem !important;
+  height: 7.5rem !important;
+  max-width: 10rem !important;
+  max-height: 7.5rem !important;
+  flex-shrink: 0;
+}

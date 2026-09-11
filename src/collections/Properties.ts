@@ -38,7 +38,7 @@ export const Properties: CollectionConfig = {
   labels: { singular: 'Property', plural: 'Properties' },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'displayLocation', 'monthlyRent', 'status', 'updatedAt'],
+    defaultColumns: ['images', 'title', 'displayLocation', 'monthlyRent', 'status', 'updatedAt'],
     group: 'Properties',
     description: 'Everything you are currently marketing.',
     listSearchableFields: ['title', 'displayLocation', 'postcode'],
@@ -231,10 +231,15 @@ export const Properties: CollectionConfig = {
               type: 'upload',
               relationTo: 'media',
               hasMany: true,
-              label: 'Property photos',
+              displayPreview: true,
+              label: 'Photo',
               admin: {
                 description:
-                  'You can select several at once. Drag them into the order you want them shown.',
+                  'You can select several at once. The first photo is the main picture. Drag them into the order you want them shown.',
+                disableListFilter: true,
+                components: {
+                  Cell: '@/components/admin/PropertyPhotoCell#PropertyPhotoCell',
+                },
               },
             },
           ],

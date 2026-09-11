@@ -205,6 +205,21 @@ test('folders stay out of the sidebar and out of the URL', async ({ page }) => {
   await expect(page.locator('.nav').getByRole('link', { name: /folder/i })).toHaveCount(0)
 })
 
+test('the properties list leads with a photograph so listings are easy to recognise', async ({
+  page,
+}) => {
+  await page.goto('/admin/collections/properties')
+
+  const headers = page.getByRole('columnheader')
+  await expect(headers.filter({ hasText: /^Photo$/ })).toBeVisible()
+
+  const labels = await headers.allTextContents()
+  const photoIndex = labels.findIndex((label) => /^Photo$/.test(label.trim()))
+  const titleIndex = labels.findIndex((label) => /Property title/.test(label))
+  expect(photoIndex).toBeGreaterThan(-1)
+  expect(titleIndex).toBeGreaterThan(photoIndex)
+})
+
 test('the sidebar and header make it obvious how to go home and log out', async ({ page }) => {
   await page.goto('/admin/collections/properties')
 
