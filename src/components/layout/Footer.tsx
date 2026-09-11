@@ -67,27 +67,18 @@ export async function Footer() {
           ) : null}
         </div>
 
-        <div className="grid grid-cols-2 gap-x-6 gap-y-6 border-t border-navy-800 py-6 md:grid-cols-4 md:gap-8 md:py-7">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-8 border-t border-navy-800 py-8 lg:grid-cols-12 lg:gap-x-10 lg:py-9">
           {settings.footerColumns?.map((column, index, columns) => {
             const oddLastOnMobile = columns.length % 2 === 1 && index === columns.length - 1
-            const inlineLinks = (column.links?.length ?? 0) <= 2
 
             return (
               <nav
                 key={column.id ?? column.title}
                 aria-label={column.title}
-                className={oddLastOnMobile ? 'col-span-2 md:col-span-1' : undefined}
+                className={oddLastOnMobile ? 'col-span-2 lg:col-span-3' : 'lg:col-span-3'}
               >
-                <h2 className="text-xs font-semibold tracking-wider text-white uppercase">
-                  {column.title}
-                </h2>
-                <ul
-                  className={
-                    inlineLinks
-                      ? 'mt-2.5 flex flex-wrap gap-x-4 gap-y-1.5 text-sm'
-                      : 'mt-2.5 space-y-1.5 text-sm'
-                  }
-                >
+                <FooterHeading>{column.title}</FooterHeading>
+                <ul className="mt-3 space-y-2 text-sm">
                   {column.links?.map((link) => (
                     <li key={link.id ?? link.href}>
                       <Link href={link.href} className="text-navy-200 hover:text-white">
@@ -100,49 +91,65 @@ export async function Footer() {
             )
           })}
 
-          <div className="col-span-2 md:col-span-1">
-            <h2 className="text-xs font-semibold tracking-wider text-white uppercase">
-              Get in touch
-            </h2>
-            <ul className="mt-2.5 grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2 md:grid-cols-1">
-              {business.telephone ? (
-                <li className="flex gap-2">
-                  <Icon name="phone" className="mt-0.5 size-4 shrink-0 text-accent-400" />
-                  <a href={telHref(business.telephone)} className="hover:text-white">
-                    {business.telephone}
-                  </a>
-                </li>
-              ) : null}
-              {business.email ? (
-                <li className="flex min-w-0 gap-2">
-                  <Icon name="mail" className="mt-0.5 size-4 shrink-0 text-accent-400" />
-                  <a href={`mailto:${business.email}`} className="break-all hover:text-white">
-                    {business.email}
-                  </a>
-                </li>
-              ) : null}
-              {addressLines.length ? (
-                <li className="flex gap-2 sm:col-span-2 md:col-span-1">
-                  <Icon name="pin" className="mt-0.5 size-4 shrink-0 text-accent-400" />
-                  <a href={mapLink(business)} rel="noopener noreferrer" target="_blank">
-                    <address className="not-italic">{addressLines.join(', ')}</address>
-                  </a>
-                </li>
-              ) : null}
-              {business.openingHours?.length ? (
-                <li className="flex gap-2 sm:col-span-2 md:col-span-1">
-                  <Icon name="clock" className="mt-0.5 size-4 shrink-0 text-accent-400" />
-                  <span>
-                    {business.openingHours.map((row, index) => (
-                      <span key={row.id ?? row.days} className="md:block md:leading-snug">
-                        {index > 0 ? <span className="text-navy-400 md:hidden"> · </span> : null}
-                        <span className="text-navy-300">{row.days}</span> {row.hours}
-                      </span>
-                    ))}
-                  </span>
-                </li>
-              ) : null}
-            </ul>
+          <div className={contactSpanClass(settings.footerColumns?.length ?? 0)}>
+            <FooterHeading>Get in touch</FooterHeading>
+            <div className="mt-3 grid gap-x-8 gap-y-4 text-sm sm:grid-cols-2">
+              <ul className="space-y-2.5">
+                {business.telephone ? (
+                  <li className="flex gap-2.5">
+                    <Icon name="phone" className="mt-0.5 size-4 shrink-0 text-navy-300" />
+                    <a href={telHref(business.telephone)} className="text-navy-200 hover:text-white">
+                      {business.telephone}
+                    </a>
+                  </li>
+                ) : null}
+                {business.email ? (
+                  <li className="flex min-w-0 gap-2.5">
+                    <Icon name="mail" className="mt-0.5 size-4 shrink-0 text-navy-300" />
+                    <a
+                      href={`mailto:${business.email}`}
+                      className="wrap-break-word text-navy-200 hover:text-white"
+                    >
+                      {business.email}
+                    </a>
+                  </li>
+                ) : null}
+              </ul>
+              <ul className="space-y-2.5">
+                {addressLines.length ? (
+                  <li className="flex gap-2.5">
+                    <Icon name="pin" className="mt-0.5 size-4 shrink-0 text-navy-300" />
+                    <a
+                      href={mapLink(business)}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      className="text-navy-200 hover:text-white"
+                    >
+                      <address className="not-italic">
+                        {addressLines.map((line) => (
+                          <span key={line} className="block leading-snug">
+                            {line}
+                          </span>
+                        ))}
+                      </address>
+                    </a>
+                  </li>
+                ) : null}
+                {business.openingHours?.length ? (
+                  <li className="flex gap-2.5">
+                    <Icon name="clock" className="mt-0.5 size-4 shrink-0 text-navy-300" />
+                    <span>
+                      {business.openingHours.map((row) => (
+                        <span key={row.id ?? row.days} className="block leading-snug">
+                          <span className="text-navy-300">{row.days}</span>{' '}
+                          <span className="text-navy-200">{row.hours}</span>
+                        </span>
+                      ))}
+                    </span>
+                  </li>
+                ) : null}
+              </ul>
+            </div>
           </div>
         </div>
 
@@ -175,4 +182,25 @@ export async function Footer() {
       </Container>
     </footer>
   )
+}
+
+/** Same eyebrow treatment as section labels elsewhere: sans, not the display serif. */
+function FooterHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="font-sans text-sm font-semibold tracking-wider text-accent-300 uppercase">
+      {children}
+    </h2>
+  )
+}
+
+/**
+ * Link columns take three of twelve. What remains goes to the contact block,
+ * so two short lists do not leave a cramped stack sitting in an empty fourth
+ * column.
+ */
+function contactSpanClass(columnCount: number): string {
+  if (columnCount === 0) return 'col-span-2 lg:col-span-12'
+  if (columnCount === 1) return 'col-span-2 lg:col-span-9'
+  if (columnCount === 2) return 'col-span-2 lg:col-span-6'
+  return 'col-span-2 lg:col-span-3'
 }

@@ -69,13 +69,6 @@ export const siteSettings = {
         { label: 'Book a valuation', href: '/landlords#enquiry' },
       ],
     },
-    {
-      title: 'Smart Move',
-      links: [
-        { label: 'About us', href: '/about' },
-        { label: 'Contact us', href: '/contact' },
-      ],
-    },
   ],
   legalLinks: [
     { label: 'Privacy policy', href: '/privacy-policy' },
