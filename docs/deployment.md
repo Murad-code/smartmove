@@ -135,10 +135,9 @@ reloaded _and_ the app is not running yet. That is harmless; carry on.
 ## Part 5 — Configure and start
 
 ```bash
-scp docker-compose.prod.yml you@vps:/opt/smartmove/
-scp deploy/update.sh you@vps:/opt/smartmove/
+scp docker-compose.prod.yml you@vps:~/smartmove/
 cp .env.production.example .env.production   # fill it in locally
-scp .env.production you@vps:/opt/smartmove/
+scp .env.production you@vps:~/smartmove/
 ```
 
 Generate the two machine secrets rather than inventing them:
@@ -151,11 +150,66 @@ openssl rand -hex 32   # PAYLOAD_SECRET
 Then on the VPS:
 
 ```bash
-cd /opt/smartmove
+cd ~/smartmove
 chmod 600 .env.production
+```
+
+Create `update.sh` in that folder (paste the whole block):
+
+```bash
+cat > ~/smartmove/update.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+
+if [[ -f docker-compose.prod.yml ]]; then
+  COMPOSE_FILE=docker-compose.prod.yml
+elif [[ -f docker-compose.yml ]]; then
+  COMPOSE_FILE=docker-compose.yml
+else
+  echo "No compose file in $(pwd)." >&2
+  exit 1
+fi
+
+COMPOSE=(docker compose -f "$COMPOSE_FILE" --env-file .env.production)
+
+if [[ -n "${1:-}" ]]; then
+  pin="${1#v}"
+  sed -i -E "s|^APP_IMAGE=(.*):.*$|APP_IMAGE=\1:$pin|" .env.production
+  echo "Pinned to $pin"
+fi
+
+echo "Current image:"
+"${COMPOSE[@]}" images app || true
+"${COMPOSE[@]}" pull app
+"${COMPOSE[@]}" up -d
+
+echo "Waiting for the health check..."
+for _ in $(seq 1 30); do
+  if [[ "$("${COMPOSE[@]}" ps -q app | xargs docker inspect -f '{{.State.Health.Status}}' 2>/dev/null)" == "healthy" ]]; then
+    echo "Healthy."
+    exit 0
+  fi
+  sleep 3
+done
+
+echo "Did not become healthy in 90s. Recent logs:" >&2
+"${COMPOSE[@]}" logs --tail=50 app >&2
+exit 1
+EOF
+chmod +x ~/smartmove/update.sh
+```
+
+Then:
+
+```bash
+cd ~/smartmove
 docker compose -f docker-compose.prod.yml --env-file .env.production pull
 docker compose -f docker-compose.prod.yml --env-file .env.production up -d
 ```
+
+`update.sh` is not on `PATH`. Run it from this folder as `./update.sh`. If the
+compose file is named `docker-compose.yml`, the script still finds it.
 
 Watch the first boot. On an empty database you should see the migration run and
 then the seed:
@@ -231,14 +285,39 @@ Then in a browser:
 
 ### Deploy a new version
 
+`update.sh` is a file in the project folder, not a package. Create it once on
+the VPS (same block as in Part 5). Then:
+
 ```bash
-./deploy/release.sh patch                    # from your machine
+cd ~/smartmove
+./update.sh 1.3.1
+```
+
+After that, each release is:
+
+```bash
+./deploy/release.sh patch                    # laptop: build and push Docker Hub
 ssh you@vps 'cd ~/smartmove && ./update.sh 1.3.1'
 ```
 
-`update.sh` pins the tag in `.env.production`, pulls, restarts and waits for the
-health check, printing the last 50 log lines if it does not come up. Migrations
-apply themselves as the new container connects.
+The script pins `APP_IMAGE` in `.env.production`, pulls, restarts, and waits
+for the health check. Migrations apply when the new container connects.
+
+### New project on the same VPS
+
+Once per site, on the VPS:
+
+```bash
+APP=~/other-project
+mkdir -p "$APP"
+# create update.sh with the Part 5 heredoc, but write to $APP/update.sh
+chmod +x "$APP/update.sh"
+chmod 600 "$APP/.env.production"
+cd "$APP" && ./update.sh 1.0.0
+```
+
+Point `APP_IMAGE` in that folder's `.env.production` at that project's Hub
+image (`muradkamali/other-project:1.0.0`).
 
 ### Roll back
 

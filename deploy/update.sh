@@ -1,19 +1,37 @@
 #!/usr/bin/env bash
 #
-# Pull the newest published image and restart. Run on the VPS from $APP_DIR.
+# Pull a published image and restart. Lives next to the compose file on the VPS.
 #
-#   ./update.sh          # move to whatever :latest points at
-#   ./update.sh 1.2.1    # pin and pull that image (no v; GHCR strips it)
-#   ./update.sh v1.2.1   # same; a leading v is ignored
+#   ./update.sh          # pull whatever APP_IMAGE already points at
+#   ./update.sh 1.3.1    # pin APP_IMAGE to that Docker Hub tag, then pull
+#   ./update.sh v1.3.1   # same; a leading v is ignored
 
 set -euo pipefail
 
 cd "$(dirname "$0")"
-COMPOSE=(docker compose -f docker-compose.prod.yml --env-file .env.production)
+
+if [[ -f docker-compose.prod.yml ]]; then
+  COMPOSE_FILE=docker-compose.prod.yml
+elif [[ -f docker-compose.yml ]]; then
+  COMPOSE_FILE=docker-compose.yml
+else
+  echo "No docker-compose.prod.yml or docker-compose.yml in $(pwd)." >&2
+  echo "Copy this script into the same directory as the compose file." >&2
+  exit 1
+fi
+
+COMPOSE=(docker compose -f "$COMPOSE_FILE" --env-file .env.production)
 
 if [[ -n "${1:-}" ]]; then
-  # GHCR tags are 1.2.1, not v1.2.1. Accept either so a copied git tag works.
   pin="${1#v}"
+  if [[ ! -f .env.production ]]; then
+    echo "Missing .env.production in $(pwd)." >&2
+    exit 1
+  fi
+  if ! grep -q '^APP_IMAGE=' .env.production; then
+    echo "APP_IMAGE is not set in .env.production." >&2
+    exit 1
+  fi
   sed -i -E "s|^APP_IMAGE=(.*):.*$|APP_IMAGE=\1:$pin|" .env.production
   echo "Pinned to $pin"
 fi

@@ -69,6 +69,7 @@ Then on the VPS:
 
   cd $APP_DIR
   chmod 600 .env.production
+  chmod +x update.sh
   docker compose -f docker-compose.prod.yml --env-file .env.production up -d
   docker compose -f docker-compose.prod.yml --env-file .env.production \\
     run --rm app node dist/seed.mjs
