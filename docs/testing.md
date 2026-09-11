@@ -30,7 +30,7 @@ Two projects: `desktop` (Chrome) and `mobile` (Pixel 7).
 | File                       | Covers                                                                                                                                                                                    |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `browse.e2e.spec.ts`       | Home page, navigating to the listings, opening a property, filtering and that filters survive a reload, the empty state, the legal and contact pages, the custom 404                      |
-| `enquiries.e2e.spec.ts`    | One successful general enquiry (the only e2e that notifies the email provider), and that validation errors appear against the right fields with `aria-invalid` set                        |
+| `enquiries.e2e.spec.ts`    | Successful general enquiry (console email only — never the sending API), and that validation errors appear against the right fields with `aria-invalid` set                               |
 | `mobile.e2e.spec.ts`       | Opening the menu and navigating, closing with Escape, the call link, that cards stack in one column, and that nothing scrolls sideways at 320px                                           |
 | `admin.e2e.spec.ts`        | The sidebar wording, the tabbed property form, and the whole owner workflow: add a property, see it live, mark it let, see it disappear, delete it, and filing photographs into folders   |
 | `live-preview.e2e.spec.ts` | The preview pane on a page, a service, a hidden property and the home page, that an autosaved edit reaches the pane, and that the same edit is absent from what a signed-out visitor gets |
@@ -44,6 +44,10 @@ property it creates.
 That is the anti-bot timing check. E2E tests wait 2.5 seconds before pressing
 submit. A new form test that submits immediately will fail with "We could not
 send your message" and it is not a bug.
+
+**Enquiry emails in e2e never call the sending API.** Playwright sends a
+development-only header so even a reused `pnpm dev` with `EMAIL_PROVIDER=resend`
+writes the notification to the console. Production ignores that header.
 
 **Enquiry rate limiting keys off `x-forwarded-for`.** The Playwright config
 sends a random address per run, so repeated local runs inside the ten-minute

@@ -89,8 +89,8 @@ test('a visitor can swipe the property gallery', async ({ page }) => {
 })
 
 test('a sent viewing request keeps the confirmation on screen', async ({ page }) => {
-  // Submits a real enquiry so we can prove the confirmation is scrolled
-  // into view once the long mobile form collapses.
+  // Submits a real enquiry. Playwright forces the console email path, so this
+  // does not call the sending API.
   await page.goto('/properties')
   await page.getByRole('article').first().getByRole('link').first().click()
 

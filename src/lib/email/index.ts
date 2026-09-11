@@ -1,6 +1,9 @@
+import { headers } from 'next/headers'
+
 import { env } from '@/lib/env'
 import { logger } from '@/lib/logger'
 
+import { E2E_EMAIL_HEADER, shouldUseConsoleEmail } from './e2e'
 import { consoleProvider } from './providers/console'
 import { resendProvider } from './providers/resend'
 import type { EmailMessage, EmailProvider } from './types'
@@ -22,6 +25,22 @@ export function getEmailProvider(): EmailProvider {
   return consoleProvider
 }
 
+async function e2eHeader(): Promise<string | null> {
+  try {
+    return (await headers()).get(E2E_EMAIL_HEADER)
+  } catch {
+    return null
+  }
+}
+
+/** The configured provider, unless this is an e2e request against a dev server. */
+export async function getRequestEmailProvider(): Promise<EmailProvider> {
+  if (shouldUseConsoleEmail(env.isProduction, await e2eHeader())) {
+    return consoleProvider
+  }
+  return getEmailProvider()
+}
+
 /**
  * Sends a notification, reporting success rather than throwing.
  *
@@ -35,13 +54,15 @@ export async function sendNotification(message: EmailMessage): Promise<boolean> 
     return false
   }
 
+  const provider = await getRequestEmailProvider()
+
   try {
-    await getEmailProvider().send(message)
+    await provider.send(message)
     return true
   } catch (error) {
     logger.error('Failed to send enquiry notification', error, {
       subject: message.subject,
-      provider: env.email.provider,
+      provider: provider.name,
     })
     return false
   }

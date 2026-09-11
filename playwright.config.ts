@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 import 'dotenv/config'
 
+import { E2E_EMAIL_HEADER, E2E_EMAIL_HEADER_VALUE } from './src/lib/email/e2e'
+
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000'
 
 export default defineConfig({
@@ -22,6 +24,10 @@ export default defineConfig({
       // way it will behind nginx. A fresh address per run stops repeated local
       // runs inside the ten-minute window from tripping the limit.
       'x-forwarded-for': `198.51.100.${Math.floor(Math.random() * 250) + 1}`,
+      // A reused `pnpm dev` keeps EMAIL_PROVIDER from `.env`. This header
+      // makes that server write notifications to the console instead of
+      // calling the sending API. Production ignores it.
+      [E2E_EMAIL_HEADER]: E2E_EMAIL_HEADER_VALUE,
     },
   },
   projects: [
@@ -44,11 +50,8 @@ export default defineConfig({
     url: baseURL,
     timeout: 120_000,
     env: {
-      // The enquiry journeys submit real forms, so each run would send a real
-      // notification once the sending domain is verified. Next leaves
-      // already-set variables alone, so this takes precedence over .env.
-      // Only applies to a server Playwright starts itself: with
-      // reuseExistingServer, a `pnpm dev` you started keeps your own setting.
+      // Still set when Playwright starts the server itself. Against a reused
+      // `pnpm dev`, the e2e header above is what keeps Resend unused.
       EMAIL_PROVIDER: 'console',
     },
   },

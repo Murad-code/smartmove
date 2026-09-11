@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 
+import { E2E_EMAIL_HEADER_VALUE, shouldUseConsoleEmail } from '@/lib/email/e2e'
 import { adminEnquiryUrl } from '@/lib/email/templates'
 
 describe('enquiry notification links', () => {
@@ -20,5 +21,19 @@ describe('enquiry notification links', () => {
     expect(adminEnquiryUrl(42)).toBe(
       'https://smartmove4u.muradsprojects.co.uk/admin/collections/enquiries/42',
     )
+  })
+})
+
+describe('e2e email routing', () => {
+  it('writes to the console on a development e2e request', () => {
+    expect(shouldUseConsoleEmail(false, E2E_EMAIL_HEADER_VALUE)).toBe(true)
+  })
+
+  it('never lets the e2e header silence mail in production', () => {
+    expect(shouldUseConsoleEmail(true, E2E_EMAIL_HEADER_VALUE)).toBe(false)
+  })
+
+  it('leaves a normal development request on the configured provider', () => {
+    expect(shouldUseConsoleEmail(false, null)).toBe(false)
   })
 })

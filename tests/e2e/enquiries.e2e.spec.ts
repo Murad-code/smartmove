@@ -2,12 +2,10 @@ import { expect, test } from '@playwright/test'
 
 /**
  * One successful submission is enough to prove the form, the server action and
- * the email provider are wired together. The other three enquiry types are
- * covered by schema tests; sending them here would hit the provider on every
- * run against a reused `pnpm dev` (which keeps EMAIL_PROVIDER from .env).
- *
- * Enquiries land in the development database; delete them from the admin
- * panel if they get in the way.
+ * the console email path are wired together. Playwright tells the dev server
+ * not to call the sending API, so the other enquiry types can be covered here
+ * without spending quota. They still land in the development database; delete
+ * them from the admin panel if they get in the way.
  */
 
 const uniqueEmail = () => `e2e-${Date.now()}@smartmove.test`

@@ -2,7 +2,7 @@ import type { PayloadEmailAdapter, SendEmailOptions } from 'payload'
 
 import { env } from '@/lib/env'
 
-import { getEmailProvider } from './index'
+import { getRequestEmailProvider } from './index'
 
 /**
  * Payload's email adapter, built on the provider layer this app already uses
@@ -14,9 +14,10 @@ import { getEmailProvider } from './index'
  *
  * There is a first-party `@payloadcms/email-resend` package, but it would be a
  * second Resend client alongside `providers/resend.ts` and a dependency the
- * site does not need. Routing through `getEmailProvider` also means
+ * site does not need. Routing through `getRequestEmailProvider` also means
  * `EMAIL_PROVIDER=console` silences reset emails in development exactly as it
- * does enquiry notifications.
+ * does enquiry notifications, and Playwright's e2e header does the same
+ * against a reused `pnpm dev`.
  */
 
 /** Splits `Name <address@example.com>` into its parts. */
@@ -72,7 +73,8 @@ export const payloadEmailAdapter: PayloadEmailAdapter = () => {
       // `message.from` is deliberately ignored. The sender has to match a
       // domain verified with the provider, so it is a deployment concern that
       // belongs in EMAIL_FROM rather than at each call site.
-      await getEmailProvider().send({
+      const provider = await getRequestEmailProvider()
+      await provider.send({
         to: recipients,
         subject: message.subject ?? '',
         text:
