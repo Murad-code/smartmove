@@ -88,6 +88,31 @@ test('the figures count up to the values the owner typed', async ({ page }) => {
   }
 })
 
+test('copy already on screen under a photo header does not wait for a scroll', async ({
+  page,
+}) => {
+  // Tall enough that a `lg:min-h-[38rem]` photo header leaves the first
+  // section in the lower viewport rather than below it. The previous observer
+  // inset of 12% treated that band as still off-screen.
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto('/tenants')
+
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () =>
+            [...document.querySelectorAll('.reveal, .reveal-group')].filter((el) => {
+              const box = el.getBoundingClientRect()
+              const onScreen = box.bottom > 0 && box.top < window.innerHeight
+              return onScreen && getComputedStyle(el).opacity !== '1'
+            }).length,
+        ),
+      { timeout: 10_000 },
+    )
+    .toBe(0)
+})
+
 test('landing part-way down leaves nothing waiting to be revealed', async ({ page }) => {
   await page.goto('/')
   await page.evaluate(() => window.scrollTo(0, 1200))
@@ -104,7 +129,7 @@ test('landing part-way down leaves nothing waiting to be revealed', async ({ pag
           () =>
             [...document.querySelectorAll('.reveal, .reveal-group')].filter((el) => {
               const box = el.getBoundingClientRect()
-              const onScreen = box.bottom > 0 && box.top < window.innerHeight * 0.8
+              const onScreen = box.bottom > 0 && box.top < window.innerHeight
               return onScreen && getComputedStyle(el).opacity !== '1'
             }).length,
         ),

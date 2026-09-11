@@ -80,10 +80,10 @@ export function Motion() {
           reveals.unobserve(entry.target)
         }
       },
-      // A ratio threshold cannot be relied on here: a section taller than the
-      // viewport never reaches one. Insetting the bottom of the root instead
-      // means "once it is 12% of a screen into view", whatever its height.
-      { rootMargin: '0px 0px -12% 0px' },
+      // Default root, no inset. A ratio threshold would miss a section taller
+      // than the viewport; a bottom inset would miss copy that is already on
+      // screen under a tall photo header. A single pixel in the viewport is
+      // enough: the visitor can see it, so it must not wait for a scroll.
     )
 
     const counters = new IntersectionObserver(
@@ -98,7 +98,14 @@ export function Motion() {
     )
 
     document.querySelectorAll('.reveal-group').forEach(armStagger)
-    document.querySelectorAll(REVEAL_SELECTOR).forEach((el) => reveals.observe(el))
+    document.querySelectorAll(REVEAL_SELECTOR).forEach((el) => {
+      const box = el.getBoundingClientRect()
+      if (box.bottom > 0 && box.top < window.innerHeight) {
+        el.classList.add('revealed')
+        return
+      }
+      reveals.observe(el)
+    })
     document.querySelectorAll<HTMLElement>('[data-count-to]').forEach((el) => {
       counters.observe(el)
     })

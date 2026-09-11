@@ -224,6 +224,12 @@ correct fallback: a static page, never a blank one.
 `src/components/layout/Motion.tsx` is mounted once in the frontend layout. It is
 the only client component the motion system adds.
 
+Anything already in the viewport is revealed as soon as the observer starts —
+including copy sitting in the bottom of the first screen under a tall photo
+header. The root is not inset: an inset of 12% is what the reference used to
+time the animation, and it left visible text at `opacity: 0` until the visitor
+scrolled. Below-the-fold blocks still wait.
+
 Reveals moved _off_ scroll timelines and onto the observer during this work, and
 that was the point of the change. A `view()` timeline is scrubbed, so a revealed
 card fades back out when you scroll up past it. The reference's one-shot,
