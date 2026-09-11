@@ -1,7 +1,7 @@
-# Builds the production image and publishes it to GitHub Container Registry.
-#
-# Triggered by a version tag, or by hand from the Actions tab. The VPS then
-# only ever pulls; it never builds and never needs a source checkout.
+# Optional. Production images are built by ./deploy/release.sh and pushed to
+# Docker Hub (muradkamali/smartmove). This workflow still publishes to GHCR
+# if you push a git tag matching v*. The release script does not create those
+# tags.
 
 name: Release
 

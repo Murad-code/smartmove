@@ -1,7 +1,7 @@
 # Deploying to a VPS
 
-The VPS never builds and never needs a source checkout. GitHub Actions builds
-the image and publishes it to GitHub Container Registry; the server pulls it.
+The VPS never builds and never needs a source checkout. You build
+`linux/amd64` on your machine and push it to Docker Hub; the server pulls it.
 
 The container migrates its own database on first connect and, on a fresh
 database, seeds the starter content. A deployment is therefore two commands.
@@ -22,37 +22,29 @@ Internet
 
 ## Part 1 — Publish the image
 
-Once per release, from your machine:
+Once per release, from your machine (Docker Hub login required):
 
 ```bash
-./deploy/release.sh patch    # bugfix: 1.2.0 -> 1.2.1
-./deploy/release.sh minor    # feature: 1.2.0 -> 1.3.0
+./deploy/release.sh patch    # bugfix: 1.3.0 -> 1.3.1
+./deploy/release.sh minor    # feature: 1.3.0 -> 1.4.0
 ./deploy/release.sh          # asks which
 ```
 
-That bumps `package.json`, commits, tags `vX.Y.Z`, and pushes. GitHub Actions
-then builds `linux/amd64`. You can still tag by hand (`git tag v1.2.1 && git
-push origin v1.2.1`) if you need to.
+That bumps `package.json`, builds `linux/amd64`, and pushes these tags to
+`muradkamali/smartmove`:
 
-That runs [`.github/workflows/release.yml`](../.github/workflows/release.yml),
-which builds `linux/amd64` and pushes these tags to
-`ghcr.io/murad-code/smartmove`:
+| Tag        | Meaning                                           |
+| ---------- | ------------------------------------------------- |
+| `1.3.1`    | The exact release. Use this in production.        |
+| `latest`   | Whatever was published most recently.             |
 
-| Tag             | Meaning                                           |
-| --------------- | ------------------------------------------------- |
-| `v1.0.0`, `1.0` | The exact release. Use this in production.        |
-| `latest`        | Whatever was published most recently.             |
-| `sha-abc1234`   | The commit, for tracing a mystery back to source. |
-
-You can also publish without tagging from the Actions tab → Release → Run
-workflow.
+Do not skip `--platform linux/amd64`: a Mac build is arm64 and the VPS is not.
 
 > Two different variables, same hostname:
 >
 > - **`NEXT_PUBLIC_SITE_URL`** is inlined into the JavaScript bundle at **image
->   build** time. Set it as a build-arg (`docker build --build-arg
-NEXT_PUBLIC_SITE_URL=https://…`) or in `.github/workflows/release.yml`.
->   Changing it only on the server does not fix canonicals or Open Graph URLs.
+>   build** time. `./deploy/release.sh` passes it as a build-arg. Changing it
+>   only on the server does not fix canonicals or Open Graph URLs.
 > - **`SITE_URL`** is read at **runtime** for enquiry notification links and
 >   password-reset / invite emails. `docker-compose.prod.yml` copies it from
 >   `NEXT_PUBLIC_SITE_URL` in `.env.production`. If email links point at
@@ -61,17 +53,18 @@ NEXT_PUBLIC_SITE_URL=https://…`) or in `.github/workflows/release.yml`.
 > If the public domain ever changes, update both the build-arg / workflow and
 > `.env.production`, then publish a new image.
 
-### The registry package is private
+### Docker Hub login
 
-The image contains the demo photographs, which are not ours to republish, so
-keep the GHCR package private and give the VPS a read-only token.
-
-1. GitHub → Settings → Developer settings → Personal access tokens → **Tokens
-   (classic)** → Generate new token, scope **`read:packages`** only.
-2. On the VPS:
+On your machine, once:
 
 ```bash
-echo 'YOUR_TOKEN' | docker login ghcr.io -u Murad-code --password-stdin
+docker login
+```
+
+On the VPS, only if the Hub repository is private:
+
+```bash
+docker login
 ```
 
 ---
@@ -240,7 +233,7 @@ Then in a browser:
 
 ```bash
 ./deploy/release.sh patch                    # from your machine
-ssh you@vps 'cd /opt/smartmove && ./update.sh 1.2.1'
+ssh you@vps 'cd ~/smartmove && ./update.sh 1.3.1'
 ```
 
 `update.sh` pins the tag in `.env.production`, pulls, restarts and waits for the
@@ -250,7 +243,7 @@ apply themselves as the new container connects.
 ### Roll back
 
 ```bash
-./update.sh v1.0.0
+./update.sh 1.3.0
 ```
 
 Rolling back the image does not roll back the database. A release that adds a
@@ -308,10 +301,10 @@ Take a backup first. Postgres major versions do not upgrade in place; pin
 | Symptom                                              | Cause and fix                                                                                                                                                             |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `502 Bad Gateway`                                    | The app container is not up, or `APP_PORT` and the nginx `upstream` disagree. Check `$C ps` and `ss -tlnp                                                                 | grep 3001`. |
-| `denied` on `docker compose pull`                    | The VPS is not logged in to GHCR, or the token lacks `read:packages`. Repeat the `docker login` in Part 1.                                                                |
-| Site loads but every link points at `localhost:3000` | The image was built with the wrong `NEXT_PUBLIC_SITE_URL`. It is baked in at build time: fix the build-arg / `SITE_URL` in the release workflow and publish again.        |
+| `denied` on `docker compose pull`                    | Not logged in to Docker Hub, or the Hub repo is private. Run `docker login` on the VPS.                                                                                    |
+| Site loads but every link points at `localhost:3000` | The image was built with the wrong `NEXT_PUBLIC_SITE_URL`. It is baked in at build time: rebuild with `./deploy/release.sh` so the build-arg is the public URL.            |
 | Enquiry email "View in admin" points at localhost    | The container is missing runtime `SITE_URL`. `docker-compose.prod.yml` should set `SITE_URL: ${NEXT_PUBLIC_SITE_URL}`. Restart the stack; no rebuild needed for this one. |
-| `exec format error`                                  | An arm64 image on an x86-64 host. The workflow builds `linux/amd64`; do not `docker load` an image built on an Apple Silicon Mac.                                         |
+| `exec format error`                                  | An arm64 image on an x86-64 host. Always build with `--platform linux/amd64` (the release script does). Do not push a default Apple Silicon build.                         |
 | Migration says it is waiting for a batch             | A development-mode command ran against this database and wrote a `batch = -1` row. See [operations.md](operations.md).                                                    |
 | Enquiries stored but no email                        | `EMAIL_PROVIDER` is still `console`, or Resend is rejecting the sender. Resend only accepts a `from` on a domain verified with it, or its sandbox address.                |
 | Uploads vanish after a deploy                        | The `media` volume is not mounted. `docker volume ls` should show `smartmove_media`.                                                                                      |

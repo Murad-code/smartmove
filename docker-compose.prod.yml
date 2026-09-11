@@ -9,8 +9,8 @@
 # all, so it is reachable only from the app container.
 #
 # Each service declares both `image` and `build`, so the same file works two
-# ways: `pull` fetches the image built by CI, and `build` produces it locally
-# for testing. See docs/deployment.md.
+# ways: `pull` fetches the image from Docker Hub, and `build` produces it
+# locally for testing. See docs/deployment.md.
 
 x-logging: &logging
   driver: json-file
@@ -38,7 +38,7 @@ services:
     logging: *logging
 
   app:
-    image: ${APP_IMAGE:-ghcr.io/murad-code/smartmove:latest}
+    image: ${APP_IMAGE:-muradkamali/smartmove:latest}
     build:
       context: .
       target: runner

@@ -1,39 +1,41 @@
 #!/usr/bin/env bash
 #
-# Publish a production image from your machine. Does not SSH to the VPS.
+# Build the production image for the VPS and push it to Docker Hub.
 #
-# Bumps package.json, commits, tags vX.Y.Z, and pushes. GitHub Actions then
-# builds linux/amd64 and publishes to ghcr.io/murad-code/smartmove (the git
-# tag keeps the v; the image tag does not).
+# The version you pass (patch / minor / major) is the Docker tag, e.g.
+# muradkamali/smartmove:1.3.1. package.json is kept in step so the next
+# bump starts from whatever is on Hub. This does not create a git tag, so
+# it will not publish to GHCR.
 #
 #   ./deploy/release.sh              # asks patch / minor / major
-#   ./deploy/release.sh patch        # 1.2.0 -> 1.2.1  bugfix, styling
-#   ./deploy/release.sh minor        # 1.2.0 -> 1.3.0  new feature
-#   ./deploy/release.sh major        # 1.2.0 -> 2.0.0  breaking
-#   ./deploy/release.sh patch --no-watch
+#   ./deploy/release.sh patch        # 1.3.0 -> 1.3.1
+#   ./deploy/release.sh minor        # 1.3.0 -> 1.4.0
+#   ./deploy/release.sh major        # 1.3.0 -> 2.0.0
 #
-# Then on the VPS, after the Action is green:
+# Then on the VPS:
 #
-#   ssh you@vps 'cd /opt/smartmove && ./update.sh 1.2.1'
+#   cd ~/smartmove && ./update.sh 1.3.1
+#
+# Override the Hub repo or the public URL with IMAGE_REPO / NEXT_PUBLIC_SITE_URL.
 
 set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 
-WATCH=1
+IMAGE_REPO="${IMAGE_REPO:-muradkamali/smartmove}"
+PLATFORM="${DOCKER_PLATFORM:-linux/amd64}"
+SITE_URL="${NEXT_PUBLIC_SITE_URL:-https://smartmove4u.muradsprojects.co.uk}"
 BUMP=""
 
 usage() {
-  sed -n '2,18p' "$0" | sed 's/^# \?//'
+  sed -n '2,20p' "$0" | sed 's/^# \?//'
   exit "${1:-0}"
 }
 
 for arg in "$@"; do
   case "$arg" in
     -h | --help) usage 0 ;;
-    --no-watch) WATCH=0 ;;
-    --watch) WATCH=1 ;;
     patch | minor | major) BUMP="$arg" ;;
     *)
       echo "Unknown argument: $arg" >&2
@@ -61,6 +63,7 @@ if [[ -z "$BUMP" ]]; then
     usage 1
   fi
   echo "Current version: $current"
+  echo "  Image: $IMAGE_REPO:$current"
   echo "  patch  -> $(next_version patch)   bugfix, animation, copy, styling"
   echo "  minor  -> $(next_version minor)   new feature the owner would notice"
   echo "  major  -> $(next_version major)   breaking (env, deploy, data)"
@@ -77,81 +80,64 @@ case "$BUMP" in
 esac
 
 version="$(next_version "$BUMP")"
-tag="v$version"
 
 if [[ -n "$(git status --porcelain)" ]]; then
-  echo "Working tree is dirty. Commit or stash first so the tag is exactly what you meant to ship." >&2
+  echo "Working tree is dirty. Commit or stash first so the image is exactly what you meant to ship." >&2
   git status --short >&2
   exit 1
 fi
 
-if git rev-parse "$tag" >/dev/null 2>&1; then
-  echo "Tag $tag already exists locally." >&2
+if ! command -v docker >/dev/null 2>&1; then
+  echo "Docker is not on PATH." >&2
   exit 1
-fi
-
-git fetch origin --tags --quiet
-if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
-  echo "Tag $tag already exists on origin." >&2
-  exit 1
-fi
-
-branch="$(git rev-parse --abbrev-ref HEAD)"
-if [[ "$branch" == "HEAD" ]]; then
-  echo "Detached HEAD. Check out a branch before releasing." >&2
-  exit 1
-fi
-
-if git rev-parse --abbrev-ref '@{u}' >/dev/null 2>&1; then
-  if [[ -n "$(git log 'HEAD..@{u}' --oneline)" ]]; then
-    echo "Local $branch is behind the remote. Pull (or rebase) before releasing." >&2
-    exit 1
-  fi
 fi
 
 pnpm version "$BUMP" --no-git-tag-version >/dev/null
 actual="$(node -p "require('./package.json').version")"
 if [[ "$actual" != "$version" ]]; then
   echo "pnpm wrote $actual, expected $version." >&2
+  git checkout -- package.json
   exit 1
 fi
 
+revert_version() {
+  git checkout -- package.json
+}
+
+trap revert_version ERR
+
+echo
+echo "Building $IMAGE_REPO:$version ($PLATFORM) and pushing to Docker Hub..."
+echo "Site URL baked into the bundle: $SITE_URL"
+
+docker buildx build \
+  --platform "$PLATFORM" \
+  --target runner \
+  --build-arg "NEXT_PUBLIC_SITE_URL=$SITE_URL" \
+  --build-arg "NEXT_PUBLIC_ANALYTICS_PROVIDER=${NEXT_PUBLIC_ANALYTICS_PROVIDER:-}" \
+  --build-arg "NEXT_PUBLIC_ANALYTICS_ID=${NEXT_PUBLIC_ANALYTICS_ID:-}" \
+  --build-arg "NEXT_PUBLIC_PLAUSIBLE_HOST=${NEXT_PUBLIC_PLAUSIBLE_HOST:-}" \
+  --build-arg "NEXT_PUBLIC_TURNSTILE_SITE_KEY=${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-}" \
+  --tag "$IMAGE_REPO:$version" \
+  --tag "$IMAGE_REPO:latest" \
+  --push \
+  .
+
+trap - ERR
+
 git add package.json
 git commit -m "Bump version to $version"
-git tag "$tag"
 
+branch="$(git rev-parse --abbrev-ref HEAD)"
 git push origin "$branch"
-git push origin "$tag"
-sha="$(git rev-parse "$tag")"
 
 echo
-echo "Published $tag. Image tag (no v): ghcr.io/murad-code/smartmove:$version"
-echo "Watch: https://github.com/Murad-code/smartmove/actions"
+echo "Pushed $IMAGE_REPO:$version and $IMAGE_REPO:latest"
 echo
-echo "On the VPS, after the Action is green:"
-echo "  ssh you@vps 'cd /opt/smartmove && ./update.sh $version'"
-
-if [[ "$WATCH" -eq 1 ]] && command -v gh >/dev/null 2>&1; then
-  echo
-  echo "Waiting for the Release workflow..."
-  # The tag push takes a moment to become a run.
-  run_id=""
-  for _ in $(seq 1 20); do
-    run_id="$(
-      gh run list --workflow=release.yml --limit 5 --json databaseId,headSha \
-        --jq "[.[] | select(.headSha == \"$sha\")][0].databaseId // empty"
-    )"
-    if [[ -n "$run_id" ]]; then
-      break
-    fi
-    sleep 3
-  done
-  if [[ -z "$run_id" ]]; then
-    echo "No Release run found yet. Check the Actions tab." >&2
-    exit 0
-  fi
-  gh run watch "$run_id" --exit-status
-  echo
-  echo "Image is on GHCR. Pull it on the VPS with:"
-  echo "  ssh you@vps 'cd /opt/smartmove && ./update.sh $version'"
-fi
+echo "On the VPS:"
+echo "  cd ~/smartmove && ./update.sh $version"
+echo
+echo "If update.sh is not on the server, set APP_IMAGE=$IMAGE_REPO:$version"
+echo "in .env.production, then:"
+echo "  docker compose --env-file .env.production pull"
+echo "  docker compose --env-file .env.production up -d"
