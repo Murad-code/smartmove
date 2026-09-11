@@ -123,3 +123,31 @@ html[data-theme='light'] {
   max-height: 7.5rem !important;
   flex-shrink: 0;
 }
+
+/* Payload only turns the first column into a link. Stretch that link across
+   the row so clicking the title, rent or empty space still opens the record.
+   Checkboxes stay above the overlay so bulk select still works. */
+.table tbody tr {
+  cursor: pointer;
+}
+
+.table tbody tr:hover td {
+  background: var(--theme-elevation-100);
+}
+
+.table tbody td:not(.cell-_select):not(.cell-_dragHandle) {
+  position: static;
+}
+
+.table tbody td.cell-_select,
+.table tbody td.cell-_dragHandle {
+  position: relative;
+  z-index: 2;
+}
+
+.table tbody td a[href*='/collections/']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}

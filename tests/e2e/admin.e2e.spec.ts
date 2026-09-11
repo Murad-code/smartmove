@@ -205,6 +205,30 @@ test('folders stay out of the sidebar and out of the URL', async ({ page }) => {
   await expect(page.locator('.nav').getByRole('link', { name: /folder/i })).toHaveCount(0)
 })
 
+test('clicking anywhere on an admin list row opens that record', async ({ page }) => {
+  await page.goto('/admin/collections/properties')
+
+  const propertyRow = page.locator('.table tbody tr').first()
+  await expect(propertyRow).toBeVisible()
+  const propertyTitle = propertyRow.locator('.cell-title')
+  const propertyBox = (await propertyTitle.boundingBox())!
+  // The first column's link is stretched over the whole row, which is the
+  // point: a real click on the title hits that overlay, not the title cell.
+  await page.mouse.click(
+    propertyBox.x + propertyBox.width / 2,
+    propertyBox.y + propertyBox.height / 2,
+  )
+  await page.waitForURL(/\/admin\/collections\/properties\/\d+/)
+
+  await page.goto('/admin/collections/users')
+  const userRow = page.locator('.table tbody tr').first()
+  await expect(userRow).toBeVisible()
+  const userEmail = userRow.locator('.cell-email')
+  const userBox = (await userEmail.boundingBox())!
+  await page.mouse.click(userBox.x + userBox.width / 2, userBox.y + userBox.height / 2)
+  await page.waitForURL(/\/admin\/collections\/users\/\d+/)
+})
+
 test('the properties list leads with a photograph so listings are easy to recognise', async ({
   page,
 }) => {

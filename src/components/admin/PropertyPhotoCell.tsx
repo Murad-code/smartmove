@@ -6,8 +6,18 @@ import { toImage } from '@/lib/properties/mappers'
 /**
  * First photograph in the Properties list. The stock upload cell shows up to
  * three filenames; the owner needs a picture they can recognise at a glance.
+ *
+ * This is the first column, so Payload treats it as the document link. The
+ * wrap has to live here: a custom cell replaces the default linked cell.
  */
-export async function PropertyPhotoCell({ cellData, payload }: DefaultServerCellComponentProps) {
+export async function PropertyPhotoCell({
+  cellData,
+  collectionSlug,
+  link,
+  linkURL,
+  payload,
+  rowData,
+}: DefaultServerCellComponentProps) {
   const first = Array.isArray(cellData) ? cellData[0] : cellData
   let image = toImage(first)
 
@@ -20,11 +30,7 @@ export async function PropertyPhotoCell({ cellData, payload }: DefaultServerCell
     }
   }
 
-  if (!image) {
-    return <span className="property-photo-cell property-photo-cell--empty">No photo</span>
-  }
-
-  return (
+  const inner = image ? (
     <span className="property-photo-cell">
       {/* Not next/image: this renders inside Payload's admin bundle. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -33,5 +39,14 @@ export async function PropertyPhotoCell({ cellData, payload }: DefaultServerCell
         alt={image.alt || 'Property photo'}
       />
     </span>
+  ) : (
+    <span className="property-photo-cell property-photo-cell--empty">No photo</span>
   )
+
+  if (!link) return inner
+
+  const href =
+    linkURL ?? `/admin/collections/${collectionSlug}/${encodeURIComponent(String(rowData.id))}`
+
+  return <a href={href}>{inner}</a>
 }
