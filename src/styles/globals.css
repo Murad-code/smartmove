@@ -384,6 +384,33 @@
   }
 }
 
+/* Hero copy cannot share the photo's simultaneous cross-fade. Two headings
+   in the same grid cell read as a double-exposure, and on a narrow screen
+   they wrap onto the same lines. The outgoing slide leaves first; the
+   incoming one waits until it has. */
+@layer components {
+  .hero-slide-copy {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms var(--ease-smooth);
+  }
+
+  .hero-slide-copy.is-active {
+    opacity: 1;
+    pointer-events: auto;
+    transition-duration: 500ms;
+    transition-delay: 280ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .hero-slide-copy {
+      transition: none;
+    }
+  }
+}
+
 /* ---------------------------------------------------------------------------
    Hover mechanics
 

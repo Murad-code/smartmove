@@ -12,9 +12,10 @@ import { cn } from '@/lib/cn'
  * The home page banner.
  *
  * One slide renders as a still hero and costs nothing extra; two or more
- * cross-fade. No carousel library: the slides are stacked in a single grid
- * cell so the band is always as tall as its tallest slide and never jumps
- * as it rotates.
+ * rotate. Photos cross-fade; the copy does not, because two headings in the
+ * same grid cell overlap. No carousel library: the slides are stacked in a
+ * single grid cell so the band is always as tall as its tallest slide and
+ * never jumps as it rotates.
  *
  * Auto-rotation stops on hover, on focus and for anyone who has asked their
  * device to reduce motion, and there is always a visible pause control, which
@@ -203,8 +204,8 @@ export function HeroCarousel({
                 aria-hidden={!active}
                 inert={!active}
                 className={cn(
-                  '[grid-area:1/1] max-w-2xl transition-opacity duration-700 ease-out',
-                  active ? 'opacity-100' : 'pointer-events-none opacity-0',
+                  'hero-slide-copy [grid-area:1/1] max-w-2xl',
+                  active && 'is-active',
                 )}
               >
                 {/* The heading rises from behind its own box rather than

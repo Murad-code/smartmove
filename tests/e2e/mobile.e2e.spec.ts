@@ -144,3 +144,26 @@ test('a visitor who asked for less motion gets no menu animation', async ({ page
   await page.keyboard.press('Escape')
   await expect(menu).toBeHidden()
 })
+
+test('hero copy does not stack during a slide change', async ({ page }) => {
+  await page.goto('/')
+
+  const copies = page.locator('.hero-slide-copy')
+  const count = await copies.count()
+  test.skip(count < 2, 'needs more than one hero slide')
+
+  await page.getByRole('button', { name: 'Show slide 2' }).click()
+
+  const overlapping = await page.evaluate(async () => {
+    const slides = [...document.querySelectorAll('.hero-slide-copy')]
+    const started = performance.now()
+    while (performance.now() - started < 900) {
+      const showing = slides.filter((el) => Number(getComputedStyle(el).opacity) > 0.2)
+      if (showing.length > 1) return true
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+    }
+    return false
+  })
+
+  expect(overlapping).toBe(false)
+})
