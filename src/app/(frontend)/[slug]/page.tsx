@@ -7,6 +7,7 @@ import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { LivePreview } from '@/components/layout/LivePreview'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { Container } from '@/components/ui/Container'
+import { cn } from '@/lib/cn'
 import { findPageBySlug } from '@/lib/pages'
 import { previewRequested } from '@/lib/preview'
 import { toImage } from '@/lib/properties/mappers'
@@ -59,7 +60,15 @@ export default async function CmsPage({ params, searchParams }: Props) {
         ])}
       />
 
-      <div className="relative isolate overflow-hidden border-b border-ink-200 bg-navy-50">
+      <div
+        data-page-header={heroImage ? 'with-photo' : 'plain'}
+        className={cn(
+          'relative isolate overflow-hidden border-b border-ink-200 bg-navy-50',
+          // Without a photo the band is only as tall as the heading. A photo
+          // needs a real frame or object-cover crops it to a thin strip.
+          heroImage && 'flex min-h-[40svh] items-end sm:min-h-[28rem] lg:min-h-[38rem]',
+        )}
+      >
         {heroImage ? (
           <>
             <Image
@@ -68,13 +77,18 @@ export default async function CmsPage({ params, searchParams }: Props) {
               fill
               priority
               sizes="100vw"
-              className="object-cover"
+              className="object-cover object-center"
             />
             <div aria-hidden="true" className="absolute inset-0 bg-navy-950/70" />
           </>
         ) : null}
 
-        <Container className="relative py-12 sm:py-16">
+        <Container
+          className={cn(
+            'relative',
+            heroImage ? 'w-full py-16 sm:py-20 lg:py-24' : 'py-12 sm:py-16',
+          )}
+        >
           <h1 className={`text-3xl sm:text-4xl lg:text-5xl ${heroImage ? 'text-white' : ''}`}>
             {page.hero?.heading || page.title}
           </h1>

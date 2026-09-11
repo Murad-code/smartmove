@@ -111,6 +111,28 @@ test('the legal and contact pages load', async ({ page }) => {
   }
 })
 
+test('a page header stays compact when it has no background photo', async ({ page }) => {
+  await page.goto('/cookie-policy')
+
+  const header = page.locator('[data-page-header]')
+  await expect(header).toHaveAttribute('data-page-header', 'plain')
+  const box = await header.boundingBox()
+  expect(box?.height, 'text-only headers should not use the photo band height').toBeLessThan(280)
+})
+
+test('a page header with a background photo is tall enough to show the picture', async ({
+  page,
+}) => {
+  await page.goto('/about')
+
+  const header = page.locator('[data-page-header]')
+  const kind = await header.getAttribute('data-page-header')
+  test.skip(kind !== 'with-photo', 'needs a background photo on the About page')
+
+  const box = await header.boundingBox()
+  expect(box?.height).toBeGreaterThan(400)
+})
+
 test('an unknown address shows the custom not-found page', async ({ page }) => {
   const response = await page.goto('/this-page-does-not-exist')
 
