@@ -272,11 +272,13 @@ Two things happen automatically in the container, and both are load-bearing:
   database connection when `NODE_ENV=production`. This is why the VPS needs no
   source checkout and no migration step. Keep `src/migrations/index.ts` in the
   config's import graph.
-- `src/instrumentation.ts` runs the seed on boot when `RUN_SEED_ON_BOOT` is
-  set. Seeding cannot be a standalone script in production: the Next standalone
-  build inlines the Payload config into its own server chunks, so `payload` is
-  not resolvable from outside the server process. `src/scripts/seed-run.ts`
-  holds the work; `src/scripts/seed.ts` is only the `pnpm seed` entry point.
+- `src/instrumentation.ts` always creates the root account from
+  `ROOT_ADMIN_EMAIL` if it is missing. On an empty database it also runs the
+  starter seed (`SEED_DEMO=true` adds the demo listings). Seeding cannot be a
+  standalone script in production: the Next standalone build inlines the
+  Payload config into its own server chunks, so `payload` is not resolvable
+  from outside the server process. `src/scripts/seed-run.ts` holds the work;
+  `src/scripts/seed.ts` is only the `pnpm seed` entry point.
 
 `robots.ts` is `force-dynamic` on purpose. One image is built and deployed to
 environments that disagree about whether they may be indexed, so `SITE_NOINDEX`

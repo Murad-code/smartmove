@@ -3,10 +3,11 @@
  *
  *   pnpm seed
  *
- * Used in development and by the test setup. Production seeds itself on first
- * boot instead, through `src/instrumentation.ts`, because the standalone build
- * cannot resolve `payload` from a plain script. The work is the same either
- * way: see `seed-run.ts`.
+ * Used in development and by the test setup. Production creates the root
+ * account (and seeds an empty database) on boot through
+ * `src/instrumentation.ts`, because the standalone build cannot resolve
+ * `payload` from a plain script. The work is the same either way: see
+ * `seed-run.ts`.
  */
 
 // Marks the file as a module so top-level await is allowed.

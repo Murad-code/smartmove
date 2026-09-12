@@ -75,14 +75,13 @@ services:
       NEXT_PUBLIC_ANALYTICS_PROVIDER: ${NEXT_PUBLIC_ANALYTICS_PROVIDER:-}
       NEXT_PUBLIC_ANALYTICS_ID: ${NEXT_PUBLIC_ANALYTICS_ID:-}
       NEXT_PUBLIC_PLAUSIBLE_HOST: ${NEXT_PUBLIC_PLAUSIBLE_HOST:-}
-      # unset = never seed. `true` = set up the site if it is empty, and do
-      # nothing once it has content, so it is safe to leave on. `force` =
-      # re-apply the seed on every boot, which overwrites the client's edits.
-      # SEED_DEMO=true implies `force` when this is unset.
-      RUN_SEED_ON_BOOT: ${RUN_SEED_ON_BOOT:-}
+      # Owner account: created on first boot if missing, hidden from other
+      # admins, cannot be deleted. SEED_ADMIN_* names still work.
+      ROOT_ADMIN_EMAIL: ${ROOT_ADMIN_EMAIL:-}
+      ROOT_ADMIN_PASSWORD: ${ROOT_ADMIN_PASSWORD:-}
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
-      # The whole demonstration site, listings and home page photography both.
+      # Optional. Adds the third-party demo listings and photography.
       SEED_DEMO: ${SEED_DEMO:-false}
     volumes:
       # Property photographs. Back this up alongside the database.

@@ -48,13 +48,17 @@ Postgres. Compose refuses to start if the first two are missing.
 | `POSTGRES_PASSWORD` | Use a long random value. |
 | `POSTGRES_DB`       | Defaults to `smartmove`. |
 
-## Seeding
+## Owner account
 
-| Variable              | Notes                                                                                                                                         |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SEED_ADMIN_EMAIL`    | The first admin account.                                                                                                                      |
-| `SEED_ADMIN_PASSWORD` | Required. The seed refuses to run without it. Change it after the first sign-in.                                                              |
-| `SEED_DEMO`           | `true` loads the whole demonstration site: six demo listings and the home page photography, figures and reviews that go with them. See below. |
+These must be in the environment so the site can create (and later recognise)
+the hidden root user. `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` still work as
+aliases.
+
+| Variable              | Notes                                                                                                                                                            |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ROOT_ADMIN_EMAIL`    | The owner account. Created on first boot if missing. Can sign in, cannot be deleted, hidden from other admins on the Users list. Keep this set after first boot. |
+| `ROOT_ADMIN_PASSWORD` | Used only when creating that account. Not required on later boots once the user exists.                                                                          |
+| `SEED_DEMO`           | `true` also loads the demonstration listings and home page photography. Off (the default) leaves an empty site besides the starter pages.                        |
 
 ## Backup script
 
@@ -77,16 +81,16 @@ exists.
 These are set in `.env.production` on the server and have no effect in
 development.
 
-| Variable                                            | Purpose                                                                                                                                                                                                                                       |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Variable                                            | Purpose                                                                                                                                                                                             |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `APP_IMAGE`                                         | Which published image to run, e.g. `muradkamali/smartmove:1.3.0`. `./deploy/release.sh` tags Docker Hub with the semver, no `v`. Pin a version tag in production so a rollback has somewhere to go. |
-| `APP_PORT`                                          | The port on `127.0.0.1` that the host's nginx proxies to. Default `3001`. Nothing is published publicly.                                                                                                                                      |
-| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | Credentials for the Postgres container. The app's `DATABASE_URL` is assembled from these by Compose.                                                                                                                                          |
-| `SITE_NOINDEX`                                      | `true` blocks every crawler in `robots.txt` and sends `noindex` on every page. Leave `true` on a preview or staging deployment.                                                                                                               |
-| `SITE_URL`                                          | Runtime origin for enquiry emails and password-reset links. Compose copies it from `NEXT_PUBLIC_SITE_URL`. Do not omit it: Next inlines `NEXT_PUBLIC_SITE_URL` at build, which is often localhost.                                            |
-| `RUN_SEED_ON_BOOT`                                  | `true` seeds the starter content only if the database has no users, so it is safe to leave set. `force` re-applies the seed on every restart and overwrites the client's edits. Unset means never seed, unless `SEED_DEMO` is on.             |
-| `SEED_DEMO`                                         | `true` turns the deployment into the demonstration site, and implies `RUN_SEED_ON_BOOT=force` when that is unset, so one flag is enough. Works in production on purpose. Pair it with `SITE_NOINDEX=true`.                                    |
-| `SEED_ASSET_DIR`                                    | Where the seed looks for brand marks and demo photographs. The production image sets this to `/app/seed-assets`; you should not need to.                                                                                                      |
+| `APP_PORT`                                          | The port on `127.0.0.1` that the host's nginx proxies to. Default `3001`. Nothing is published publicly.                                                                                            |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | Credentials for the Postgres container. The app's `DATABASE_URL` is assembled from these by Compose.                                                                                                |
+| `SITE_NOINDEX`                                      | `true` blocks every crawler in `robots.txt` and sends `noindex` on every page. Leave `true` on a preview or staging deployment.                                                                     |
+| `SITE_URL`                                          | Runtime origin for enquiry emails and password-reset links. Compose copies it from `NEXT_PUBLIC_SITE_URL`. Do not omit it: Next inlines `NEXT_PUBLIC_SITE_URL` at build, which is often localhost.  |
+| `ROOT_ADMIN_EMAIL`, `ROOT_ADMIN_PASSWORD`           | Owner account. Created on first boot if missing. Hidden from other admins. `SEED_ADMIN_*` names still work.                                                                                         |
+| `SEED_DEMO`                                         | `true` adds the demonstration listings and photography on first boot (and when you run `pnpm seed`). Pair it with `SITE_NOINDEX=true`. Off means starter pages only.                                |
+| `SEED_ASSET_DIR`                                    | Where the seed looks for brand marks and demo photographs. The production image sets this to `/app/seed-assets`; you should not need to.                                                            |
 
 `NEXT_PUBLIC_SITE_URL` is inlined into the browser bundle at build time, so a
 domain change needs a new image. `SITE_URL` is the runtime override used by

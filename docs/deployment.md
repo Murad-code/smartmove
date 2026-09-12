@@ -33,10 +33,10 @@ Once per release, from your machine (Docker Hub login required):
 That bumps `package.json`, builds `linux/amd64`, and pushes these tags to
 `muradkamali/smartmove`:
 
-| Tag        | Meaning                                           |
-| ---------- | ------------------------------------------------- |
-| `1.3.1`    | The exact release. Use this in production.        |
-| `latest`   | Whatever was published most recently.             |
+| Tag      | Meaning                                    |
+| -------- | ------------------------------------------ |
+| `1.3.1`  | The exact release. Use this in production. |
+| `latest` | Whatever was published most recently.      |
 
 Do not skip `--platform linux/amd64`: a Mac build is arm64 and the VPS is not.
 
@@ -211,8 +211,8 @@ docker compose -f docker-compose.prod.yml --env-file .env.production up -d
 `update.sh` is not on `PATH`. Run it from this folder as `./update.sh`. If the
 compose file is named `docker-compose.yml`, the script still finds it.
 
-Watch the first boot. On an empty database you should see the migration run and
-then the seed:
+Watch the first boot. On an empty database you should see the migration run,
+then the root account and starter pages:
 
 ```bash
 docker compose -f docker-compose.prod.yml --env-file .env.production logs -f app
@@ -221,22 +221,17 @@ docker compose -f docker-compose.prod.yml --env-file .env.production logs -f app
 ```
 Migrating: 20260906_111931_initial
 Migrated:  20260906_111931_initial (630ms)
-Created admin user you@example.com
+Created root user you@example.com
 Seeded 4 services
 Seeded 9 pages
 Seed complete.
 ```
 
-`RUN_SEED_ON_BOOT=true` only seeds a database with no users in it, so it is
-safe to leave set: every later restart logs `Seed skipped: this site is already
-set up` and changes nothing.
+Every later restart only checks that the root account still exists. It does
+not overwrite pages the client has edited.
 
-On the demonstration box, set `SEED_DEMO=true` and leave `RUN_SEED_ON_BOOT`
-unset. That one flag loads the demo listings, the home page photography, the
-figures and the reviews, and re-applies them on every boot, so a restart always
-brings the demo back to a known state. Any edit made in the admin panel while
-demonstrating is lost on the next restart, which is the trade for not having to
-think about it.
+For a demonstration box, set `SEED_DEMO=true` as well. That adds the demo
+listings and photography on first boot. Keep `SITE_NOINDEX=true` beside it.
 
 ---
 
@@ -273,11 +268,12 @@ Then in a browser:
 - The home page renders with the Smart Move logo.
 - `/properties` lists the properties and the filters work.
 - A property page opens and its gallery works on a phone.
-- `/admin` signs in with `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`.
+- `/admin` signs in with `ROOT_ADMIN_EMAIL` and `ROOT_ADMIN_PASSWORD`.
 - Submitting an enquiry stores it under Enquiries and sends the email.
 
-**Change the admin password after the first sign-in**, and remove
-`SEED_ADMIN_PASSWORD` from `.env.production` once you have.
+Keep `ROOT_ADMIN_EMAIL` in `.env.production` so the owner row stays hidden
+from other admins. `ROOT_ADMIN_PASSWORD` is only used when that account is
+created.
 
 ---
 
@@ -350,19 +346,12 @@ $C down          # keeps the volumes
 Never `docker compose down -v` on the server: `-v` deletes the database and
 every uploaded photograph.
 
-### Re-apply the seed content
+### Re-apply the starter or demo content
 
-Only while a demo is being iterated on, and never once the client has started
-editing, because it overwrites their changes:
-
-```bash
-# set RUN_SEED_ON_BOOT=force in .env.production
-$C up -d && $C logs -f app
-# then set it back to true
-```
-
-A box running `SEED_DEMO=true` already behaves this way and needs none of the
-above.
+Only while iterating, and never once the client has started editing, because
+it overwrites their changes. From a machine that can run `pnpm seed` against
+that database, or use **Load demo properties** on the dashboard if you only
+need the listings.
 
 ### Update Postgres and the base image
 
@@ -380,10 +369,10 @@ Take a backup first. Postgres major versions do not upgrade in place; pin
 | Symptom                                              | Cause and fix                                                                                                                                                             |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `502 Bad Gateway`                                    | The app container is not up, or `APP_PORT` and the nginx `upstream` disagree. Check `$C ps` and `ss -tlnp                                                                 | grep 3001`. |
-| `denied` on `docker compose pull`                    | Not logged in to Docker Hub, or the Hub repo is private. Run `docker login` on the VPS.                                                                                    |
-| Site loads but every link points at `localhost:3000` | The image was built with the wrong `NEXT_PUBLIC_SITE_URL`. It is baked in at build time: rebuild with `./deploy/release.sh` so the build-arg is the public URL.            |
+| `denied` on `docker compose pull`                    | Not logged in to Docker Hub, or the Hub repo is private. Run `docker login` on the VPS.                                                                                   |
+| Site loads but every link points at `localhost:3000` | The image was built with the wrong `NEXT_PUBLIC_SITE_URL`. It is baked in at build time: rebuild with `./deploy/release.sh` so the build-arg is the public URL.           |
 | Enquiry email "View in admin" points at localhost    | The container is missing runtime `SITE_URL`. `docker-compose.prod.yml` should set `SITE_URL: ${NEXT_PUBLIC_SITE_URL}`. Restart the stack; no rebuild needed for this one. |
-| `exec format error`                                  | An arm64 image on an x86-64 host. Always build with `--platform linux/amd64` (the release script does). Do not push a default Apple Silicon build.                         |
+| `exec format error`                                  | An arm64 image on an x86-64 host. Always build with `--platform linux/amd64` (the release script does). Do not push a default Apple Silicon build.                        |
 | Migration says it is waiting for a batch             | A development-mode command ran against this database and wrote a `batch = -1` row. See [operations.md](operations.md).                                                    |
 | Enquiries stored but no email                        | `EMAIL_PROVIDER` is still `console`, or Resend is rejecting the sender. Resend only accepts a `from` on a domain verified with it, or its sandbox address.                |
 | Uploads vanish after a deploy                        | The `media` volume is not mounted. `docker volume ls` should show `smartmove_media`.                                                                                      |

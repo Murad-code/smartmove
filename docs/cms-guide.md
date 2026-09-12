@@ -296,8 +296,8 @@ first.
      you fully trust
 5. Click **Save**
 
-The first account created when the site was set up cannot be deleted. That is
-deliberate, so you cannot lock yourself out.
+You can remove a staff account from this list when they leave. That does not
+sign you out of your own account.
 
 On a private preview, the Dashboard also has a **Load demo properties** button.
 It copies example listings from another agency so the site can be demonstrated.

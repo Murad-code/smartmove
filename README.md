@@ -19,7 +19,7 @@ cp .env.example .env
 ```
 
 Fill in `.env`. At a minimum you need `DATABASE_URL`, a `PAYLOAD_SECRET`
-(`openssl rand -hex 32`), and a `SEED_ADMIN_PASSWORD`.
+(`openssl rand -hex 32`), and `ROOT_ADMIN_EMAIL` / `ROOT_ADMIN_PASSWORD`.
 
 Start Postgres. The quickest way is the development Compose file, which
 creates the `smartmove` database for you:
@@ -38,16 +38,16 @@ Then set up the database and start the app:
 
 ```bash
 pnpm migrate
-SEED_DEMO=true pnpm seed
+pnpm seed
 pnpm dev
 ```
 
 - Website: http://localhost:3000
-- Admin: http://localhost:3000/admin, signing in with `SEED_ADMIN_EMAIL`
+- Admin: http://localhost:3000/admin, signing in with `ROOT_ADMIN_EMAIL`
 
-The seed writes the starter pages, services and business details. With
-`SEED_DEMO=true` it also adds six demo properties from the fixtures
-in `src/scripts/`. It is safe to re-run.
+The seed writes the root account, starter pages, services and business
+details. With `SEED_DEMO=true` it also adds six demo properties from the
+fixtures in `src/scripts/`. It is safe to re-run.
 
 > The demo photographs and particulars were taken from another agency's live
 > listings so the site demonstrates well. They are development scaffolding and

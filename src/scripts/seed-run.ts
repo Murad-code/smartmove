@@ -4,6 +4,7 @@ import path from 'node:path'
 import type { Payload } from 'payload'
 
 import { env } from '@/lib/env'
+import { configuredRootEmail, configuredRootPassword } from '@/lib/root-user'
 
 import { buildDemoProperties } from './demo-properties'
 import {
@@ -27,17 +28,14 @@ import {
  * Idempotent: running it twice updates rather than duplicates, so it is safe
  * to re-run after changing the content in `seed-content.ts`.
  *
- * The admin user, business details, services and pages are always written,
- * which is exactly what a first deployment needs. The logo in
- * `demo-assets/brand` comes from the live smartmove4u.co.uk site and is Smart
- * Move's own. `office.jpg` beside it is a generated shopfront, not a
- * photograph of the real premises, so treat it as illustrative.
+ * On every boot the root account from ROOT_ADMIN_EMAIL is created if it is
+ * missing. An empty database also gets the starter pages, services and
+ * business details. `SEED_DEMO=true` adds the demonstration listings and
+ * photography on top. Nothing the demo writes is Smart Move's, so a site
+ * running with it set should also have SITE_NOINDEX=true.
  *
- * `SEED_DEMO=true` adds the rest of the demonstration site in one go: the six
- * demo listings, the home page photography taken from them, and the invented
- * home page reviews. One flag, and it works in production, because the demo is
- * shown to prospective clients from a real deployment. Nothing it writes is
- * Smart Move's, so a site running with it set should also have SITE_NOINDEX=true.
+ * ROOT_ADMIN_PASSWORD is still accepted as SEED_ADMIN_PASSWORD so existing
+ * servers keep working.
  */
 
 // The production image copies the assets to a fixed path rather than keeping
@@ -158,17 +156,16 @@ export type RunSeedOptions = {
   demo?: boolean
 }
 
-export async function runSeed(payload: Payload, options: RunSeedOptions = {}): Promise<void> {
-  // One decision, taken once. The home page photography comes out of the same
-  // listings as the demo properties, so both have to obey the same answer.
-  const useDemoContent = options.demo ?? env.seedDemo
+/**
+ * Create the hidden owner account if it does not already exist.
+ * Does not reset the password of an account that is already there.
+ */
+export async function ensureRootUser(payload: Payload): Promise<void> {
+  const email = configuredRootEmail()
+  const password = configuredRootPassword()
 
-  // --- Admin user ----------------------------------------------------------
-  const email = process.env.SEED_ADMIN_EMAIL || 'admin@smartmove4u.co.uk'
-  const password = process.env.SEED_ADMIN_PASSWORD
-
-  if (!password) {
-    throw new Error('Set SEED_ADMIN_PASSWORD in .env before running the seed.')
+  if (!email) {
+    throw new Error('Set ROOT_ADMIN_EMAIL before starting the site.')
   }
 
   const existingUsers = await payload.find({
@@ -178,16 +175,29 @@ export async function runSeed(payload: Payload, options: RunSeedOptions = {}): P
     overrideAccess: true,
   })
 
-  if (existingUsers.docs.length === 0) {
-    await payload.create({
-      collection: 'users',
-      data: { email, password, name: 'Smart Move', role: 'admin' },
-      overrideAccess: true,
-    })
-    payload.logger.info(`Created admin user ${email}`)
-  } else {
-    payload.logger.info(`Admin user ${email} already exists`)
+  if (existingUsers.docs.length > 0) {
+    payload.logger.info(`Root user ${email} already exists`)
+    return
   }
+
+  if (!password) {
+    throw new Error('Set ROOT_ADMIN_PASSWORD to create the owner account.')
+  }
+
+  await payload.create({
+    collection: 'users',
+    data: { email, password, name: 'Root', role: 'admin' },
+    overrideAccess: true,
+  })
+  payload.logger.info(`Created root user ${email}`)
+}
+
+export async function runSeed(payload: Payload, options: RunSeedOptions = {}): Promise<void> {
+  // One decision, taken once. The home page photography comes out of the same
+  // listings as the demo properties, so both have to obey the same answer.
+  const useDemoContent = options.demo ?? env.seedDemo
+
+  await ensureRootUser(payload)
 
   // --- Globals -------------------------------------------------------------
   const [logoId, logoLightId, faviconId] = await Promise.all([

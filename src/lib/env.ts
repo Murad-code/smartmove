@@ -46,14 +46,9 @@ export const env = {
   noindex: process.env.SITE_NOINDEX === 'true',
 
   /**
-   * Loads the whole demonstration site in one go: starter content, the
-   * third-party demo listings, and the home page photography that comes from
-   * them.
-   *
-   * One flag rather than three, and deliberately not gated on NODE_ENV,
-   * because the demo is shown to prospective clients from a real deployment.
-   * What it creates includes photographs belonging to another agency, so keep
-   * SITE_NOINDEX=true beside it and never set it on a live client site.
+   * Optional. Adds the third-party demo listings and the home page
+   * photography taken from them. Off (the default) is an empty site besides
+   * the starter pages. Keep SITE_NOINDEX=true beside it.
    */
   seedDemo: process.env.SEED_DEMO === 'true',
 

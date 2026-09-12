@@ -130,7 +130,7 @@ same host. The route to caching, if traffic ever justifies it, is documented.
 
 ```bash
 pnpm install
-cp .env.example .env          # fill in DATABASE_URL, PAYLOAD_SECRET, SEED_ADMIN_PASSWORD
+cp .env.example .env          # fill in DATABASE_URL, PAYLOAD_SECRET, ROOT_ADMIN_PASSWORD
 docker compose up -d          # Postgres, or use your own
 pnpm migrate
 SEED_DEMO=true pnpm seed

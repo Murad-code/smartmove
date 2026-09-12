@@ -131,8 +131,9 @@ them.
 | `name` |                                                                                                                                                           |
 | `role` | `admin` or `editor`. Both can sign in to the admin panel. Field-level access is admin-only, so an editor cannot promote themselves or see other accounts. |
 
-The address in `SEED_ADMIN_EMAIL` is treated as the owner account: admins can
-create other admins under Users, but that owner row cannot be deleted.
+The address in `ROOT_ADMIN_EMAIL` is the owner account created on first boot
+(`SEED_ADMIN_EMAIL` is still accepted). It can sign in with full admin rights
+and cannot be deleted. Other admins do not see it on the Users list.
 
 Sessions last eight hours, with `SameSite=Lax` cookies that are `Secure` in
 production.

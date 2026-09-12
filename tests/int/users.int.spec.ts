@@ -6,17 +6,21 @@ import { isRootAdminEmail } from '@/lib/root-user'
 
 const rootEmail = 'owner-root@smartmove.test'
 const otherAdminEmail = 'other-admin@smartmove.test'
+const staffAdminEmail = 'staff-admin@smartmove.test'
 const editorEmail = 'editor-staff@smartmove.test'
 
 let payload: Payload
 let previousRootEmail: string | undefined
+let previousLegacyRootEmail: string | undefined
 
 beforeAll(async () => {
-  previousRootEmail = process.env.SEED_ADMIN_EMAIL
+  previousRootEmail = process.env.ROOT_ADMIN_EMAIL
+  previousLegacyRootEmail = process.env.SEED_ADMIN_EMAIL
   payload = await getPayload({ config: await config })
 
   delete process.env.SEED_ADMIN_EMAIL
-  for (const email of [rootEmail, otherAdminEmail, editorEmail]) {
+  delete process.env.ROOT_ADMIN_EMAIL
+  for (const email of [rootEmail, otherAdminEmail, staffAdminEmail, editorEmail]) {
     await payload.delete({
       collection: 'users',
       where: { email: { equals: email } },
@@ -24,7 +28,7 @@ beforeAll(async () => {
     })
   }
 
-  process.env.SEED_ADMIN_EMAIL = rootEmail
+  process.env.ROOT_ADMIN_EMAIL = rootEmail
 
   await payload.create({
     collection: 'users',
@@ -51,6 +55,17 @@ beforeAll(async () => {
   await payload.create({
     collection: 'users',
     data: {
+      email: staffAdminEmail,
+      password: 'StaffPassword123!',
+      name: 'Staff admin',
+      role: 'admin',
+    },
+    overrideAccess: true,
+  })
+
+  await payload.create({
+    collection: 'users',
+    data: {
       email: editorEmail,
       password: 'EditorPassword123!',
       name: 'Editor',
@@ -61,18 +76,21 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
+  delete process.env.ROOT_ADMIN_EMAIL
   delete process.env.SEED_ADMIN_EMAIL
   await payload.delete({
     collection: 'users',
-    where: { email: { in: [rootEmail, otherAdminEmail, editorEmail] } },
+    where: { email: { in: [rootEmail, otherAdminEmail, staffAdminEmail, editorEmail] } },
     overrideAccess: true,
   })
-  if (previousRootEmail === undefined) delete process.env.SEED_ADMIN_EMAIL
-  else process.env.SEED_ADMIN_EMAIL = previousRootEmail
+  if (previousRootEmail === undefined) delete process.env.ROOT_ADMIN_EMAIL
+  else process.env.ROOT_ADMIN_EMAIL = previousRootEmail
+  if (previousLegacyRootEmail === undefined) delete process.env.SEED_ADMIN_EMAIL
+  else process.env.SEED_ADMIN_EMAIL = previousLegacyRootEmail
 })
 
 describe('root owner account', () => {
-  it('recognises the SEED_ADMIN_EMAIL address without regard to case', () => {
+  it('recognises the ROOT_ADMIN_EMAIL address without regard to case', () => {
     expect(isRootAdminEmail('Owner-Root@smartmove.test')).toBe(true)
     expect(isRootAdminEmail(otherAdminEmail)).toBe(false)
   })
@@ -114,6 +132,80 @@ describe('root owner account', () => {
     })
 
     expect(deleted.id).toBe(other.docs[0]!.id)
+  })
+
+  it('hides the owner account from other admins', async () => {
+    const staff = await payload.find({
+      collection: 'users',
+      where: { email: { equals: staffAdminEmail } },
+      limit: 1,
+      overrideAccess: true,
+    })
+
+    const listed = await payload.find({
+      collection: 'users',
+      user: staff.docs[0],
+      overrideAccess: false,
+    })
+    const emails = listed.docs.map((doc) => doc.email)
+
+    expect(emails).not.toContain(rootEmail)
+    expect(emails).toContain(staffAdminEmail)
+    expect(emails).toContain(editorEmail)
+  })
+
+  it('lets the owner see every account, including their own', async () => {
+    const root = await payload.find({
+      collection: 'users',
+      where: { email: { equals: rootEmail } },
+      limit: 1,
+      overrideAccess: true,
+    })
+
+    const listed = await payload.find({
+      collection: 'users',
+      user: root.docs[0],
+      overrideAccess: false,
+    })
+    const emails = listed.docs.map((doc) => doc.email)
+
+    expect(emails).toContain(rootEmail)
+    expect(emails).toContain(staffAdminEmail)
+  })
+
+  it('refuses a regular admin reading or updating the owner account', async () => {
+    const root = await payload.find({
+      collection: 'users',
+      where: { email: { equals: rootEmail } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    const staff = await payload.find({
+      collection: 'users',
+      where: { email: { equals: staffAdminEmail } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    const rootId = root.docs[0]!.id
+
+    await expect(
+      payload.findByID({
+        collection: 'users',
+        id: rootId,
+        user: staff.docs[0],
+        overrideAccess: false,
+      }),
+    ).rejects.toThrow()
+
+    await expect(
+      payload.update({
+        collection: 'users',
+        id: rootId,
+        data: { name: 'Hijacked' },
+        user: staff.docs[0],
+        overrideAccess: false,
+      }),
+    ).rejects.toThrow()
   })
 })
 
