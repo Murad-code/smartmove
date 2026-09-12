@@ -88,9 +88,7 @@ test('the figures count up to the values the owner typed', async ({ page }) => {
   }
 })
 
-test('copy already on screen under a photo header does not wait for a scroll', async ({
-  page,
-}) => {
+test('copy already on screen under a photo header does not wait for a scroll', async ({ page }) => {
   // Tall enough that a `lg:min-h-[38rem]` photo header leaves the first
   // section in the lower viewport rather than below it. The previous observer
   // inset of 12% treated that band as still off-screen.

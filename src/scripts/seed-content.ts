@@ -33,12 +33,10 @@ export const businessDetails = {
     'We belong to a government-approved redress scheme. Ask the office for the current membership details.',
   clientMoneyProtection:
     'Client money is protected. Ask the office for our Client Money Protection membership details.',
-  depositScheme:
-    'Tenant deposits are protected in a government-approved tenancy deposit scheme.',
+  depositScheme: 'Tenant deposits are protected in a government-approved tenancy deposit scheme.',
   registeredName: '',
   companyNumber: '',
-  footerNote:
-    'Independent letting agents at 96 Frodingham Road, Scunthorpe. Call 01724 856260.',
+  footerNote: 'Independent letting agents at 96 Frodingham Road, Scunthorpe. Call 01724 856260.',
 }
 
 export const siteSettings = {
@@ -516,7 +514,7 @@ export const services = [
         blockType: 'text',
         body: paragraphs(
           'Letting agents in England can only ask tenants for certain payments. We will confirm the exact figures in writing before you pay anything.',
-          'For most tenancies the holding deposit is one week\'s rent and the tenancy deposit is five weeks\' rent, which is the legal maximum where the yearly rent is under £50,000. Your deposit is protected in a government-approved scheme.',
+          "For most tenancies the holding deposit is one week's rent and the tenancy deposit is five weeks' rent, which is the legal maximum where the yearly rent is under £50,000. Your deposit is protected in a government-approved scheme.",
         ),
       },
       {
@@ -527,12 +525,13 @@ export const services = [
         items: [
           {
             title: 'Holding deposit',
-            description: "Equivalent to one week's rent. Put towards your first rent if the tenancy goes ahead.",
+            description:
+              "Equivalent to one week's rent. Put towards your first rent if the tenancy goes ahead.",
           },
           {
             title: 'Tenancy deposit',
             description:
-              'Usually five weeks\' rent, protected in a government-approved scheme until you move out.',
+              "Usually five weeks' rent, protected in a government-approved scheme until you move out.",
           },
           {
             title: 'Rent',
@@ -587,7 +586,8 @@ export const services = [
           },
           {
             title: 'Rent',
-            description: 'Paid by standing order. If a payment is going to be late, call us before it is due.',
+            description:
+              'Paid by standing order. If a payment is going to be late, call us before it is due.',
           },
           {
             title: 'The office',
@@ -731,7 +731,7 @@ export const pages = [
           {
             title: 'Your deposit',
             description:
-              'Your deposit is protected in a government-approved tenancy deposit scheme. For most tenancies this is the equivalent of five weeks\' rent, which is the legal maximum where the yearly rent is under £50,000. We will tell you the exact amount, and which scheme it sits in, before you sign.',
+              "Your deposit is protected in a government-approved tenancy deposit scheme. For most tenancies this is the equivalent of five weeks' rent, which is the legal maximum where the yearly rent is under £50,000. We will tell you the exact amount, and which scheme it sits in, before you sign.",
           },
           {
             title: 'What you pay',
@@ -861,9 +861,9 @@ export const pages = [
           ),
           bulletList([
             "Holding deposit: equivalent to one week's rent. This is the legal maximum. If the tenancy goes ahead it is put towards your first rent. If it does not, it is returned except where the law allows us to keep it, for example if you withdraw or fail a right-to-rent check.",
-            'Tenancy deposit: equivalent to five weeks\' rent where the yearly rent is under £50,000, or six weeks\' rent where it is £50,000 or more. This is the legal maximum. It is protected in a government-approved scheme.',
+            "Tenancy deposit: equivalent to five weeks' rent where the yearly rent is under £50,000, or six weeks' rent where it is £50,000 or more. This is the legal maximum. It is protected in a government-approved scheme.",
             'Rent, as set out in your tenancy agreement.',
-            "A payment to change the tenancy at your request: £50 including VAT, or our reasonable costs if they are higher.",
+            'A payment to change the tenancy at your request: £50 including VAT, or our reasonable costs if they are higher.',
             "A payment if you ask to end the tenancy early: capped at the landlord's actual loss.",
             'Payments for utilities, communication services, a TV licence and council tax, where you are responsible for them under the tenancy.',
             'Default fees for late rent or a lost key, but only where those fees are set out in the tenancy agreement and only at the amounts the law allows.',

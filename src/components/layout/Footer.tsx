@@ -98,7 +98,10 @@ export async function Footer() {
                 {business.telephone ? (
                   <li className="flex gap-2.5">
                     <Icon name="phone" className="mt-0.5 size-4 shrink-0 text-navy-300" />
-                    <a href={telHref(business.telephone)} className="text-navy-200 hover:text-white">
+                    <a
+                      href={telHref(business.telephone)}
+                      className="text-navy-200 hover:text-white"
+                    >
                       {business.telephone}
                     </a>
                   </li>

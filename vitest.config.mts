@@ -8,5 +8,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     include: ['tests/int/**/*.int.spec.ts'],
+    // Payload's first `getPayload` in CI pulls the schema and can exceed
+    // Vitest's 10s hook default, which skips the rest of the file.
+    hookTimeout: 30_000,
   },
 })

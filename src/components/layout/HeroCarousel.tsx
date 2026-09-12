@@ -203,10 +203,7 @@ export function HeroCarousel({
                 aria-label={many ? `Slide ${position + 1} of ${count}` : undefined}
                 aria-hidden={!active}
                 inert={!active}
-                className={cn(
-                  'hero-slide-copy [grid-area:1/1] max-w-2xl',
-                  active && 'is-active',
-                )}
+                className={cn('hero-slide-copy [grid-area:1/1] max-w-2xl', active && 'is-active')}
               >
                 {/* The heading rises from behind its own box rather than
                     fading in. Two elements and one keyframe, and it is the
@@ -279,7 +276,6 @@ export function HeroCarousel({
             ) : null}
           </div>
         ) : null}
-
       </Container>
 
       {/* Outside the heading scrub, so the cards do not fade on scroll. */}

@@ -158,27 +158,27 @@ Stripping the effects away, five decisions do the work:
 
 ### What is worth taking, and what is not
 
-| Reference feature                        | Verdict                                                                                                                                                               |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Single ease curve + duration tiers       | **Take.** Free, and the biggest single win.                                                                                                                           |
-| Masked line reveal on the h1             | **Take.** Highest impact per line of code on the page.                                                                                                                |
-| Ken Burns hero                           | **Take.** 24s, imperceptible, kills the dead-still feeling.                                                                                                           |
-| Hero scrub-out                           | **Take.** Pure CSS with scroll timelines.                                                                                                                             |
-| Image drift inside card frames           | **Take.** The quiet workhorse.                                                                                                                                        |
-| Scrubbed section titles                  | **Take.**                                                                                                                                                             |
-| Multi-property hover on cards            | **Take.**                                                                                                                                                             |
-| Button shimmer sweep                     | **Take.**                                                                                                                                                             |
-| Marquee                                  | **Take.** We have real accreditations to put in it.                                                                                                                   |
-| Animated counters                        | **Take.** Our figures come from the CMS as strings, so parse.                                                                                                         |
-| Progress bar, header shrink, back-to-top | **Take**, but CSS-driven, not on a scroll listener.                                                                                                                   |
-| Smooth scrolling (Lenis)                 | **Take.** This is the "fluid" the brief is about.                                                                                                                     |
-| Custom cursor ring                       | **Skip.** Built, tried, and taken back out: the client did not want a second cursor, and it is the one effect that draws attention to itself rather than to the page. |
-| 3D card tilt                             | **Adapt.** Kept, but ±3.5°/±5° instead of ±6°/±8°.                                                                                                                    |
+| Reference feature                        | Verdict                                                                                                                                                                                     |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Single ease curve + duration tiers       | **Take.** Free, and the biggest single win.                                                                                                                                                 |
+| Masked line reveal on the h1             | **Take.** Highest impact per line of code on the page.                                                                                                                                      |
+| Ken Burns hero                           | **Take.** 24s, imperceptible, kills the dead-still feeling.                                                                                                                                 |
+| Hero scrub-out                           | **Take.** Pure CSS with scroll timelines.                                                                                                                                                   |
+| Image drift inside card frames           | **Take.** The quiet workhorse.                                                                                                                                                              |
+| Scrubbed section titles                  | **Take.**                                                                                                                                                                                   |
+| Multi-property hover on cards            | **Take.**                                                                                                                                                                                   |
+| Button shimmer sweep                     | **Take.**                                                                                                                                                                                   |
+| Marquee                                  | **Take.** We have real accreditations to put in it.                                                                                                                                         |
+| Animated counters                        | **Take.** Our figures come from the CMS as strings, so parse.                                                                                                                               |
+| Progress bar, header shrink, back-to-top | **Take**, but CSS-driven, not on a scroll listener.                                                                                                                                         |
+| Smooth scrolling (Lenis)                 | **Take.** This is the "fluid" the brief is about.                                                                                                                                           |
+| Custom cursor ring                       | **Skip.** Built, tried, and taken back out: the client did not want a second cursor, and it is the one effect that draws attention to itself rather than to the page.                       |
+| 3D card tilt                             | **Adapt.** Kept, but ±3.5°/±5° instead of ±6°/±8°.                                                                                                                                          |
 | About-image clip-path curtain            | **Skip.** A scrubbed clip-path opening, stacked with image drift, felt theatrical on editorial photos of the office and houses. Those three use the same 24s Ken Burns as the hero instead. |
-| Chapter numerals, CTA background settle  | **Skip.** Numerals are an editorial device that needs the rest of that system to mean anything, and our CTA band has no background photo to settle.                   |
-| Scroll cue under the hero                | **Skip.** Our hero is not full-height, so a cue would point at content already on screen.                                                                             |
-| Pinned horizontal gallery                | **Skip.** See below.                                                                                                                                                  |
-| Preloader curtain                        | **Skip.** See below.                                                                                                                                                  |
+| Chapter numerals, CTA background settle  | **Skip.** Numerals are an editorial device that needs the rest of that system to mean anything, and our CTA band has no background photo to settle.                                         |
+| Scroll cue under the hero                | **Skip.** Our hero is not full-height, so a cue would point at content already on screen.                                                                                                   |
+| Pinned horizontal gallery                | **Skip.** See below.                                                                                                                                                                        |
+| Preloader curtain                        | **Skip.** See below.                                                                                                                                                                        |
 
 **The pinned horizontal gallery is skipped** because our services list is
 CMS-driven and of unknown length, and pinning needs a known measurement. The
