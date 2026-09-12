@@ -22,6 +22,7 @@ import { BrandLogo as BrandLogo_fd0a9bbb35693e340bbbfa9596236d37 } from '@/compo
 import { HeaderLogout as HeaderLogout_08331a78061c89098aff2e2a9d5d155f } from '@/components/admin/HeaderLogout'
 import { DashboardTools as DashboardTools_452e18dc31cc5f23865f44f53acfc706 } from '@/components/admin/DashboardTools'
 import { DashboardNavLink as DashboardNavLink_3987d42d9edba53cc710fb1f6cc541b5 } from '@/components/admin/DashboardNavLink'
+import { ListRowClick as ListRowClick_d97ecb904f6c53019e6751866eb47e37 } from '@/components/admin/ListRowClick'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -50,5 +51,6 @@ export const importMap = {
   "@/components/admin/HeaderLogout#HeaderLogout": HeaderLogout_08331a78061c89098aff2e2a9d5d155f,
   "@/components/admin/DashboardTools#DashboardTools": DashboardTools_452e18dc31cc5f23865f44f53acfc706,
   "@/components/admin/DashboardNavLink#DashboardNavLink": DashboardNavLink_3987d42d9edba53cc710fb1f6cc541b5,
+  "@/components/admin/ListRowClick#ListRowClick": ListRowClick_d97ecb904f6c53019e6751866eb47e37,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

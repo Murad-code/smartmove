@@ -126,7 +126,13 @@ html[data-theme='light'] {
 
 /* Payload only turns the first column into a link. Stretch that link across
    the row so clicking the title, rent or empty space still opens the record.
-   Checkboxes stay above the overlay so bulk select still works. */
+   Checkboxes stay above the overlay so bulk select still works.
+
+   The overlay is not enough on a phone: WebKit will not treat a table-row as
+   a containing block, so the hit target stays in the first cell, and iOS
+   drops taps on an empty pseudo-element. `ListRowClick` follows the document
+   link for those taps. `cursor: pointer` on the cells is what makes iOS
+   fire a click at all. */
 .table tbody tr {
   cursor: pointer;
 }
@@ -137,6 +143,7 @@ html[data-theme='light'] {
 
 .table tbody td:not(.cell-_select):not(.cell-_dragHandle) {
   position: static;
+  cursor: pointer;
 }
 
 .table tbody td.cell-_select,
@@ -150,4 +157,6 @@ html[data-theme='light'] {
   position: absolute;
   inset: 0;
   z-index: 1;
+  /* iOS Safari ignores taps on empty pseudo-elements. */
+  background-color: rgb(0 0 0 / 0);
 }

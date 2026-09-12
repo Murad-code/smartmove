@@ -229,6 +229,24 @@ test('clicking anywhere on an admin list row opens that record', async ({ page }
   await page.waitForURL(/\/admin\/collections\/users\/\d+/)
 })
 
+test.describe('admin list on a phone', () => {
+  test.use({ viewport: { width: 390, height: 844 } })
+
+  test('tapping a list row opens that record', async ({ page }) => {
+    await page.goto('/admin/collections/properties')
+
+    const propertyRow = page.locator('.table tbody tr').first()
+    await expect(propertyRow).toBeVisible()
+    const title = propertyRow.locator('.cell-title')
+    const box = (await title.boundingBox())!
+    // Coordinate tap, not locator.click: on a narrow screen the first-column
+    // overlay covers the title, and Playwright would otherwise refuse the
+    // click as intercepted. A finger does not.
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+    await page.waitForURL(/\/admin\/collections\/properties\/\d+/)
+  })
+})
+
 test('the properties list leads with a photograph so listings are easy to recognise', async ({
   page,
 }) => {
