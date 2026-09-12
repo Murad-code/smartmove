@@ -20,5 +20,8 @@ export async function login({ page, user }: LoginOptions): Promise<void> {
   await page.click('button[type="submit"]')
 
   await page.waitForURL(/\/admin(\?|$)/)
-  await expect(page.locator('.nav')).toBeVisible()
+  // On a phone the menu is a closed drawer, so the aside is in the DOM but
+  // not visible. The page body is what tells us the session actually loaded.
+  await expect(page.locator('.template-default__wrap')).toBeVisible()
+  await expect(page.locator('.nav')).toBeAttached()
 }

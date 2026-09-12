@@ -210,22 +210,13 @@ test('clicking anywhere on an admin list row opens that record', async ({ page }
 
   const propertyRow = page.locator('.table tbody tr').first()
   await expect(propertyRow).toBeVisible()
-  const propertyTitle = propertyRow.locator('.cell-title')
-  const propertyBox = (await propertyTitle.boundingBox())!
-  // The first column's link is stretched over the whole row, which is the
-  // point: a real click on the title hits that overlay, not the title cell.
-  await page.mouse.click(
-    propertyBox.x + propertyBox.width / 2,
-    propertyBox.y + propertyBox.height / 2,
-  )
+  await propertyRow.locator('.cell-title').click()
   await page.waitForURL(/\/admin\/collections\/properties\/\d+/)
 
   await page.goto('/admin/collections/users')
   const userRow = page.locator('.table tbody tr').first()
   await expect(userRow).toBeVisible()
-  const userEmail = userRow.locator('.cell-email')
-  const userBox = (await userEmail.boundingBox())!
-  await page.mouse.click(userBox.x + userBox.width / 2, userBox.y + userBox.height / 2)
+  await userRow.locator('.cell-email').click()
   await page.waitForURL(/\/admin\/collections\/users\/\d+/)
 })
 
@@ -237,13 +228,39 @@ test.describe('admin list on a phone', () => {
 
     const propertyRow = page.locator('.table tbody tr').first()
     await expect(propertyRow).toBeVisible()
-    const title = propertyRow.locator('.cell-title')
-    const box = (await title.boundingBox())!
-    // Coordinate tap, not locator.click: on a narrow screen the first-column
-    // overlay covers the title, and Playwright would otherwise refuse the
-    // click as intercepted. A finger does not.
-    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+    await expect(page.locator('.template-default--nav-open')).toHaveCount(0)
+    await propertyRow.locator('.cell-title').click()
     await page.waitForURL(/\/admin\/collections\/properties\/\d+/)
+  })
+
+  test('opening the menu does not squash the page into a strip', async ({ page }) => {
+    await page.goto('/admin/collections/properties')
+
+    const viewport = page.viewportSize()!
+    const wrap = page.locator('.template-default__wrap')
+    await expect(wrap).toBeVisible()
+    await expect(page.locator('.app-header__mobile-nav-toggler')).toBeVisible()
+    await expect(page.locator('.template-default--nav-open')).toHaveCount(0)
+
+    await page.locator('.app-header__mobile-nav-toggler').click()
+    const nav = page.locator('aside.nav')
+    await expect(page.locator('.template-default--nav-open')).toHaveCount(1)
+    await expect(nav.getByRole('link', { name: 'Dashboard', exact: true })).toBeVisible()
+
+    const layout = await page.evaluate(() => {
+      const wrap = document.querySelector('.template-default__wrap')
+      const nav = document.querySelector('aside.nav')
+      const link = document.querySelector('.nav a.nav__link')
+      return {
+        wrap: wrap instanceof HTMLElement ? wrap.offsetWidth : 0,
+        nav: nav instanceof HTMLElement ? nav.offsetWidth : 0,
+        linkSize:
+          link instanceof HTMLElement ? Number.parseFloat(getComputedStyle(link).fontSize) : 0,
+      }
+    })
+    expect(layout.wrap).toBeGreaterThan(viewport.width * 0.9)
+    expect(layout.nav).toBeGreaterThan(viewport.width * 0.9)
+    expect(layout.linkSize).toBeGreaterThanOrEqual(16)
   })
 })
 
