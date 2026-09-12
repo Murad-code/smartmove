@@ -6,7 +6,7 @@ export interface TestUser {
   email: string
   password: string
   name: string
-  role: 'admin'
+  role: 'admin' | 'editor'
 }
 
 export const testUser: TestUser = {

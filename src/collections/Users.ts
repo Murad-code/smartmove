@@ -1,6 +1,6 @@
 import { APIError, type CollectionConfig } from 'payload'
 
-import { isAdmin, isAdminField, isAdminNotRoot, isAdminOrSelf } from '@/access'
+import { isAdmin, isAdminField, isAdminNotRoot, isAdminOrSelf, isStaff } from '@/access'
 import { isRootAdminEmail } from '@/lib/root-user'
 
 export const Users: CollectionConfig = {
@@ -18,17 +18,21 @@ export const Users: CollectionConfig = {
     defaultColumns: ['name', 'email', 'role'],
     group: 'Settings',
     description: 'Accounts that can sign in and manage this website.',
+    // The Users list is how staff accounts are created and removed. Editors
+    // still sign in; they change their own name and password under Account.
+    hidden: ({ user }) => {
+      if (!user || !('role' in user)) return true
+      return user.role !== 'admin'
+    },
   },
   access: {
     read: isAdminOrSelf,
     create: isAdmin,
     update: isAdminOrSelf,
     delete: isAdminNotRoot,
-    // Only admins see the Users section at all.
-    admin: ({ req: { user } }) => {
-      if (!user || !('role' in user)) return false
-      return user.role === 'admin'
-    },
+    // On the auth collection this is the admin *panel* gate, not the Users
+    // nav item. Both roles must pass or an editor is locked out after login.
+    admin: ({ req }) => Boolean(isStaff({ req })),
   },
   hooks: {
     beforeDelete: [
@@ -60,8 +64,8 @@ export const Users: CollectionConfig = {
       saveToJWT: true,
       label: 'What can this person do?',
       options: [
-        { label: 'Manage everything, including staff accounts', value: 'admin' },
-        { label: 'Manage properties, pages and enquiries', value: 'editor' },
+        { label: 'Can manage the website and other staff accounts', value: 'admin' },
+        { label: 'Can manage the website, but not other staff accounts', value: 'editor' },
       ],
       // Without this an editor could promote themselves to admin.
       access: {
@@ -69,7 +73,8 @@ export const Users: CollectionConfig = {
         update: isAdminField,
       },
       admin: {
-        description: 'Only choose the first option for people you fully trust.',
+        description:
+          'The second option can still sign in and look after listings, pages and enquiries. Only choose the first option for people you fully trust.',
       },
     },
   ],

@@ -126,10 +126,10 @@ them.
 
 ### Users (`users`)
 
-| Field  | Notes                                                                                          |
-| ------ | ---------------------------------------------------------------------------------------------- |
-| `name` |                                                                                                |
-| `role` | `admin` or `editor`. Field-level access is admin-only, so an editor cannot promote themselves. |
+| Field  | Notes                                                                                                                                                     |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name` |                                                                                                                                                           |
+| `role` | `admin` or `editor`. Both can sign in to the admin panel. Field-level access is admin-only, so an editor cannot promote themselves or see other accounts. |
 
 The address in `SEED_ADMIN_EMAIL` is treated as the owner account: admins can
 create other admins under Users, but that owner row cannot be deleted.

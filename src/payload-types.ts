@@ -671,7 +671,7 @@ export interface User {
   id: number;
   name: string;
   /**
-   * Only choose the first option for people you fully trust.
+   * The second option can still sign in and look after listings, pages and enquiries. Only choose the first option for people you fully trust.
    */
   role: 'admin' | 'editor';
   updatedAt: string;

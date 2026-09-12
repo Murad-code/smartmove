@@ -289,9 +289,11 @@ first.
 2. Click **Create new**
 3. Enter their name, email address and a password
 4. Choose what they can do:
-   - **Manage properties, pages and enquiries** — for most staff
-   - **Manage everything, including staff accounts** — only for people you
-     fully trust
+   - **Can manage the website, but not other staff accounts** — for most
+     staff. They can sign in and look after listings, pages and enquiries.
+     They cannot add, change or remove other accounts.
+   - **Can manage the website and other staff accounts** — only for people
+     you fully trust
 5. Click **Save**
 
 The first account created when the site was set up cannot be deleted. That is

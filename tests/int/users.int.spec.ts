@@ -6,6 +6,7 @@ import { isRootAdminEmail } from '@/lib/root-user'
 
 const rootEmail = 'owner-root@smartmove.test'
 const otherAdminEmail = 'other-admin@smartmove.test'
+const editorEmail = 'editor-staff@smartmove.test'
 
 let payload: Payload
 let previousRootEmail: string | undefined
@@ -15,7 +16,7 @@ beforeAll(async () => {
   payload = await getPayload({ config: await config })
 
   delete process.env.SEED_ADMIN_EMAIL
-  for (const email of [rootEmail, otherAdminEmail]) {
+  for (const email of [rootEmail, otherAdminEmail, editorEmail]) {
     await payload.delete({
       collection: 'users',
       where: { email: { equals: email } },
@@ -46,13 +47,24 @@ beforeAll(async () => {
     },
     overrideAccess: true,
   })
+
+  await payload.create({
+    collection: 'users',
+    data: {
+      email: editorEmail,
+      password: 'EditorPassword123!',
+      name: 'Editor',
+      role: 'editor',
+    },
+    overrideAccess: true,
+  })
 })
 
 afterAll(async () => {
   delete process.env.SEED_ADMIN_EMAIL
   await payload.delete({
     collection: 'users',
-    where: { email: { in: [rootEmail, otherAdminEmail] } },
+    where: { email: { in: [rootEmail, otherAdminEmail, editorEmail] } },
     overrideAccess: true,
   })
   if (previousRootEmail === undefined) delete process.env.SEED_ADMIN_EMAIL
@@ -102,5 +114,70 @@ describe('root owner account', () => {
     })
 
     expect(deleted.id).toBe(other.docs[0]!.id)
+  })
+})
+
+describe('editor accounts', () => {
+  async function editorUser() {
+    const found = await payload.find({
+      collection: 'users',
+      where: { email: { equals: editorEmail } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    return found.docs[0]!
+  }
+
+  it('is allowed into the admin panel', async () => {
+    const users = payload.collections.users.config
+    const allowed = await users.access.admin({ req: { user: await editorUser() } as never })
+    expect(allowed).toBe(true)
+  })
+
+  it('can create a property', async () => {
+    const created = await payload.create({
+      collection: 'properties',
+      data: {
+        title: 'Editor Created Listing',
+        status: 'draft',
+        monthlyRent: 500,
+        bedrooms: 2,
+        propertyType: 'terraced',
+        displayLocation: 'Test area',
+        shortDescription: 'Created by an editor in the access tests.',
+      },
+      user: await editorUser(),
+      overrideAccess: false,
+    })
+
+    expect(created.id).toBeDefined()
+    await payload.delete({ collection: 'properties', id: created.id, overrideAccess: true })
+  })
+
+  it('cannot read other staff accounts', async () => {
+    const listed = await payload.find({
+      collection: 'users',
+      user: await editorUser(),
+      overrideAccess: false,
+    })
+
+    expect(listed.docs).toHaveLength(1)
+    expect(listed.docs[0]?.email).toBe(editorEmail)
+  })
+
+  it('cannot create a staff account', async () => {
+    await expect(
+      payload.create({
+        collection: 'users',
+        data: {
+          email: 'should-not-exist@smartmove.test',
+          password: 'NopePassword123!',
+          name: 'Should not exist',
+          role: 'editor',
+        },
+        user: await editorUser(),
+        overrideAccess: false,
+      }),
+    ).rejects.toThrow()
   })
 })
