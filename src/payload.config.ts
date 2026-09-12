@@ -53,6 +53,7 @@ export default buildConfig({
       beforeNavLinks: ['@/components/admin/DashboardNavLink#DashboardNavLink'],
       beforeDashboard: ['@/components/admin/DashboardTools#DashboardTools'],
       actions: ['@/components/admin/HeaderLogout#HeaderLogout'],
+      logout: { Button: '@/components/admin/NavLogout#NavLogout' },
       providers: ['@/components/admin/ListRowClick#ListRowClick'],
     },
     meta: {

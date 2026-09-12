@@ -261,6 +261,12 @@ test.describe('admin list on a phone', () => {
     expect(layout.wrap).toBeGreaterThan(viewport.width * 0.9)
     expect(layout.nav).toBeGreaterThan(viewport.width * 0.9)
     expect(layout.linkSize).toBeGreaterThanOrEqual(16)
+
+    const logout = nav.getByRole('link', { name: 'Log out', exact: true })
+    await expect(logout).toBeVisible()
+    const logoutBox = (await logout.boundingBox())!
+    expect(logoutBox.y).toBeGreaterThanOrEqual(0)
+    expect(logoutBox.y + logoutBox.height).toBeLessThanOrEqual(viewport.height)
   })
 })
 

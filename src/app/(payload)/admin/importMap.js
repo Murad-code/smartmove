@@ -17,6 +17,7 @@ import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 }
 import { ContactDetailsNote as ContactDetailsNote_6618783976c7b4837d979b4c8dc1cec8 } from '@/components/admin/ContactDetailsNote'
 import { FolderTableCell as FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { FolderField as FolderField_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
+import { NavLogout as NavLogout_c2ec65a1083ed817443aa69dff8afcbe } from '@/components/admin/NavLogout'
 import { BrandIcon as BrandIcon_d9087a380941d12f95aff168665b00b4 } from '@/components/admin/BrandIcon'
 import { BrandLogo as BrandLogo_fd0a9bbb35693e340bbbfa9596236d37 } from '@/components/admin/BrandLogo'
 import { HeaderLogout as HeaderLogout_08331a78061c89098aff2e2a9d5d155f } from '@/components/admin/HeaderLogout'
@@ -46,6 +47,7 @@ export const importMap = {
   "@/components/admin/ContactDetailsNote#ContactDetailsNote": ContactDetailsNote_6618783976c7b4837d979b4c8dc1cec8,
   "@payloadcms/next/rsc#FolderTableCell": FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/next/rsc#FolderField": FolderField_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@/components/admin/NavLogout#NavLogout": NavLogout_c2ec65a1083ed817443aa69dff8afcbe,
   "@/components/admin/BrandIcon#BrandIcon": BrandIcon_d9087a380941d12f95aff168665b00b4,
   "@/components/admin/BrandLogo#BrandLogo": BrandLogo_fd0a9bbb35693e340bbbfa9596236d37,
   "@/components/admin/HeaderLogout#HeaderLogout": HeaderLogout_08331a78061c89098aff2e2a9d5d155f,

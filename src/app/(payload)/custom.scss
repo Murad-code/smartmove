@@ -71,16 +71,91 @@ html[data-theme='light'] {
     align-items: center;
   }
 
-  .nav__label,
-  .nav-group__toggle {
-    font-size: 0.8125rem;
+  .nav {
+    --nav-padding-inline-start: 1.25rem;
+    --nav-padding-inline-end: 1.25rem;
+    --nav-padding-block-start: 3.25rem;
+    --nav-padding-block-end: max(0.85rem, env(safe-area-inset-bottom));
   }
 
-  .nav__link {
-    font-size: 1.125rem;
-    line-height: 1.4;
-    min-height: 2.75rem;
-    padding-block: 0.5rem;
+  .nav__scroll {
+    overflow-x: hidden;
+  }
+
+  .nav__wrap {
+    gap: 0.15rem;
+  }
+
+  .nav-dashboard {
+    width: 100%;
+    margin-bottom: 0.4rem;
+    padding-bottom: 0.4rem;
+  }
+
+  .nav-group {
+    margin-bottom: 0.3rem;
+  }
+
+  .nav-group__toggle {
+    width: 100%;
+    font-size: 0.875rem;
+    min-height: 2.15rem;
+  }
+
+  .nav__label {
+    font-size: 0.875rem;
+  }
+
+  .nav__link,
+  .nav a.nav__link {
+    width: 100%;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    line-height: 1.25;
+    min-height: 2.35rem;
+    padding-block: 0.28rem;
+    padding-inline-end: 0;
+  }
+
+  .nav a.nav__link::after {
+    content: '';
+    width: 0.42rem;
+    height: 0.42rem;
+    margin-inline-start: auto;
+    flex-shrink: 0;
+    border-inline-end: 2px solid currentColor;
+    border-block-end: 2px solid currentColor;
+    transform: rotate(-45deg);
+    opacity: 0.4;
+  }
+
+  .nav__controls {
+    width: 100%;
+    gap: 0.35rem;
+    margin-top: auto;
+  }
+
+  .nav__controls > :first-child {
+    margin-top: 0.35rem;
+  }
+
+  .nav__log-out {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 2.5rem;
+    padding-block: 0.35rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--theme-text);
+    text-decoration: none;
+  }
+
+  .nav__log-out .icon--logout {
+    width: 1.35rem;
+    height: 1.35rem;
+    flex-shrink: 0;
   }
 }
 
@@ -94,6 +169,21 @@ html[data-theme='light'] {
   margin-bottom: 0.85rem;
   padding-bottom: 0.85rem;
   border-bottom: 1px solid var(--theme-elevation-100);
+}
+
+.nav__log-out {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  font-weight: 600;
+  color: var(--theme-text);
+  text-decoration: none;
+}
+
+.nav__log-out:hover {
+  text-decoration: underline;
 }
 
 .header-log-out {
